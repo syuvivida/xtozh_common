@@ -5,13 +5,13 @@
 #include <TString.h>
 #include <TSystem.h>
 #include <TLorentzVector.h>
-#include "untuplizer.h"
+#include "HEADER/untuplizer.h"
 
-Float_t jetPtEtaUnc(Double_t myPt, Double_t myEta){
+Float_t jetPtEtaUnc(std::string textFile, Double_t myPt, Double_t myEta){
 
   // text file is for MC
-  TString nCol_temp = gSystem->GetFromPipe("awk 'NR==2 {print NF}' START53_V23_Uncertainty_AK7PFchs.txt");
-  TString nRow_temp = gSystem->GetFromPipe("awk '{print NR}' START53_V23_Uncertainty_AK7PFchs.txt | tail -n 1");
+  TString nCol_temp = gSystem->GetFromPipe(Form("awk 'NR==2 {print NF}' %s", textFile.data()));
+  TString nRow_temp = gSystem->GetFromPipe(Form("awk '{print NR}' %s | tail -n 1", textFile.data()));
 
   Int_t nCol = atoi(nCol_temp.Data());
   Int_t nRow = atoi(nRow_temp.Data());
@@ -26,7 +26,7 @@ Float_t jetPtEtaUnc(Double_t myPt, Double_t myEta){
   Float_t dummy;
 
   ifstream fin;
-  fin.open("START53_V23_Uncertainty_AK7PFchs.txt");
+  fin.open(textFile.data());
 
   while(!fin.eof()){
 
@@ -60,7 +60,7 @@ Float_t jetPtEtaUnc(Double_t myPt, Double_t myEta){
 
 }
 
-TLorentzVector corrJetVector(Int_t mode, TLorentzVector jet_original){
+TLorentzVector corrJetVector(std::string textFile, Int_t mode, TLorentzVector jet_original){
 
   TLorentzVector falseVector(0,0,0,0);
 
@@ -68,7 +68,7 @@ TLorentzVector corrJetVector(Int_t mode, TLorentzVector jet_original){
 
   Float_t myPt = jet_original.Pt();
   Float_t myEta = jet_original.Eta();
-  Float_t myUnc = jetPtEtaUnc(myPt, myEta);
+  Float_t myUnc = jetPtEtaUnc(textFile, myPt, myEta);
   Float_t corrUnc = (1 + mode*fabs(myUnc));
 
   TLorentzVector jet_corr = corrUnc * jet_original;
