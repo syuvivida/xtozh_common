@@ -1,7 +1,6 @@
 XtoZh
 =====
-
-Figures for X->Zh
+Macros and scripts for X->Zh
 
 git clone git@github.com:syuvivida/xtozh_common.git
 
