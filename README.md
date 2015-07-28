@@ -4,6 +4,8 @@ Macros and scripts for X->Zh
 
 git clone git@github.com:syuvivida/xtozh_common.git
 
+git checkout 13TeV_CMSSW747
+
 cd xtozh_common
 
 git add ...
