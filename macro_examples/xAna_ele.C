@@ -1,5 +1,4 @@
-//root -q -b -l juwu.C++\(\"inputFile\"\,\"outputFile\"\)
-
+// example code to run Bulk Graviton->ZZ->ZlepZhad selections on electron-channel
 
 #include <vector>
 #include <iostream>
@@ -12,20 +11,18 @@
 #include "untuplizer.h"
 #include <TClonesArray.h>
 #include <TLorentzVector.h>
-#include "ElectronSelections.h"
 
 using namespace std;
-void xAna_ele(std::string inputFile, int LeptonMode){
+void xAna_ele(std::string inputFile){
 
   //get TTree from file ...
   TreeReader data(inputFile.data());
 
-  Long64_t nLepton[3]={0};
   Long64_t nTotal=0;
   Long64_t nPass[20]={0};
   ofstream fout;
   fout.open("ele_Eiko.txt");
-
+  TH1F* h_SD=new TH1F("h_SD","",100,0,200);
   //Event loop
   for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
 
@@ -34,7 +31,8 @@ void xAna_ele(std::string inputFile, int LeptonMode){
 
     data.GetEntry(jEntry);
     nTotal ++;
-    
+
+    // 0. check the generator-level information and make sure there is a Z->e+e-
     Int_t nGenPar        = data.GetInt("nGenPar");
     Int_t* genParId      = data.GetPtrInt("genParId");
     Int_t* genParSt      = data.GetPtrInt("genParSt");
@@ -55,13 +53,14 @@ void xAna_ele(std::string inputFile, int LeptonMode){
       int da1pdg = genParId[da1];
       int da2pdg = genParId[da2];
 
-      if(abs(da1pdg)==LeptonMode)
+      if(abs(da1pdg)==11)
      	hasLepton=true;
 
       if(hasLepton)break;
 
     }
 
+    // 1. make sure there is a Z-> qq 
     bool hasHadron=false;
 
     for(int ig=0; ig < nGenPar; ig++){
@@ -86,6 +85,7 @@ void xAna_ele(std::string inputFile, int LeptonMode){
     if(!hasHadron)continue;
     nPass[1]++;
      
+    //2. pass electron or muon trigger
     std::string* trigName = data.GetPtrString("hlt_trigName");
     vector<bool> &trigResult = *((vector<bool>*) data.GetPtr("hlt_trigResult"));
     const Int_t nsize = data.GetPtrStringSize();
@@ -114,10 +114,13 @@ void xAna_ele(std::string inputFile, int LeptonMode){
     if(!passTrigger)continue;
     nPass[2]++;
 
+
+    //3. has a good vertex
     Int_t nVtx        = data.GetInt("nVtx");
     if(nVtx<1)continue;
     nPass[3]++;
 
+    //4. look for good electrons first
     Int_t nEle         = data.GetInt("nEle");
     Int_t run          = data.GetInt("runId");
     Int_t lumi         = data.GetInt("lumiSection");
@@ -128,13 +131,8 @@ void xAna_ele(std::string inputFile, int LeptonMode){
     Float_t* eleMiniIso       = data.GetPtrFloat("eleMiniIso");
     Int_t*   eleCharge        = data.GetPtrInt("eleCharge");
 
-    bool findEPair=false;
-    TLorentzVector l4_Z(0,0,0,0);
-    std::vector<int> myElectrons;
-
-    // select_electrons(data, myElectrons);
-
-    // select good electrons
+    //5. select good electrons
+    std::vector<int> goodElectrons;
 
     for(int ie=0; ie< nEle; ie++)
       {
@@ -151,19 +149,22 @@ void xAna_ele(std::string inputFile, int LeptonMode){
     	
     	if(eleMiniIso[ie]>0.1)continue;
 
-    	myElectrons.push_back(ie);
+    	goodElectrons.push_back(ie);
       }
 
 	
+    //6. select a good Z boson
+    bool findEPair=false;
+    TLorentzVector l4_Z(0,0,0,0);
 
-    for(unsigned int i=0; i< myElectrons.size(); i++)
+    for(unsigned int i=0; i< goodElectrons.size(); i++)
       {
-	int ie = myElectrons[i];
+	int ie = goodElectrons[i];
 	TLorentzVector* thisEle = (TLorentzVector*)eleP4->At(ie);
 
 	for(unsigned int j=0; j< i; j++)
 	  {
-	    int je= myElectrons[j];
+	    int je= goodElectrons[j];
 
 	    if(eleCharge[ie]*eleCharge[je]>0)continue;
 
@@ -187,6 +188,39 @@ void xAna_ele(std::string inputFile, int LeptonMode){
     nPass[4]++;
 
 
+    //7.select a good CA8 and cleaned jet
+
+    // first select muons for cleaning against jet
+    std::vector<int> goodMuons;
+    Int_t nMu          = data.GetInt("nMu");
+    vector<bool> &isHighPtMuon = *((vector<bool>*) data.GetPtr("isHighPtMuon"));
+    vector<bool> &isCustomTrackerMuon = *((vector<bool>*) data.GetPtr("isCustomTrackerMuon"));
+    TClonesArray* muP4 = (TClonesArray*) data.GetPtrTObject("muP4");
+    Float_t* muMiniIso       = data.GetPtrFloat("muMiniIso");
+
+    for(int im=0; im< nMu; im++)
+      {
+
+    	TLorentzVector* thisMu = (TLorentzVector*)muP4->At(im);
+
+    	if(!isHighPtMuon[im] && !isCustomTrackerMuon[im])continue;
+    	
+    	if(muMiniIso[im]>0.1)continue;	
+
+        if ( goodMuons.size()==1 ) {
+	  bool highPt_AND_tracker = isHighPtMuon[0] && isCustomTrackerMuon[im];
+	  bool tracker_AND_highPt = isHighPtMuon[im] && isCustomTrackerMuon[0]; 
+            if ( !(highPt_AND_tracker or tracker_AND_highPt) ) continue; 
+        }
+
+    	if(fabs(thisMu->Eta())>2.1)continue;
+
+    	if(thisMu->Pt() < 50)continue;
+
+    	goodMuons.push_back(im);
+      }
+
+	
     Int_t nJet         = data.GetInt("FATnJet");
     TClonesArray* jetP4 = (TClonesArray*) data.GetPtrTObject("FATjetP4");
     Float_t*  jetSDmass = data.GetPtrFloat("FATjetSDmass");
@@ -195,15 +229,40 @@ void xAna_ele(std::string inputFile, int LeptonMode){
     bool findAJet=false;
     for(int ij=0; ij<nJet; ij++)
       {
-	
-	TLorentzVector* thisJet = (TLorentzVector*)jetP4->At(ij);
+    	
+     	TLorentzVector* thisJet = (TLorentzVector*)jetP4->At(ij);
 
 	if(jetSDmass[ij]<50 || jetSDmass[ij]>110)continue;
+
+	bool hasOverLap=false;
+	for(unsigned int ie=0; ie < goodElectrons.size(); ie++)
+	  {
+	    TLorentzVector* thisEle = (TLorentzVector*)eleP4->At(goodElectrons[ie]);
+	    if(thisEle->DeltaR(*thisJet)<0.8)hasOverLap=true;
+	    if(hasOverLap)break;
+	    
+	  }
+	for(unsigned int im=0; im < goodMuons.size(); im++)
+	  {
+	    TLorentzVector* thisMuo = (TLorentzVector*)muP4->At(goodMuons[im]);
+	    if(thisMuo->DeltaR(*thisJet)<0.8)hasOverLap=true;
+	    if(hasOverLap)break;
+	    
+	  }
 	
-	if(!findAJet)
-	  l4_leadingJet = *thisJet;
-	findAJet=true;
+	if(hasOverLap)continue;
 	
+	if(thisJet->Pt()<200)continue;
+	if(fabs(thisJet->Eta())>2.4)continue;
+
+     	if(!findAJet)
+	  {
+	    l4_leadingJet = *thisJet;
+	    h_SD->Fill(jetSDmass[ij]);
+	  }
+	    
+     	findAJet=true;
+    	
 
       }
     
@@ -211,9 +270,9 @@ void xAna_ele(std::string inputFile, int LeptonMode){
       continue;
     nPass[5]++;
 
-    Float_t MGrav = (l4_leadingJet + l4_Z).M();
-    if(MGrav<400)continue;
-    nPass[6]++;
+     Float_t MGrav = (l4_leadingJet + l4_Z).M();
+     if(MGrav<400)continue;
+     nPass[6]++;
 
     fout << run << " " << lumi << " " << event << endl;
     
@@ -222,8 +281,6 @@ void xAna_ele(std::string inputFile, int LeptonMode){
 
   fout.close();
   std::cout << "nTotal    = " << nTotal << std::endl;
-  for(int i=0; i<3; i++)
-    std::cout << "nLepton[" << i << "]    = " << nLepton[i] << std::endl;
   for(int i=0;i<20;i++)
     if(nPass[i]>0)
       std::cout << "nPass[" << i << "]= " << nPass[i] << std::endl;
