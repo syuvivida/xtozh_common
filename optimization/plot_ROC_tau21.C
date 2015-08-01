@@ -345,7 +345,7 @@ TGraphErrors* SIGN(TH1* h_sig, TH1* h_bkd){
     sign[i] = eff[i]*sign_denom[i];
     
     
-    error_sign[i] = sign_denom[i]*sqrt( ( pow(error_eff[i],2)+(1/4)*( pow(eff[i],2)*sign_denom[i] )*pow(sign_denom[i],2)*pow(error_denom[i],2) ) );
+    error_sign[i] = sign_denom[i]*sqrt( ( pow(error_eff[i],2)+(1/4)*( pow(eff[i],2)/sign_denom[i] )*pow(sign_denom[i],2)*pow(error_denom[i],2) ) );
 
 
 
