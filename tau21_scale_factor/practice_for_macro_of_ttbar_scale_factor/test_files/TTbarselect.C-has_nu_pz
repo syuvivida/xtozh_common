@@ -1,0 +1,245 @@
+#include <map>
+#include <vector>
+#include <string>
+#include <iostream>
+#include <algorithm>
+#include <TF1.h>
+#include <TH1D.h>
+#include <TH1F.h>
+#include <TBox.h>
+#include <TMath.h>
+#include <TFile.h>
+#include <TList.h>
+#include <TChain.h>
+#include <TCanvas.h>
+#include <TBranch.h>
+#include <TRandom.h>
+#include <TProfile.h>
+#include <TLorentzVector.h>
+#include <TSystemDirectory.h>
+#include "untuplizer.h"
+#include "ElectronLooseID.C"
+#include "MuonTightID.C"
+#include "CA8JetLooseID.C"
+#include "EventSelectionMuonChannel.C"
+#include "neutrino_pz.C"
+
+using namespace std;
+
+//Double_t fitFunc(Double_t*, Double_t*);
+//void reconstructZPrime(TreeReader&, Double_t*, Double_t*);
+void ElectronLooseID(TreeReader &, vector<Int_t> *  );
+void MuonTightID(TreeReader &, vector<Int_t> *  );
+void CA8JetLooseID(TreeReader &, vector<Int_t> *  );
+int EventSelectionMuonChannel(TreeReader &, vector<Int_t> *,
+ vector<Int_t> *, vector<Int_t> *, vector<Int_t> *,  vector<Int_t> *,
+ vector<Int_t> * );
+int neutrino_pz(TreeReader &, vector<Int_t> *, vector<Int_t> *);
+
+//void ZPrimeMass(std::string inputFile){
+void TTbarselect(){
+
+//  TreeReader data(inputFile.data());
+  TreeReader data("flattuple_12_1_pNo.root");
+
+  // Declare the histogram of reconstructed mass
+
+  TH1D* h_genParId = new TH1D("h_genParId", "gen particle ID",60 , -30,30 );
+  TH1D* h_elePt = new TH1D("h_elePt", "reco Ele Pt no Cuts",20 , 0,200 );
+  TH1D* h_muPt = new TH1D("h_muPt", "reco Mu Pt no Cuts",20 , 0,200 );
+  TH1D* h_CA8jetPt = new TH1D("h_CA8jetPt", "reco Jet Pt no Cuts",50 , 0,500 );
+  TH1D* h_pfMetCorrPt = new TH1D("h_pfMetCorrPt", "reco MET Pt no Cuts",40 , 0,400 );
+  TH1D* h_LooseCA8jetPt = new TH1D("h_LooseCA8jetPt", "reco Loose CA8 Jet Pt ",50 , 0,500 );
+  TH1D* h_nCA8jet_pass_Evt_cut = new TH1D("h_nCA8jet_pass_Evt_cut", "# of CA8jet pass event cuts",10 , 0,10 );
+
+int event_pass_counter=0;
+
+  // begin of event loop
+  
+  for (Long64_t ev = 0; ev < data.GetEntriesFast(); ev++){
+
+
+    if ( ev % 5000 == 0 )
+      fprintf(stderr, "Processing event %lli of %lli\n", ev + 1, data.GetEntriesFast());
+
+    data.GetEntry(ev);
+    
+
+    Int_t    nGenPar   = data.GetInt("nGenPar"); 
+    Int_t*   genParId  = data.GetPtrInt("genParId");
+    Int_t*   genParSt  = data.GetPtrInt("genParSt");
+    Float_t* genParPt  = data.GetPtrFloat("genParPt");
+    Float_t* genParEta = data.GetPtrFloat("genParEta");
+    Float_t* genParPhi = data.GetPtrFloat("genParPhi");
+    Float_t* genParM   = data.GetPtrFloat("genParM");
+
+    Int_t    nEle      = data.GetInt("nEle");
+    Float_t* elePt     = data.GetPtrFloat("elePt");
+    Float_t* eleScEta  = data.GetPtrFloat("eleScEta");
+    Float_t* eleSigIhIh= data.GetPtrFloat("eleSigIhIh");
+
+    Int_t    nMu          = data.GetInt("nMu");
+    Float_t* muPt         = data.GetPtrFloat("muPt");
+    Float_t* muEta        = data.GetPtrFloat("muEta");
+    Float_t* muPhi        = data.GetPtrFloat("muPhi");
+    Float_t* muM          = data.GetPtrFloat("muM");
+    Int_t*   isGlobalMuon = data.GetPtrInt("isGlobalMuon");
+    Int_t*   isTrackerMuon= data.GetPtrInt("isTrackerMuon");
+    Int_t*   muTrkLayers  = data.GetPtrInt("muTrkLayers");
+    Int_t*   muPixelHits  = data.GetPtrInt("muPixelHits");
+    Int_t*   muHits       = data.GetPtrInt("muHits");
+    Int_t*   muMatches    = data.GetPtrInt("muMatches");
+    Float_t* mudxy        = data.GetPtrFloat("mudxy");
+    Float_t* mudz         = data.GetPtrFloat("mudz");
+
+    Int_t    CA8nJet      = data.GetInt("CA8nJet");
+    Float_t* CA8jetPt     = data.GetPtrFloat("CA8jetPt");
+    Float_t* CA8jetEta    = data.GetPtrFloat("CA8jetEta");
+    Float_t* CA8jetPhi    = data.GetPtrFloat("CA8jetPhi");
+    Float_t* CA8jetEn     = data.GetPtrFloat("CA8jetEn");
+    Float_t* CA8jetCEmEF  = data.GetPtrFloat("CA8jetCEmEF");
+    Float_t* CA8jetCHadEF = data.GetPtrFloat("CA8jetCHadEF");
+    Float_t* CA8jetNEmEF  = data.GetPtrFloat("CA8jetNEmEF");
+    Float_t* CA8jetNHadEF = data.GetPtrFloat("CA8jetNHadEF");
+    Float_t* CA8jetCMulti = data.GetPtrFloat("CA8jetCMulti");
+
+    Float_t  pfMetCorrPt  = data.GetFloat("pfMetCorrPt");
+
+
+    //-----------------------------------------------------------------------------------// gen particle ID, 
+
+        for(int i=0 ;i<nGenPar ;i++){
+
+          h_genParId->Fill(genParId[i]);}
+
+    //-----------------------------------------------------------------------------------// reco elePt, muPt, CA8jetPt, Met
+
+        for(int i=0 ;i<nEle ;i++){
+
+          h_elePt->Fill(elePt[i]);}
+
+           for(int i=0 ;i<nMu ;i++){
+
+          h_muPt->Fill(muPt[i]);}
+
+        for(int i=0 ;i<CA8nJet ;i++){
+
+          h_CA8jetPt->Fill(CA8jetPt[i]);}
+
+          h_pfMetCorrPt->Fill(pfMetCorrPt);
+
+    //-----------------------------------------------------------------------------------//
+    vector<Int_t> Loose_Electron_index;
+    ElectronLooseID(data, &Loose_Electron_index );
+
+    vector<Int_t> Tight_Muon_index;
+    MuonTightID(data, &Tight_Muon_index );
+
+    vector<Int_t> Loose_CA8Jet_index;
+    CA8JetLooseID(data, &Loose_CA8Jet_index );
+
+      for( int i=0 ;i<Loose_CA8Jet_index.size() ;i++){
+h_LooseCA8jetPt->Fill( CA8jetPt[ Loose_CA8Jet_index[i] ] );
+     }
+
+    //-----------------------------------------------------------------------------------//
+    // event selection in muon channel
+
+    vector<Int_t> Muon_pass_index;
+//    int *leading_CA8Jet_index;
+//    int *second_CA8Jet_index;
+    vector<Int_t> leading_and_second_CA8Jet_index;
+    vector<Int_t> Btagged_CA8Jet_index;
+
+    int flag1 = -2;// muon channel event selection flag
+
+    flag1 = EventSelectionMuonChannel(data, &Tight_Muon_index, &Loose_Electron_index ,
+&Loose_CA8Jet_index, &Muon_pass_index, &leading_and_second_CA8Jet_index,
+&Btagged_CA8Jet_index  );
+    // flag1 = 2  for pass, and -2 and -1 for fail 
+
+
+/*    if (flag1==2){
+        cout<<"flag1:"<<flag1<<endl;
+        event_pass_counter = event_pass_counter + 1 ; 
+        h_nCA8jet_pass_Evt_cut->Fill( Loose_CA8Jet_index.size() );
+        cout<<"Muon_pass_index size: "<<Muon_pass_index.size()<<endl;
+        cout<<"leading CA8jet index: "<<leading_and_second_CA8Jet_index[0]
+            <<" second CA8jet index: "<<leading_and_second_CA8Jet_index[1]<<endl;
+        cout<<"Btagged_CA8Jet_index size: "<<Btagged_CA8Jet_index.size()<<endl;
+        }*/
+
+   //-----------------------------------------------------------------------------------//
+   // calculate neutrino pz
+   
+   vector<Int_t> nu_pz;// neutrino pz 2 solutions   
+
+   if (flag1==2){
+      if (Muon_pass_index.size()>1){continue;}// present way only calculate nu pz in case of 1 muon 
+      neutrino_pz(data, &Muon_pass_index, &nu_pz);
+
+   }
+
+   //-----------------------------------------------------------------------------------//
+   // reconstruct leptonic top
+
+   TLorentzVector mu;
+   TLorentzVector nu;//neutrino
+   TLorentzVector jet;//CA8jet
+   TLorentzVector top;
+
+   if (flag1==2){
+  
+        for (int i=0;i<Muon_pass_index.size();i++){
+            for (int j=0;j<Loose_CA8Jet_index.size();j++){
+                if(Loose_CA8Jet_index[j]==leading_and_second_CA8Jet_index[0]){continue;}
+                // remove the leading jet to leptonic top reco
+
+                   for (int k=0; k<Btagged_CA8Jet_index.size();k++ ){
+                      if(Loose_CA8Jet_index[j]==Btagged_CA8Jet_index[k]){
+                      // require the b-tagged jet
+                      mu.SetPtEtaPhiM(muPt[Muon_pass_index[i]],muEta[Muon_pass_index[i]],
+                                      muPhi[Muon_pass_index[i]],muM[Muon_pass_index[i]]);
+
+                      jet.SetPtEtaPhiM(CA8jetPt[Loose_CA8Jet_index[j]],CA8jetEta[Loose_CA8Jet_index[j]],
+                                       CA8jetPhi[Loose_CA8Jet_index[j]],CA8jetEn[Loose_CA8Jet_index[j]]);
+
+                      top = mu + jet;
+    //                  cout<<"mu+jet mass:"<<top.M()<<endl;
+                       }
+                   }
+            }
+        }
+      }
+   //-----------------------------------------------------------------------------------//
+
+  }   // end of event loop
+
+//cout<<"event_pass_counter: "<<event_pass_counter<<endl;
+
+/*    TCanvas * c1 =new TCanvas("c1","",600,600);
+    h_genParId->Draw();
+    TCanvas * c2 =new TCanvas("c2","",600,600);
+    h_elePt->Draw();
+    TCanvas * c3 =new TCanvas("c3","",600,600);
+    h_muPt->Draw();
+    TCanvas * c4 =new TCanvas("c4","",600,600);
+    h_CA8jetPt->Draw();
+    TCanvas * c5 =new TCanvas("c5","",600,600);
+    h_pfMetCorrPt->Draw();
+*/
+//    TCanvas * c6 =new TCanvas("c6","",600,600);
+//h_LooseCA8jetPt->Draw();
+//h_nCA8jet_pass_Evt_cut->Draw();
+
+//    c1->Print("genParId.png");
+//    c2->Print("elePt.png");
+//    c3->Print("muPt.png");
+//    c4->Print("CA8jetPt.png");
+//    c5->Print("pfMetCorrPt.png");
+
+  // Fitting the mass ratio
+  
+  
+}
+
