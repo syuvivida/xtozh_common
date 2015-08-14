@@ -214,13 +214,13 @@ void xAna_btag(std::string inputFile, Float_t signalM=-1){
     else {
 
 
-      vector<int>     *subjetMotherIndex =  data.GetPtrVectorInt("CA8subjetMotherIndex", nCA8jet);
-      vector<float>   *subjetPrunedPt=  data.GetPtrVectorFloat("CA8subjetPrunedPt", nCA8jet);
-      vector<float>   *subjetPrunedEta =  data.GetPtrVectorFloat("CA8subjetPrunedEta", nCA8jet);
-      vector<float>   *subjetPrunedPhi =  data.GetPtrVectorFloat("CA8subjetPrunedPhi", nCA8jet);
-      vector<float>   *subjetPrunedMass =  data.GetPtrVectorFloat("CA8subjetPrunedMass", nCA8jet);
-      vector<float>   *subjetPrunedEn =  data.GetPtrVectorFloat("CA8subjetPrunedEn", nCA8jet);
-      vector<float>   *subjetPrunedCSV =  data.GetPtrVectorFloat("CA8subjetPrunedCSV", nCA8jet);
+      vector<int>     *subjetMotherIndex =  data.GetPtrVectorInt("CA8subjetMotherIndex");
+      vector<float>   *subjetPrunedPt=  data.GetPtrVectorFloat("CA8subjetPrunedPt");
+      vector<float>   *subjetPrunedEta =  data.GetPtrVectorFloat("CA8subjetPrunedEta");
+      vector<float>   *subjetPrunedPhi =  data.GetPtrVectorFloat("CA8subjetPrunedPhi");
+      vector<float>   *subjetPrunedMass =  data.GetPtrVectorFloat("CA8subjetPrunedMass");
+      vector<float>   *subjetPrunedEn =  data.GetPtrVectorFloat("CA8subjetPrunedEn");
+      vector<float>   *subjetPrunedCSV =  data.GetPtrVectorFloat("CA8subjetPrunedCSV");
 
       TLorentzVector subjet_l4[2];
       bool problem=false;
