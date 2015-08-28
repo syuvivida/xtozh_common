@@ -47,6 +47,7 @@ void xAna_hh(std::string inputFile){
     vector<float>   *subjetSDPy  =  data.GetPtrVectorFloat("FATsubjetSDPy", nFATJet);
     vector<float>   *subjetSDPz  =  data.GetPtrVectorFloat("FATsubjetSDPz", nFATJet);
     vector<float>   *subjetSDE   =  data.GetPtrVectorFloat("FATsubjetSDCE", nFATJet);
+    vector<bool>    &passFatJetLooseID = *((vector<bool>*) data.GetPtr("FATjetPassIDLoose"));
     
     int nFatBTag=0;
     for(int ij=0; ij<nJets; ij++)
@@ -56,7 +57,8 @@ void xAna_hh(std::string inputFile){
     	if(thisJet->Pt()<30)continue;
     	if(fabs(thisJet->Eta())>2.5)continue;
     	if(fatjetSDmass[ij]<95 || fatjetSDmass[ij]>145)continue;
-
+	if(!passFatJetLooseID[ij])continue;
+	
     	if(fatjetCISVV2[ij] < 0.605)continue;
     	if(fatjetCISVV2[ij] > 1)continue;
 
@@ -76,6 +78,7 @@ void xAna_hh(std::string inputFile){
 	if(thisJet->Pt()<30)continue;
 	if(fabs(thisJet->Eta())>2.5)continue;
 	if(fatjetSDmass[ij]<95 || fatjetSDmass[ij]>145)continue;
+	if(!passFatJetLooseID[ij])continue;
 
 
       	for(int is=0; is < nSubSoftDropJet[ij]; is++){
