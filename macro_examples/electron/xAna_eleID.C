@@ -26,6 +26,7 @@ void xAna_eleID(std::string inputFile, int mode){
 
   TString outputFile;
   std::vector<string> infiles;
+  // string idname[4]={"HEEPMiniIso","LooseMiniIso","LeadHEEPSubHEEPLooseMiniIso","HEEPMiniIsoOrLooseMiniIso"};
   string idname[4]={"HEEPNoIso","LooseNoIso","LeadHEEPSubHEEPLoose","HEEPNoIsoOrLooseNoIso"};
 
   if(inputFile.find(".root")!= std::string::npos)
@@ -80,6 +81,8 @@ void xAna_eleID(std::string inputFile, int mode){
       h_recodR[i]->SetTitle(name[i].data());
       h_recodR[i]->SetXTitle("reconstruction-level #Delta R(e,e)");
     }
+
+  h_dR->SetXTitle("#Delta R(gen-e,reco-e)");
 
   //Event loop
   for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
@@ -137,6 +140,7 @@ void xAna_eleID(std::string inputFile, int mode){
     int receIndex[2]={-1,-1};
     Int_t nEle         = data.GetInt("nEle");
     TClonesArray* eleP4 = (TClonesArray*) data.GetPtrTObject("eleP4");
+    const float drmax=0.1;
 
     for(int ip=0; ip<2; ip++){
 
@@ -147,7 +151,7 @@ void xAna_eleID(std::string inputFile, int mode){
 	  TLorentzVector* thisEle= (TLorentzVector*)eleP4->At(ie);
 	  float dR = thisEle->DeltaR(gene_l4[ip]);
 	  h_dR->Fill(dR);
-	  if(dR<0.1 && thisEle->Pt()>ptmax)
+	  if(dR<drmax && thisEle->Pt()>ptmax)
 	    {
 	      ptmax=thisEle->Pt();
 	      receIndex[ip]=ie;
@@ -178,7 +182,6 @@ void xAna_eleID(std::string inputFile, int mode){
 
     //4. look for good electrons first
     Float_t* eleSCEta         = data.GetPtrFloat("eleScEta");
-    Float_t* eleMiniIso       = data.GetPtrFloat("eleMiniIso");
     Int_t*   eleCharge        = data.GetPtrInt("eleCharge");
      
 
@@ -285,6 +288,10 @@ void xAna_eleID(std::string inputFile, int mode){
 	  break;
 	}
       }
+
+    // Float_t* eleMiniIso       = data.GetPtrFloat("eleMiniIso");
+    // for(int i=0;i<2;i++)
+    //   passEle[i] = passEle[i] && (eleMiniIso[zIndex[i]]<0.1);
 
     if(passEle[0])
       {
