@@ -26,7 +26,7 @@ void xAna_eleID(std::string inputFile, int mode){
 
   TString outputFile;
   std::vector<string> infiles;
-  //  string idname[4]={"HEEPMiniIso","LooseMiniIso","LeadHEEPSubHEEPLooseMiniIso","HEEPMiniIsoOrLooseMiniIso"};
+  // string idname[4]={"HEEPMiniIso","LooseMiniIso","LeadHEEPSubHEEPLooseMiniIso","HEEPMiniIsoOrLooseMiniIso"};
   string idname[4]={"HEEPNoIso","LooseNoIso","LeadHEEPSubHEEPLoose","HEEPNoIsoOrLooseNoIso"};
 
   if(inputFile.find(".root")!= std::string::npos)
@@ -210,9 +210,8 @@ void xAna_eleID(std::string inputFile, int mode){
       {
 
 	int ie = receIndex[i];
-    	TLorentzVector* thisEle = (TLorentzVector*)eleP4->At(ie);
 
-    	if(fabs(thisEle->Eta())>2.5)continue;
+    	if(fabs(eleSCEta[ie])>2.5)continue;
 
     	if(! (fabs(eleSCEta[ie])<1.4442 || fabs(eleSCEta[ie])>1.566))continue;
     	
@@ -315,9 +314,9 @@ void xAna_eleID(std::string inputFile, int mode){
 	}
       }
 
-     // Float_t* eleMiniIso       = data.GetPtrFloat("eleMiniIso");
-     // for(int i=0;i<2;i++)
-     //   passEle[i] = passEle[i] && (eleMiniIso[zIndex[i]]<0.1);
+    // Float_t* eleMiniIso       = data.GetPtrFloat("eleMiniIso");
+    // for(int i=0;i<2;i++)
+    //   passEle[i] = passEle[i] && (eleMiniIso[zIndex[i]]<0.1);
 
     if(passEle[0])
       {

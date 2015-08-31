@@ -12,7 +12,7 @@ void call_display()
   // filenames.push_back(dirname+"eff_LooseMiniIso_ZprimeToZhToZlephbb.root");
   // filenames.push_back(dirname+"eff_LeadHEEPSubHEEPLooseMiniIso_ZprimeToZhToZlephbb.root");
   // filenames.push_back(dirname+"eff_HEEPMiniIsoOrLooseMiniIso_ZprimeToZhToZlephbb.root");
-
+  
   filenames.push_back(dirname+"eff_HEEPNoIso_ZprimeToZhToZlephbb.root");
   filenames.push_back(dirname+"eff_LooseNoIso_ZprimeToZhToZlephbb.root");
   filenames.push_back(dirname+"eff_LeadHEEPSubHEEPLoose_ZprimeToZhToZlephbb.root");
@@ -28,6 +28,11 @@ void call_display()
   // displayMultipleEffs(filenames,legnames,"graph_gEff2","with MiniIso<0.1");
   // displayMultipleEffs(filenames,legnames,"graph_recoEff","with MiniIso<0.1");
   // displayMultipleEffs(filenames,legnames,"graph_recoEff2","with MiniIso<0.1");
+
+  // displayMultipleEffs(filenames,legnames,"ptgraph_gEff","with MiniIso<0.1");
+  // displayMultipleEffs(filenames,legnames,"ptgraph_gEff2","with MiniIso<0.1");
+  // displayMultipleEffs(filenames,legnames,"ptgraph_recoEff","with MiniIso<0.1");
+  // displayMultipleEffs(filenames,legnames,"ptgraph_recoEff2","with MiniIso<0.1");
   
   displayMultipleEffs(filenames,legnames,"graph_gEff","no iso cut");
   displayMultipleEffs(filenames,legnames,"graph_gEff2","no iso cut");
