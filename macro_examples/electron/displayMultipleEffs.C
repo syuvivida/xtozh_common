@@ -10,8 +10,8 @@ using namespace std;
 void displayMultipleEffs(vector<string> files,
 		   vector<string> legs,
 		   string histo,
-		   string output="test",
 		   string title="",
+		   string output="test",
 		   string notation="", 
 		   float xmin=-1, float xmax=-1, float ymin=0, float ymax=1.2)
 {
@@ -38,15 +38,18 @@ void displayMultipleEffs(vector<string> files,
     }
 
 
-  TLegend* leg = new TLegend(0.149194,0.236287,0.306452,0.457806) ;
+  TLegend* leg = new TLegend(0.159194,0.236287,0.306452,0.457806) ;
 
   leg->SetFillColor(0);
   leg->SetFillStyle(0);
   leg->SetBorderSize(0);
-  leg->SetTextSize(0.05);
+  leg->SetTextSize(0.035);
   leg->SetHeader(title.data());
   for(i=0; i < nfiles; i++)
-    leg->AddEntry(h[i],legs[i].data(),"lf");
+    {
+      leg->AddEntry(h[i],legs[i].data(),"lf");
+    }
+
 
   leg->Draw("same");
 

@@ -10,4 +10,4 @@ root -q -b xAna_eleID.C++\(\"/data7/syu/13TeV_signalMC/ZprimeToZhToZlephbb\",1\)
 root -q -b xAna_eleID.C++\(\"/data7/syu/13TeV_signalMC/ZprimeToZhToZlephbb\",2\)
 root -q -b xAna_eleID.C++\(\"/data7/syu/13TeV_signalMC/ZprimeToZhToZlephbb\",3\)
 
-root -q -b ~/scripts/call_display.C
+root -q -b call_display.C

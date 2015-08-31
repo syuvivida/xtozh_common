@@ -26,7 +26,7 @@ void xAna_eleID(std::string inputFile, int mode){
 
   TString outputFile;
   std::vector<string> infiles;
-  // string idname[4]={"HEEPMiniIso","LooseMiniIso","LeadHEEPSubHEEPLooseMiniIso","HEEPMiniIsoOrLooseMiniIso"};
+  //  string idname[4]={"HEEPMiniIso","LooseMiniIso","LeadHEEPSubHEEPLooseMiniIso","HEEPMiniIsoOrLooseMiniIso"};
   string idname[4]={"HEEPNoIso","LooseNoIso","LeadHEEPSubHEEPLoose","HEEPNoIsoOrLooseNoIso"};
 
   if(inputFile.find(".root")!= std::string::npos)
@@ -64,22 +64,37 @@ void xAna_eleID(std::string inputFile, int mode){
   
   Long64_t nTotal=0;
   Long64_t nPass[20]={0};
-
+  TH1F* h_pt = new TH1F("h_pt","",50,0,1000);
+  h_pt->SetXTitle("generator-level #p_{T}");
   TH1F* h_dR = new TH1F("h_dR","",20,0,1);
   h_dR->SetXTitle("generator-level #Delta R(e,e)");
+  TH1F* h_gendR_nocut = (TH1F*)h_dR->Clone("h_gendR_nocut"); 
   TH1F* h_gendR[4];
   TH1F* h_recodR[4];
+  TH1F* h_genpt[4];
+  TH1F* h_recopt[4];
   string name[4]={"matched reconstructed Z","matched reconstructed Z passing " + idname[mode] + " cuts",
 		  "matched reconstructed electron",
 		  "matched reconstructed electron passing " + idname[mode] + " cuts"};
+  string endfix[4]={"p_{T}(Z) [GeV]","p_{T}(Z) [GeV]","p_{T}(e) [GeV]","p_{T}(e) [GeV]"};
+
   for(int i=0; i<4; i++)
     {
       h_gendR[i] = (TH1F*)h_dR->Clone(Form("h_gendR%d",i));
       h_gendR[i]->SetTitle(name[i].data());
 
+      h_genpt[i] = (TH1F*)h_pt->Clone(Form("h_genpt%d",i));
+      h_genpt[i]->SetTitle(name[i].data());
+      h_genpt[i]->SetXTitle(Form("generator-level %s",endfix[i].data()));
+
       h_recodR[i] = (TH1F*)h_dR->Clone(Form("h_recoR%d",i));
       h_recodR[i]->SetTitle(name[i].data());
       h_recodR[i]->SetXTitle("reconstruction-level #Delta R(e,e)");
+
+      h_recopt[i] = (TH1F*)h_pt->Clone(Form("h_recopt%d",i));
+      h_recopt[i]->SetTitle(name[i].data());
+      h_recopt[i]->SetXTitle(Form("reconstruction-level %s",endfix[i].data()));
+
     }
 
   h_dR->SetXTitle("#Delta R(gen-e,reco-e)");
@@ -127,14 +142,17 @@ void xAna_eleID(std::string inputFile, int mode){
 
     TClonesArray* genParP4 = (TClonesArray*) data.GetPtrTObject("genParP4");
     TLorentzVector gene_l4[2];
-    
+    TLorentzVector genZ_l4;
 
     for(int i=0; i<2; i++)
       {
 	gene_l4[i] = *((TLorentzVector*)genParP4->At(geneIndex[i]));
 	if(DEBUG)gene_l4[i].Print();
+	genZ_l4 += gene_l4[i];
       }
-   
+
+    float gendR = gene_l4[0].DeltaR(gene_l4[1]);
+    h_gendR_nocut->Fill(gendR);
     
     // look for reco electrons that are matched to gen-electrons
     int receIndex[2]={-1,-1};
@@ -164,11 +182,12 @@ void xAna_eleID(std::string inputFile, int mode){
     nPass[2]++;
 
     TLorentzVector rece_l4[2];
-    
+    TLorentzVector recoZ_l4;
     for(int i=0; i<2; i++)
       {
 	rece_l4[i] = *((TLorentzVector*)eleP4->At(receIndex[i]));
 	if(DEBUG)rece_l4[i].Print();
+	recoZ_l4 += rece_l4[i];
       }
 
     //3. has a good vertex
@@ -176,7 +195,6 @@ void xAna_eleID(std::string inputFile, int mode){
     if(nVtx<1)continue;
     nPass[3]++;
 
-    float gendR = gene_l4[0].DeltaR(gene_l4[1]);
     float recdR = rece_l4[0].DeltaR(rece_l4[1]);
     
 
@@ -232,7 +250,7 @@ void xAna_eleID(std::string inputFile, int mode){
 
 	    if(ptmax<115)continue;
 
-	    if(ptmin<20)continue;
+	    if(ptmin<40)continue;
 
 	    if(pt1>pt2){
 	      zIndex[0]=ie;
@@ -257,6 +275,14 @@ void xAna_eleID(std::string inputFile, int mode){
 
     h_gendR[0]->Fill(gendR);
     h_recodR[0]->Fill(recdR);
+
+    h_genpt[0]->Fill(genZ_l4.Pt());
+    h_recopt[0]->Fill(recoZ_l4.Pt());
+
+    h_genpt[2]->Fill(gene_l4[0].Pt());
+    h_recopt[2]->Fill(rece_l4[0].Pt());
+    h_genpt[2]->Fill(gene_l4[1].Pt());
+    h_recopt[2]->Fill(rece_l4[1].Pt());
 
     h_gendR[2]->Fill(gendR);
     h_gendR[2]->Fill(gendR);
@@ -289,19 +315,25 @@ void xAna_eleID(std::string inputFile, int mode){
 	}
       }
 
-    // Float_t* eleMiniIso       = data.GetPtrFloat("eleMiniIso");
-    // for(int i=0;i<2;i++)
-    //   passEle[i] = passEle[i] && (eleMiniIso[zIndex[i]]<0.1);
+     // Float_t* eleMiniIso       = data.GetPtrFloat("eleMiniIso");
+     // for(int i=0;i<2;i++)
+     //   passEle[i] = passEle[i] && (eleMiniIso[zIndex[i]]<0.1);
 
     if(passEle[0])
       {
 	h_gendR[3]->Fill(gendR);
 	h_recodR[3]->Fill(recdR);
+	h_genpt[3]->Fill(gene_l4[0].Pt());
+	h_recopt[3]->Fill(rece_l4[0].Pt());
+
       }
     if(passEle[1])
       {
 	h_gendR[3]->Fill(gendR);
 	h_recodR[3]->Fill(recdR);
+	h_genpt[3]->Fill(gene_l4[1].Pt());
+	h_recopt[3]->Fill(rece_l4[1].Pt());
+
       }
 
     
@@ -310,6 +342,9 @@ void xAna_eleID(std::string inputFile, int mode){
     h_gendR[1]->Fill(gendR);
     h_recodR[1]->Fill(recdR);
     
+    h_genpt[1]->Fill(genZ_l4.Pt());
+    h_recopt[1]->Fill(recoZ_l4.Pt());
+
     
 
 
@@ -319,7 +354,9 @@ void xAna_eleID(std::string inputFile, int mode){
   for(int i=0;i<20;i++)
     if(nPass[i]>0)
       std::cout << "nPass[" << i << "]= " << nPass[i] << std::endl;
+  
 
+  // deltaR efficiency
 
   TEfficiency* gEff = new TEfficiency(*h_gendR[1],*h_gendR[0]);
   gEff->SetName("gEff");
@@ -369,13 +406,65 @@ void xAna_eleID(std::string inputFile, int mode){
   graph_recoEff2->GetYaxis()->SetTitle("ID efficiency per electron");
 
 
+  // pt efficiency
+  TEfficiency* ptgEff = new TEfficiency(*h_genpt[1],*h_genpt[0]);
+  ptgEff->SetName("ptgEff");
+  ptgEff->SetTitle("Z-ID efficiency; generator-level p_{T}(Z) [GeV]; total ID efficiency per Z candidate");
+  
+  ptgEff->Draw();
+  gPad->Update();
+
+  TGraphAsymmErrors* ptgraph_gEff=ptgEff->GetPaintedGraph();
+  ptgraph_gEff->SetName("ptgraph_gEff");
+  ptgraph_gEff->GetXaxis()->SetTitle("generator-level p_{T}(Z) [GeV]");
+  ptgraph_gEff->GetYaxis()->SetTitle("Total ID efficiency per Z candidate");
+
+  TEfficiency* ptrecoEff = new TEfficiency(*h_recopt[1],*h_recopt[0]);
+  ptrecoEff->SetName("ptrecoEff");
+  ptrecoEff->SetTitle("Z-ID efficiency; reconstruction-level p_{T}(Z) [GeV]; total ID efficiency per Z candidate");
+
+  ptrecoEff->Draw();
+  gPad->Update();
+
+  TGraphAsymmErrors* ptgraph_recoEff=ptrecoEff->GetPaintedGraph();
+  ptgraph_recoEff->SetName("ptgraph_recoEff");
+  ptgraph_recoEff->GetXaxis()->SetTitle("reconstruction-level p_{T}(Z) [GeV]");
+  ptgraph_recoEff->GetYaxis()->SetTitle("Total ID efficiency per Z candidate");
+
+  TEfficiency* ptgEff2 = new TEfficiency(*h_genpt[3],*h_genpt[2]);
+  ptgEff2->SetName("ptgEff2");
+  ptgEff2->SetTitle("electron-ID efficiency; generator-level p_{T}(e) [GeV]; ID efficiency per electron");
+
+  ptgEff2->Draw();
+  gPad->Update();
+
+  TGraphAsymmErrors* ptgraph_gEff2=ptgEff2->GetPaintedGraph();
+  ptgraph_gEff2->SetName("ptgraph_gEff2");
+  ptgraph_gEff2->GetXaxis()->SetTitle("generator-level p_{T}(e) [GeV]");
+  ptgraph_gEff2->GetYaxis()->SetTitle("ID efficiency per electron");
+
+  TEfficiency* ptrecoEff2 = new TEfficiency(*h_recopt[3],*h_recopt[2]);
+  ptrecoEff2->SetName("ptrecoEff2");
+  ptrecoEff2->SetTitle("electron-ID efficiency; reconstruction-level p_{T}(e) [GeV]; ID efficiency per electron");
+
+  ptrecoEff2->Draw();
+  gPad->Update();
+
+  TGraphAsymmErrors* ptgraph_recoEff2=ptrecoEff2->GetPaintedGraph();
+  ptgraph_recoEff2->SetName("ptgraph_recoEff2");
+  ptgraph_recoEff2->GetXaxis()->SetTitle("reconstruction-level p_{T}(e) [GeV]");
+  ptgraph_recoEff2->GetYaxis()->SetTitle("ID efficiency per electron");
+
 
   TFile* outFile = new TFile(outputFile.Data(),"recreate");
   h_dR->Write();
+  h_gendR_nocut->Write();
   for(int i=0;i<4;i++)
     {
       h_gendR[i]->Write();
       h_recodR[i]->Write();
+      h_genpt[i]->Write();
+      h_recopt[i]->Write();
     }
   gEff->Write();
   recoEff->Write();
@@ -386,6 +475,16 @@ void xAna_eleID(std::string inputFile, int mode){
   graph_recoEff->Write();
   graph_gEff2->Write();
   graph_recoEff2->Write();
+
+  ptgEff->Write();
+  ptrecoEff->Write();
+  ptgEff2->Write();
+  ptrecoEff2->Write();
+
+  ptgraph_gEff->Write();
+  ptgraph_recoEff->Write();
+  ptgraph_gEff2->Write();
+  ptgraph_recoEff2->Write();
 
   outFile->Close();
     
