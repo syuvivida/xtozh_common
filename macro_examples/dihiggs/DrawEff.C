@@ -79,7 +79,7 @@ void DrawEff()
       csveff[i]->SetMarkerSize(1.5);
       csveff[i]->SetMaximum(0.45);
       csveff[i]->SetMinimum(0);
-      csveff[i]->SetTitle("b-tagging Efficiency");
+      csveff[i]->SetTitle("Signal Event Efficiency");
       csveff[i]->GetXaxis()->SetTitle("Mass of Graviton [GeV]");
       csveff[i]->GetXaxis()->SetTitleOffset(1.4);
       csveff[i]->GetYaxis()->SetTitle("Efficiency");
