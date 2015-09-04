@@ -96,7 +96,7 @@ void xAna_hh1(std::string inputFile){
     vector<float>   *subjetSDPx  =  data.GetPtrVectorFloat("FATsubjetSDPx", nFATJet);
     vector<float>   *subjetSDPy  =  data.GetPtrVectorFloat("FATsubjetSDPy", nFATJet);
     vector<float>   *subjetSDPz  =  data.GetPtrVectorFloat("FATsubjetSDPz", nFATJet);
-    vector<float>   *subjetSDE   =  data.GetPtrVectorFloat("FATsubjetSDE", nFATJet);
+    vector<float>   *subjetSDE   =  data.GetPtrVectorFloat("FATsubjetSDCE", nFATJet);
     vector<bool>    &passFatJetLooseID = *((vector<bool>*) data.GetPtr("FATjetPassIDLoose"));
 
     
@@ -164,7 +164,9 @@ void xAna_hh1(std::string inputFile){
   TH1D* h_CutFlow = new TH1D(" ", Form("Cut Flow for %s",mstring.Data()) ,6,0,6);
 
   std::string cut_name[6] = {"Total","Vertex","FATjet_{CSV}","#geq 2 Subjet_{CSV}","#geq 3 Subjet_{CSV}","#geq 4 Subjet_{CSV}"};
-  
+  ofstream fout;
+  fout.open("eff.dat",ios::app|ios::out);
+  //  fout << mstring.Data() << " ";
   for(int i=1;i<=6;i++){ // i is the index of column of cut flow plot 
 
     float ntotal = nTotal;
@@ -174,7 +176,10 @@ void xAna_hh1(std::string inputFile){
     h_CutFlow->SetBinContent(i,eff);
     h_CutFlow->SetBinError(i,err);
     h_CutFlow->GetXaxis()->SetBinLabel( i , cut_name[i-1].data() );
+    if(i>=3)
+      fout << eff << " " << err << " ";
   }
+  fout << endl;
   
   h_CutFlow->GetXaxis()->SetLabelSize(0.05);
   h_CutFlow->SetStats(0);
