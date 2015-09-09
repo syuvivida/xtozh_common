@@ -12,8 +12,8 @@ void displayMultipleHistos(vector<string> files,
 			   vector<string> legs,
 			   string histo,
 			   string title="",
-			   string notation="", 
-			   float xmin=-1, float xmax=-1, 
+			   string title2="test",
+			   float xmin=-9999, float xmax=-9999, 
 			   float ymin=0, float ymax=1.5)
 {
   const unsigned int nfiles = files.size();
@@ -28,8 +28,13 @@ void displayMultipleHistos(vector<string> files,
       cout << "Opening " << files[i].data() << endl;
       h[i] = dynamic_cast<TH1F*>(gDirectory->Get(histo.data()));
       h[i]->SetName(Form("h%d",i));
+      h[i]->SetTitle("");
+      if(title2!="test")
+	h[i]->SetXTitle(title2.data());
       h[i]->Scale(1.0/h[i]->Integral());
       h[i]->SetMinimum(ymin); 
+      if(xmax>xmin)
+	h[i]->GetXaxis()->SetRangeUser(xmin,xmax);
       xtitle = h[i]->GetXaxis()->GetTitle();
       h[i]->SetMarkerStyle(20+i);
       h[i]->SetMarkerColor(2+i);
@@ -69,11 +74,16 @@ void displayMultipleHistos(vector<string> files,
 
   string dirname ="compareHistos";
   gSystem->mkdir(dirname.data());
-  string temp= dirname + "/" + histo +  ".eps";
+  TString outputFile=gSystem->GetFromPipe(Form("file=%s; histo=%s; test=${file##*Radion}; test2=${test%%.root*}; test3=${histo##*h_}; echo \"${test2}_${test3}\"",
+					       files[0].data(),histo.data()));
+  string tempout = outputFile;
+  cout << tempout << endl;
+  string prefix=dirname + "/" + tempout;
+  string temp= prefix +  ".eps";
   c1->Print(temp.data());
-  temp= dirname + "/" + histo + ".gif";
+  temp= prefix + ".gif";
   c1->Print(temp.data());
-  temp= dirname + "/" + histo + ".pdf";
+  temp= prefix + ".pdf";
   c1->Print(temp.data());
 
 }
