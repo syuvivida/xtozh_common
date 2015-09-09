@@ -209,11 +209,11 @@ void xAna_rec(std::string inputFile){
 	float dR2_gen0= thatMu.DeltaR(l4_mu[0]);
 	float dR2_gen1= thatMu.DeltaR(l4_mu[1]);
 	
-	if(dR2_gen0 > dRMin && dR2_gen1 > dRMin)continue;
+	if(dR2_gen0 > drmax && dR2_gen1 > drmax)continue;
 
 	bool matched = 
-	  (dR1_gen0 < dRMin && dR2_gen1 < dRMin) || 
-	  (dR1_gen1 < dRMin && dR2_gen0 < dRMin);
+	  (dR1_gen0 < drmax && dR2_gen1 < drmax) || 
+	  (dR1_gen1 < drmax && dR2_gen0 < drmax);
 
 	if(!matched)continue;
 
