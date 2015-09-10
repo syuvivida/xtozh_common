@@ -131,7 +131,7 @@ void xAna_eleID(std::string inputFile, int mode){
 
       if(geneIndex[0]<0 && genParId[ig]==11)
 	geneIndex[0]=ig;
-      else if(geneIndex[1]<0 && genParId[ig]== -11)
+      if(geneIndex[1]<0 && genParId[ig]== -11)
 	geneIndex[1]=ig;
       
       if(geneIndex[0]>=0 &&
