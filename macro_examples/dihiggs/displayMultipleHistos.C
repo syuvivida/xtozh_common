@@ -2,9 +2,11 @@
 #include <TCanvas.h>
 #include <string>
 #include <vector>
+#include <iostream>
 #include <TFile.h>
 #include <TLegend.h>
 #include <TStyle.h>
+#include <TSystem.h>
 
 using namespace std;
 
@@ -14,6 +16,7 @@ void displayMultipleHistos(vector<string> files,
 			   string title="",
 			   string title2="test",
 			   float xmin=-9999, float xmax=-9999, 
+			   bool rebin=true,
 			   float ymin=0, float ymax=1.5)
 {
   const unsigned int nfiles = files.size();
@@ -22,23 +25,26 @@ void displayMultipleHistos(vector<string> files,
   float max=-999;
   gStyle->SetOptStat(0);
   gStyle->SetTitleFontSize(0.07);
+  int color[4]={kRed, kMagenta, kBlue, kGreen+2};
+  vector<double> integrals; 
   for(unsigned i=0; i<nfiles; i++)
     {
       TFile *f = TFile::Open(files[i].data());
       cout << "Opening " << files[i].data() << endl;
       h[i] = dynamic_cast<TH1F*>(gDirectory->Get(histo.data()));
       h[i]->SetName(Form("h%d",i));
+      if(rebin)h[i]->Rebin(4);
       h[i]->SetTitle("");
       if(title2!="test")
 	h[i]->SetXTitle(title2.data());
-      h[i]->Scale(1.0/h[i]->Integral());
+      integrals.push_back(h[i]->Integral());
+      h[i]->Scale(1.0/integrals[i]);
       h[i]->SetMinimum(ymin); 
       if(xmax>xmin)
 	h[i]->GetXaxis()->SetRangeUser(xmin,xmax);
-      xtitle = h[i]->GetXaxis()->GetTitle();
       h[i]->SetMarkerStyle(20+i);
-      h[i]->SetMarkerColor(2+i);
-      h[i]->SetLineColor(2+i);
+      h[i]->SetMarkerColor(color[i%4]);
+      h[i]->SetLineColor(color[i%4]);
       h[i]->GetXaxis()->SetTitleOffset(1.2);
       h[i]->GetYaxis()->SetTitleOffset(1.4);
 
@@ -46,16 +52,23 @@ void displayMultipleHistos(vector<string> files,
 	max=h[i]->GetMaximum();
     }
 
-  for(unsigned i=0; i<nfiles; i++)
+  for(unsigned int i=0; i<nfiles; i++)
     {
       h[i]->SetMaximum(ymax*max);
-      // h[i]->SetXTitle(xtitle.data());
       if(i==0)
 	  h[i]->Draw("histe");
 
       else
 	h[i]->Draw("histesame");
     }
+
+  // compute the fraction of DY and GF
+  int frac_GF = 100*integrals[nfiles-1]/integrals[nfiles-2];
+  int frac_DY = 100 - frac_GF;
+  string temp1= Form("%d",frac_DY);
+  string temp2= Form(" %d",frac_GF);
+
+  legs[nfiles-2] += " (" +  temp1 + "% DY" + ", " + temp2 + "% GF)"; 
 
   TLegend* leg = new TLegend(0.181452,0.662447,0.330645,0.883966) ;
 
@@ -64,7 +77,7 @@ void displayMultipleHistos(vector<string> files,
   leg->SetBorderSize(0);
   leg->SetTextSize(0.035);
   leg->SetHeader(title.data());
-  for(i=0; i < nfiles; i++)
+  for(unsigned i=0; i < nfiles; i++)
     {
       leg->AddEntry(h[i],legs[i].data(),"lpf");
     }
@@ -72,18 +85,18 @@ void displayMultipleHistos(vector<string> files,
 
   leg->Draw("same");
 
-  string dirname ="compareHistos";
-  gSystem->mkdir(dirname.data());
+  TString dirname ="compareHistos";
+  gSystem->mkdir(dirname.Data());
   TString outputFile=gSystem->GetFromPipe(Form("file=%s; histo=%s; test=${file##*Radion}; test2=${test%%.root*}; test3=${histo##*h_}; echo \"${test2}_${test3}\"",
 					       files[0].data(),histo.data()));
-  string tempout = outputFile;
+  TString tempout = outputFile;
   cout << tempout << endl;
-  string prefix=dirname + "/" + tempout;
-  string temp= prefix +  ".eps";
-  c1->Print(temp.data());
+  TString prefix=dirname + "/" + tempout;
+  TString temp= prefix +  ".eps";
+  c1->Print(temp.Data());
   temp= prefix + ".gif";
-  c1->Print(temp.data());
+  c1->Print(temp.Data());
   temp= prefix + ".pdf";
-  c1->Print(temp.data());
+  c1->Print(temp.Data());
 
 }
