@@ -37,7 +37,7 @@ void displayMultipleHistos(vector<string> files,
       h[i]->SetTitle("");
       if(title2!="test")
 	h[i]->SetXTitle(title2.data());
-      integrals.push_back(h[i]->Integral());
+      integrals.push_back(h[i]->Integral(0,h[i]->GetNbinsX()+1));
       h[i]->Scale(1.0/integrals[i]);
       h[i]->SetMinimum(ymin); 
       if(xmax>xmin)
