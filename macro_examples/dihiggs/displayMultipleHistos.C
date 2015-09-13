@@ -17,7 +17,7 @@ void displayMultipleHistos(vector<string> files,
 			   string title2="test",
 			   float xmin=-9999, float xmax=-9999, 
 			   bool rebin=true,
-			   float ymin=0, float ymax=1.5)
+			   float ymin=0, float ymax=1.7)
 {
   const unsigned int nfiles = files.size();
   TH1F* h[nfiles];
@@ -77,6 +77,7 @@ void displayMultipleHistos(vector<string> files,
   leg->SetBorderSize(0);
   leg->SetTextSize(0.035);
   leg->SetHeader(title.data());
+  leg->AddEntry((TObject*)0, "","");
   for(unsigned i=0; i < nfiles; i++)
     {
       leg->AddEntry(h[i],legs[i].data(),"lpf");
