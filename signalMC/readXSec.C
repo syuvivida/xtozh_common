@@ -101,11 +101,7 @@ void readXSec(double searchM)
   }
 
   ofstream foutbb;
-  foutbb.open("xsec_Zhllbb.txt",ios::out | ios::app);
-  ofstream foutww;
-  foutww.open("xsec_Zhllww.txt",ios::out | ios::app);
-  ofstream foutzz;
-  foutzz.open("xsec_Zhllzz.txt",ios::out | ios::app);
+  foutbb.open("13TeV_xsec_Zhllbb.txt",ios::out | ios::app);
 
   double xsec=myMap[searchM]["CX0(pb)"];
   cout << "---------------------------------------------------------------------------------------------------------------------------" << endl;
@@ -119,8 +115,8 @@ void readXSec(double searchM)
   cout << "Production cross section of X(" << searchM << ") -> Zh -> qqbb = " << xsec*brZh*hbbBR*ZqqBR << " pb" << endl;
   double myResult = xsec*brZh*hbbBR*ZllBR;
   cout << "Production cross section of X(" << searchM << ") -> Zh -> llbb = " << myResult << " pb" << endl;
-  myResult *=2;
-  cout << "Production cross section of X(" << searchM << ") -> Zh -> ee/mmbb = " << myResult << " pb" << endl;
+  myResult *=3;
+  cout << "Production cross section of X(" << searchM << ") -> Zh -> ee/mm/tautaubb = " << myResult << " pb" << endl;
   foutbb << (int) searchM << " " << myResult << endl;
 
 
@@ -128,7 +124,5 @@ void readXSec(double searchM)
   cout << endl;
 
   foutbb.close();
-  foutww.close();
-  foutzz.close();
 
 }
