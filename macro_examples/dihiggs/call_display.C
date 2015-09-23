@@ -10,14 +10,16 @@ void call_display()
   vector<string> filenames;
   vector<string> legnames;
   ////////////////////////////////  
-  filenames.clear();
+  filenames.clear(); 
   filenames.push_back(dirname+"Radionhh4b_M2000.root");
+  filenames.push_back(dirname+"2HDMhh4b_M2000.root");
   filenames.push_back(dirname+"Bulkhh4b_M2000.root");
   filenames.push_back(dirname+"RShh4b_M2000.root");
   filenames.push_back(dirname+"RShh4b_M2000_gluon.root");
 
   legnames.clear();
   legnames.push_back("Spin-0 Radion (100% GF)");
+  legnames.push_back("Spin-0 H (100% DY)");
   legnames.push_back("Spin-2 Bulk Graviton (100% GF)");
   legnames.push_back("Spin-2 RS Graviton");
   legnames.push_back("Spin-2 RS Graviton (100% GF)");
@@ -35,6 +37,7 @@ void call_display()
   ////////////////////////////////  
   filenames.clear();
   filenames.push_back(dirname+"Radionhh4b_M4500.root");
+  filenames.push_back(dirname+"2HDMhh4b_M4500.root");
   filenames.push_back(dirname+"Bulkhh4b_M4500.root");
   filenames.push_back(dirname+"RShh4b_M4500.root");
   filenames.push_back(dirname+"RShh4b_M4500_gluon.root");
@@ -53,11 +56,56 @@ void call_display()
 
   ////////////////////////////////  
   filenames.clear();
+  filenames.push_back(dirname+"Radionhh4b_M2000_etacut.root");
+  filenames.push_back(dirname+"2HDMhh4b_M2000_etacut.root");
+  filenames.push_back(dirname+"Bulkhh4b_M2000_etacut.root");
+  filenames.push_back(dirname+"RShh4b_M2000_etacut.root");
+  filenames.push_back(dirname+"RShh4b_M2000_gluon_etacut.root");
+  
+  displayMultipleHistos(filenames,legnames,"h_Xpz","X#rightarrow hh, M_{X}=2000 GeV, |#eta_{h}|<2.5, |#Delta#eta(h,h)| < 1.3");
+  displayMultipleHistos(filenames,legnames,"h_Xy","X#rightarrow hh, M_{X}=2000 GeV, |#eta_{h}|<2.5, |#Delta#eta(h,h)| < 1.3");
+  displayMultipleHistos(filenames,legnames,"h_cosThetaStar","X#rightarrow hh, M_{X}=2000 GeV, |#eta_{h}|<2.5, |#Delta#eta(h,h)| < 1.3");
+  displayMultipleHistos(filenames,legnames,"h_cosPhi","X#rightarrow hh, M_{X}=2000 GeV, |#eta_{h}|<2.5, |#Delta#eta(h,h)| < 1.3");
+  displayMultipleHistos(filenames,legnames,"h_Bpt0","X#rightarrow hh, M_{X}=2000 GeV, |#eta_{h}|<2.5, |#Delta#eta(h,h)| < 1.3","p_{T}(H) [GeV]",0,1500);
+  displayMultipleHistos(filenames,legnames,"h_By0","X#rightarrow hh, M_{X}=2000 GeV, |#eta_{h}|<2.5, |#Delta#eta(h,h)| < 1.3","Rapidity of Higgs");
+  displayMultipleHistos(filenames,legnames,"h_D_dR0","X#rightarrow hh, M_{X}=2000 GeV, |#eta_{h}|<2.5, |#Delta#eta(h,h)| < 1.3","#DeltaR(b,b)",0,1);
+  displayMultipleHistos(filenames,legnames,"h_cosTheta0","X#rightarrow hh, M_{X}=2000 GeV, |#eta_{h}|<2.5, |#Delta#eta(h,h)| < 1.3");
+
+
+  ////////////////////////////////  
+  filenames.clear();
+  filenames.push_back(dirname+"Radionhh4b_M4500_etacut.root");
+  filenames.push_back(dirname+"2HDMhh4b_M4500_etacut.root");
+  filenames.push_back(dirname+"Bulkhh4b_M4500_etacut.root");
+  filenames.push_back(dirname+"RShh4b_M4500_etacut.root");
+  filenames.push_back(dirname+"RShh4b_M4500_gluon_etacut.root");
+  
+  displayMultipleHistos(filenames,legnames,"h_Xpz","X#rightarrow hh, M_{X}=4500 GeV, |#eta_{h}|<2.5, |#Delta#eta(h,h)| < 1.3");
+  displayMultipleHistos(filenames,legnames,"h_Xy","X#rightarrow hh, M_{X}=4500 GeV, |#eta_{h}|<2.5, |#Delta#eta(h,h)| < 1.3");
+  displayMultipleHistos(filenames,legnames,"h_cosThetaStar","X#rightarrow hh, M_{X}=4500 GeV, |#eta_{h}|<2.5, |#Delta#eta(h,h)| < 1.3");
+  displayMultipleHistos(filenames,legnames,"h_cosPhi","X#rightarrow hh, M_{X}=4500 GeV, |#eta_{h}|<2.5, |#Delta#eta(h,h)| < 1.3");
+  displayMultipleHistos(filenames,legnames,"h_Bpt0","X#rightarrow hh, M_{X}=4500 GeV, |#eta_{h}|<2.5, |#Delta#eta(h,h)| < 1.3","p_{T}(H) [GeV]");
+  displayMultipleHistos(filenames,legnames,"h_By0","X#rightarrow hh, M_{X}=4500 GeV, |#eta_{h}|<2.5, |#Delta#eta(h,h)| < 1.3","Rapidity of Higgs");
+  displayMultipleHistos(filenames,legnames,"h_D_dR0","X#rightarrow hh, M_{X}=4500 GeV, |#eta_{h}|<2.5, |#Delta#eta(h,h)| < 1.3","#DeltaR(b,b)",0,0.5);
+  displayMultipleHistos(filenames,legnames,"h_cosTheta0","X#rightarrow hh, M_{X}=4500 GeV, |#eta_{h}|<2.5, |#Delta#eta(h,h)| < 1.3");
+
+
+  ////////////////////////////////   WW
+  filenames.clear();
   filenames.push_back(dirname+"RadionWW_M2000.root");
+  filenames.push_back(dirname+"ZprimeWW_M2000.root");
   filenames.push_back(dirname+"BulkWW_M2000.root");
   filenames.push_back(dirname+"RSWW_M2000.root");
   filenames.push_back(dirname+"RSWW_M2000_gluon.root");
   
+  legnames.clear();
+  legnames.push_back("Spin-0 Radion (100% GF)");
+  legnames.push_back("Spin-1 Zprime (100% DY)");
+  legnames.push_back("Spin-2 Bulk Graviton (100% GF)");
+  legnames.push_back("Spin-2 RS Graviton");
+  legnames.push_back("Spin-2 RS Graviton (100% GF)");
+
+
   displayMultipleHistos(filenames,legnames,"h_Xpz","X#rightarrow WW, M_{X}=2000 GeV");
   displayMultipleHistos(filenames,legnames,"h_Xy","X#rightarrow WW, M_{X}=2000 GeV");
   displayMultipleHistos(filenames,legnames,"h_cosThetaStar","X#rightarrow WW, M_{X}=2000 GeV");
@@ -71,6 +119,7 @@ void call_display()
   ////////////////////////////////  
   filenames.clear();
   filenames.push_back(dirname+"RadionWW_M4500.root");
+  filenames.push_back(dirname+"ZprimeWW_M4500.root");
   filenames.push_back(dirname+"BulkWW_M4500.root");
   filenames.push_back(dirname+"RSWW_M4500.root");
   filenames.push_back(dirname+"RSWW_M4500_gluon.root");
@@ -87,44 +136,6 @@ void call_display()
 
 
 
-  ////////////////////////////////  
-  filenames.clear();
-  filenames.push_back(dirname+"Radionhh4b_M2000_etacut.root");
-  filenames.push_back(dirname+"Bulkhh4b_M2000_etacut.root");
-  filenames.push_back(dirname+"RShh4b_M2000_etacut.root");
-  filenames.push_back(dirname+"RShh4b_M2000_gluon_etacut.root");
-
-  legnames.clear();
-  legnames.push_back("Spin-0 Radion (100% GF)");
-  legnames.push_back("Spin-2 Bulk Graviton (100% GF)");
-  legnames.push_back("Spin-2 RS Graviton");
-  legnames.push_back("Spin-2 RS Graviton (100% GF)");
-  
-  displayMultipleHistos(filenames,legnames,"h_Xpz","X#rightarrow hh, M_{X}=2000 GeV, |#eta_{h}|<2.5, |#Delta#eta(h,h)| < 1.3");
-  displayMultipleHistos(filenames,legnames,"h_Xy","X#rightarrow hh, M_{X}=2000 GeV, |#eta_{h}|<2.5, |#Delta#eta(h,h)| < 1.3");
-  displayMultipleHistos(filenames,legnames,"h_cosThetaStar","X#rightarrow hh, M_{X}=2000 GeV, |#eta_{h}|<2.5, |#Delta#eta(h,h)| < 1.3");
-  displayMultipleHistos(filenames,legnames,"h_cosPhi","X#rightarrow hh, M_{X}=2000 GeV, |#eta_{h}|<2.5, |#Delta#eta(h,h)| < 1.3");
-  displayMultipleHistos(filenames,legnames,"h_Bpt0","X#rightarrow hh, M_{X}=2000 GeV, |#eta_{h}|<2.5, |#Delta#eta(h,h)| < 1.3","p_{T}(H) [GeV]",0,1500);
-  displayMultipleHistos(filenames,legnames,"h_By0","X#rightarrow hh, M_{X}=2000 GeV, |#eta_{h}|<2.5, |#Delta#eta(h,h)| < 1.3","Rapidity of Higgs");
-  displayMultipleHistos(filenames,legnames,"h_D_dR0","X#rightarrow hh, M_{X}=2000 GeV, |#eta_{h}|<2.5, |#Delta#eta(h,h)| < 1.3","#DeltaR(b,b)",0,1);
-  displayMultipleHistos(filenames,legnames,"h_cosTheta0","X#rightarrow hh, M_{X}=2000 GeV, |#eta_{h}|<2.5, |#Delta#eta(h,h)| < 1.3");
-
-
-  ////////////////////////////////  
-  filenames.clear();
-  filenames.push_back(dirname+"Radionhh4b_M4500_etacut.root");
-  filenames.push_back(dirname+"Bulkhh4b_M4500_etacut.root");
-  filenames.push_back(dirname+"RShh4b_M4500_etacut.root");
-  filenames.push_back(dirname+"RShh4b_M4500_gluon_etacut.root");
-  
-  displayMultipleHistos(filenames,legnames,"h_Xpz","X#rightarrow hh, M_{X}=4500 GeV, |#eta_{h}|<2.5, |#Delta#eta(h,h)| < 1.3");
-  displayMultipleHistos(filenames,legnames,"h_Xy","X#rightarrow hh, M_{X}=4500 GeV, |#eta_{h}|<2.5, |#Delta#eta(h,h)| < 1.3");
-  displayMultipleHistos(filenames,legnames,"h_cosThetaStar","X#rightarrow hh, M_{X}=4500 GeV, |#eta_{h}|<2.5, |#Delta#eta(h,h)| < 1.3");
-  displayMultipleHistos(filenames,legnames,"h_cosPhi","X#rightarrow hh, M_{X}=4500 GeV, |#eta_{h}|<2.5, |#Delta#eta(h,h)| < 1.3");
-  displayMultipleHistos(filenames,legnames,"h_Bpt0","X#rightarrow hh, M_{X}=4500 GeV, |#eta_{h}|<2.5, |#Delta#eta(h,h)| < 1.3","p_{T}(H) [GeV]");
-  displayMultipleHistos(filenames,legnames,"h_By0","X#rightarrow hh, M_{X}=4500 GeV, |#eta_{h}|<2.5, |#Delta#eta(h,h)| < 1.3","Rapidity of Higgs");
-  displayMultipleHistos(filenames,legnames,"h_D_dR0","X#rightarrow hh, M_{X}=4500 GeV, |#eta_{h}|<2.5, |#Delta#eta(h,h)| < 1.3","#DeltaR(b,b)",0,0.5);
-  displayMultipleHistos(filenames,legnames,"h_cosTheta0","X#rightarrow hh, M_{X}=4500 GeV, |#eta_{h}|<2.5, |#Delta#eta(h,h)| < 1.3");
 
 
 

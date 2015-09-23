@@ -25,7 +25,8 @@ void displayMultipleHistos(vector<string> files,
   float max=-999;
   gStyle->SetOptStat(0);
   gStyle->SetTitleFontSize(0.07);
-  int color[4]={kRed, kMagenta, kBlue, kGreen+2};
+  int markerStyle[5]={20,21,22,23,29};
+  int color[8]={kRed, kOrange-3, kYellow, kGreen+2, kAzure+1, kBlue, kViolet-3};
   vector<double> integrals; 
   for(unsigned i=0; i<nfiles; i++)
     {
@@ -42,9 +43,10 @@ void displayMultipleHistos(vector<string> files,
       h[i]->SetMinimum(ymin); 
       if(xmax>xmin)
 	h[i]->GetXaxis()->SetRangeUser(xmin,xmax);
-      h[i]->SetMarkerStyle(20+i);
-      h[i]->SetMarkerColor(color[i%4]);
-      h[i]->SetLineColor(color[i%4]);
+      h[i]->SetMarkerStyle(markerStyle[i%5]);
+      h[i]->SetMarkerColor(color[i%8]);
+      h[i]->SetLineColor(color[i%8]);
+      h[i]->SetLineStyle(1+i);
       h[i]->GetXaxis()->SetTitleOffset(1.2);
       h[i]->GetYaxis()->SetTitleOffset(1.4);
 
