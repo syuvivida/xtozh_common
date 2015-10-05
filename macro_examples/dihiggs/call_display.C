@@ -32,8 +32,17 @@ void call_display()
   displayMultipleHistos(filenames,legnames,"h_By0","X#rightarrow hh, M_{X}=2000 GeV","Rapidity of Higgs");
   displayMultipleHistos(filenames,legnames,"h_D_dR0","X#rightarrow hh, M_{X}=2000 GeV","#Delta R(b,b)",0,1);
   displayMultipleHistos(filenames,legnames,"h_cosTheta0","X#rightarrow hh, M_{X}=2000 GeV");
-  displayMultipleHistos(filenames,legnames,"h_B_dEta","X#rightarrow hh, M_{X}=2000 GeV");
-  displayMultipleHistos(filenames,legnames,"h_D_dEta0","X#rightarrow hh, M_{X}=2000 GeV","test",0,3);
+  displayMultipleHistos(filenames,legnames,"h_B_dEta","X#rightarrow hh, M_{X}=2000 GeV","test",-9999, -9999,true,0,1.2,
+ 			0.281452,
+			0.662447,
+			0.430645,
+			0.883966);
+  displayMultipleHistos(filenames,legnames,"h_D_dEta0","X#rightarrow hh, M_{X}=2000 GeV","test",0,3,true,0,1.2,
+			0.281452,
+			0.662447,
+			0.430645,
+			0.883966);
+
 
 
   ////////////////////////////////  
@@ -52,8 +61,16 @@ void call_display()
   displayMultipleHistos(filenames,legnames,"h_By0","X#rightarrow hh, M_{X}=4500 GeV","Rapidity of Higgs");
   displayMultipleHistos(filenames,legnames,"h_D_dR0","X#rightarrow hh, M_{X}=4500 GeV","#Delta R(b,b)",0,0.5);
   displayMultipleHistos(filenames,legnames,"h_cosTheta0","X#rightarrow hh, M_{X}=4500 GeV");
-  displayMultipleHistos(filenames,legnames,"h_B_dEta","X#rightarrow hh, M_{X}=4500 GeV");
-  displayMultipleHistos(filenames,legnames,"h_D_dEta0","X#rightarrow hh, M_{X}=4500 GeV","test",0,3);
+  displayMultipleHistos(filenames,legnames,"h_B_dEta","X#rightarrow hh, M_{X}=4500 GeV","test",-9999,-9999,true,0,1.3,
+ 			0.281452,
+			0.662447,
+			0.430645,
+			0.883966);
+  displayMultipleHistos(filenames,legnames,"h_D_dEta0","X#rightarrow hh, M_{X}=4500 GeV","test",0,3,true,0,1.3,
+ 			0.281452,
+			0.662447,
+			0.430645,
+			0.883966);
 
 
 

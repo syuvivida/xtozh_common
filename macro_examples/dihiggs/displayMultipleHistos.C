@@ -17,7 +17,11 @@ void displayMultipleHistos(vector<string> files,
 			   string title2="test",
 			   float xmin=-9999, float xmax=-9999, 
 			   bool rebin=true,
-			   float ymin=0, float ymax=1.7)
+			   float ymin=0, float ymax=1.7,
+			   float x1NDC=0.181452,
+			   float y1NDC=0.662447,
+			   float x2NDC=0.330645,
+			   float y2NDC=0.883966)
 {
   const unsigned int nfiles = files.size();
   TH1F* h[nfiles];
@@ -72,7 +76,7 @@ void displayMultipleHistos(vector<string> files,
 
   legs[nfiles-2] += " (" +  temp1 + "% DY" + ", " + temp2 + "% GF)"; 
 
-  TLegend* leg = new TLegend(0.181452,0.662447,0.330645,0.883966) ;
+  TLegend* leg = new TLegend(x1NDC,y1NDC,x2NDC,y2NDC) ;
 
   leg->SetFillColor(0);
   leg->SetFillStyle(0);
