@@ -6,7 +6,7 @@ using namespace std;
 
 void call_display()
 {
-  std::string dirname="/afs/cern.ch/work/s/syu/debug/CMSSW_7_1_14/src/";
+  std::string dirname="/afs/cern.ch/work/s/syu/debug/diboson/CMSSW_7_1_19/src/";
   vector<string> filenames;
   vector<string> legnames;
   ////////////////////////////////  
@@ -33,7 +33,7 @@ void call_display()
   displayMultipleHistos(filenames,legnames,"h_D_dR0","X#rightarrow hh, M_{X}=2000 GeV","#Delta R(b,b)",0,1);
   displayMultipleHistos(filenames,legnames,"h_cosTheta0","X#rightarrow hh, M_{X}=2000 GeV");
   displayMultipleHistos(filenames,legnames,"h_B_dEta","X#rightarrow hh, M_{X}=2000 GeV");
-  displayMultipleHistos(filenames,legnames,"h_D_dEta0","X#rightarrow hh, M_{X}=2000 GeV",0,3);
+  displayMultipleHistos(filenames,legnames,"h_D_dEta0","X#rightarrow hh, M_{X}=2000 GeV","test",0,3);
 
 
   ////////////////////////////////  
@@ -53,7 +53,7 @@ void call_display()
   displayMultipleHistos(filenames,legnames,"h_D_dR0","X#rightarrow hh, M_{X}=4500 GeV","#Delta R(b,b)",0,0.5);
   displayMultipleHistos(filenames,legnames,"h_cosTheta0","X#rightarrow hh, M_{X}=4500 GeV");
   displayMultipleHistos(filenames,legnames,"h_B_dEta","X#rightarrow hh, M_{X}=4500 GeV");
-  displayMultipleHistos(filenames,legnames,"h_D_dEta0","X#rightarrow hh, M_{X}=4500 GeV",0,3);
+  displayMultipleHistos(filenames,legnames,"h_D_dEta0","X#rightarrow hh, M_{X}=4500 GeV","test",0,3);
 
 
 
