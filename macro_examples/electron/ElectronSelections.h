@@ -9,7 +9,7 @@ void select_electrons(TreeReader &data, vector<int> &accepted) {
   Float_t* eleSCEta                    = data.GetPtrFloat("eleScEta");
   Float_t* eleSCEn                     = data.GetPtrFloat("eleScEn");
 
-  vector<bool> & eleEcalDrivenSeed     = *((vector<bool>*) data.GetPtr("eleEcalDrivenSeed"));
+  vector<bool> & eleEcalDriven     = *((vector<bool>*) data.GetPtr("eleEcalDriven"));
   Float_t* eleEtaseedAtVtx             = data.GetPtrFloat("eleEtaseedAtVtx");
   Float_t* eledPhiAtVtx                = data.GetPtrFloat("eledPhiAtVtx");
 
@@ -46,7 +46,7 @@ void select_electrons(TreeReader &data, vector<int> &accepted) {
     
     if(thisEle->Pt()<35)continue;
 
-    if(!eleEcalDrivenSeed[i])continue; 
+    if(!eleEcalDriven[i])continue; 
 
     if(eleMiniIso[i]>0.1)continue;
     
