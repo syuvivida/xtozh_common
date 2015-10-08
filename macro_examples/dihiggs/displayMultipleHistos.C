@@ -7,7 +7,7 @@
 #include <TLegend.h>
 #include <TStyle.h>
 #include <TSystem.h>
-
+#include "setNCUStyle.C"
 using namespace std;
 
 void displayMultipleHistos(vector<string> files,
@@ -25,6 +25,7 @@ void displayMultipleHistos(vector<string> files,
 {
   const unsigned int nfiles = files.size();
   TH1F* h[nfiles];
+  setNCUStyle();
   TCanvas* c1 = new TCanvas("c1","",500,500);
   float max=-999;
   gStyle->SetOptStat(0);
@@ -53,7 +54,7 @@ void displayMultipleHistos(vector<string> files,
       h[i]->SetLineStyle(1+i);
       h[i]->GetXaxis()->SetTitleOffset(1.2);
       h[i]->GetYaxis()->SetTitleOffset(1.4);
-
+      h[i]->SetYTitle("Arbitrary Unit");
       if(h[i]->GetMaximum()>max)
 	max=h[i]->GetMaximum();
     }
