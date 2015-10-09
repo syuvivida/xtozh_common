@@ -7,9 +7,14 @@ At the top of your macro
 #include "setNCUStyle.C"
 ```
 
-To call it:
+To call it without plotting the grids:
 ```
 setNCUStyle();
+```
+
+To call it if you want to enable gridx and gridy
+```
+setNCUStyle(true);
 ```
 
 However, there are some styles that can not be set via setNCUStyle. 
