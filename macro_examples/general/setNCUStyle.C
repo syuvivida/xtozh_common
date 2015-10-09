@@ -2,16 +2,16 @@
 
 // ncuGrid: Turns the grid lines on (true) or off (false)
 
-void ncuGrid(bool gridOn) {
-  ncuStyle->SetPadGridX(gridOn);
-  ncuStyle->SetPadGridY(gridOn);
-}
+// void ncuGrid(bool gridOn) {
+//   ncuStyle->SetPadGridX(gridOn);
+//   ncuStyle->SetPadGridY(gridOn);
+// }
 
-// fixOverlay: Redraws the axis
+// // fixOverlay: Redraws the axis
 
-void fixOverlay() {
-  gPad->RedrawAxis();
-}
+// void fixOverlay() {
+//   gPad->RedrawAxis();
+// }
 
 void setNCUStyle() {
   TStyle *ncuStyle = new TStyle("ncuStyle","Style for P-NCU");

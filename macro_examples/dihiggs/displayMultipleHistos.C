@@ -35,7 +35,7 @@ void displayMultipleHistos(vector<string> files,
   vector<double> integrals; 
   for(unsigned i=0; i<nfiles; i++)
     {
-      TFile *f = TFile::Open(files[i].data());
+      TFile::Open(files[i].data());
       cout << "Opening " << files[i].data() << endl;
       h[i] = dynamic_cast<TH1F*>(gDirectory->Get(histo.data()));
       h[i]->SetName(Form("h%d",i));

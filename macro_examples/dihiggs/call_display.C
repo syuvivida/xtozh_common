@@ -1,6 +1,7 @@
 #include <string>
 #include <vector>
 #include "displayMultipleHistos.C"
+#include <TFile.h>
 
 using namespace std;
 
