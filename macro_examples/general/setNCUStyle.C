@@ -1,20 +1,13 @@
 #include "TStyle.h"
+#include "TPad.h"
 
-// ncuGrid: Turns the grid lines on (true) or off (false)
-
-// void ncuGrid(bool gridOn) {
-//   ncuStyle->SetPadGridX(gridOn);
-//   ncuStyle->SetPadGridY(gridOn);
-// }
-
-// // fixOverlay: Redraws the axis
-
+// fixOverlay: Redraws the axis
 // void fixOverlay() {
 //   gPad->RedrawAxis();
 // }
 
-void setNCUStyle() {
-  TStyle *ncuStyle = new TStyle("ncuStyle","Style for P-NCU");
+void setNCUStyle(bool gridOn=false) {
+  TStyle* ncuStyle = new TStyle("ncuStyle","Style for P-NCU");
 
 // For the canvas:
   ncuStyle->SetCanvasBorderMode(0);
@@ -28,8 +21,8 @@ void setNCUStyle() {
   ncuStyle->SetPadBorderMode(0);
   // ncuStyle->SetPadBorderSize(Width_t size = 1);
   ncuStyle->SetPadColor(kWhite);
-  ncuStyle->SetPadGridX(false);
-  ncuStyle->SetPadGridY(false);
+  ncuStyle->SetPadGridX(gridOn);
+  ncuStyle->SetPadGridY(gridOn);
   ncuStyle->SetGridColor(0);
   ncuStyle->SetGridStyle(3);
   ncuStyle->SetGridWidth(1);
