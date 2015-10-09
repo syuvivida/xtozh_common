@@ -95,7 +95,7 @@ void setNCUStyle() {
   ncuStyle->SetPadTopMargin(0.08);
   ncuStyle->SetPadBottomMargin(0.13);
   ncuStyle->SetPadLeftMargin(0.13);
-  ncuStyle->SetPadRightMargin(0.08);
+  ncuStyle->SetPadRightMargin(0.04);
 
 // For the Global title:
 
