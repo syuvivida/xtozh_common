@@ -17,14 +17,16 @@ void call_display()
   filenames.push_back(dirname+"Bulkhh4b_M2000.root");
   filenames.push_back(dirname+"RShh4b_M2000.root");
   filenames.push_back(dirname+"RShh4b_M2000_gluon.root");
+  filenames.push_back(dirname+"RShh4b_M2000_DY.root");
 
   legnames.clear();
   legnames.push_back("Spin-0 Radion (100% GF)");
   legnames.push_back("Spin-0 H (100% DY)");
   legnames.push_back("Spin-2 Bulk Graviton (100% GF)");
-  legnames.push_back("Spin-2 RS Graviton");
+  legnames.push_back("Spin-2 RS Graviton");  
   legnames.push_back("Spin-2 RS Graviton (100% GF)");
-  
+  legnames.push_back("Spin-2 RS Graviton (100% DY)");
+
   displayMultipleHistos(filenames,legnames,"h_Xpz","X#rightarrow hh, M_{X}=2000 GeV");
   displayMultipleHistos(filenames,legnames,"h_Xy","X#rightarrow hh, M_{X}=2000 GeV");
   displayMultipleHistos(filenames,legnames,"h_cosThetaStar","X#rightarrow hh, M_{X}=2000 GeV");
@@ -53,6 +55,7 @@ void call_display()
   filenames.push_back(dirname+"Bulkhh4b_M4500.root");
   filenames.push_back(dirname+"RShh4b_M4500.root");
   filenames.push_back(dirname+"RShh4b_M4500_gluon.root");
+  filenames.push_back(dirname+"RShh4b_M4500_DY.root");
   
   displayMultipleHistos(filenames,legnames,"h_Xpz","X#rightarrow hh, M_{X}=4500 GeV");
   displayMultipleHistos(filenames,legnames,"h_Xy","X#rightarrow hh, M_{X}=4500 GeV");
@@ -83,6 +86,7 @@ void call_display()
   filenames.push_back(dirname+"Bulkhh4b_M2000_etacut.root");
   filenames.push_back(dirname+"RShh4b_M2000_etacut.root");
   filenames.push_back(dirname+"RShh4b_M2000_gluon_etacut.root");
+  filenames.push_back(dirname+"RShh4b_M2000_DY_etacut.root");
   
   displayMultipleHistos(filenames,legnames,"h_Xpz","X#rightarrow hh, M_{X}=2000 GeV, |#eta_{h}|<2.5, |#Delta#eta(h,h)| < 1.3");
   displayMultipleHistos(filenames,legnames,"h_Xy","X#rightarrow hh, M_{X}=2000 GeV, |#eta_{h}|<2.5, |#Delta#eta(h,h)| < 1.3");
@@ -99,9 +103,10 @@ void call_display()
   filenames.push_back(dirname+"Radionhh4b_M4500_etacut.root");
   filenames.push_back(dirname+"2HDMhh4b_M4500_etacut.root");
   filenames.push_back(dirname+"Bulkhh4b_M4500_etacut.root");
-  filenames.push_back(dirname+"RShh4b_M4500_etacut.root");
+  filenames.push_back(dirname+"RShh4b_M4500_etacut.root"); 
   filenames.push_back(dirname+"RShh4b_M4500_gluon_etacut.root");
-  
+  filenames.push_back(dirname+"RShh4b_M4500_DY_etacut.root");
+ 
   displayMultipleHistos(filenames,legnames,"h_Xpz","X#rightarrow hh, M_{X}=4500 GeV, |#eta_{h}|<2.5, |#Delta#eta(h,h)| < 1.3");
   displayMultipleHistos(filenames,legnames,"h_Xy","X#rightarrow hh, M_{X}=4500 GeV, |#eta_{h}|<2.5, |#Delta#eta(h,h)| < 1.3");
   displayMultipleHistos(filenames,legnames,"h_cosThetaStar","X#rightarrow hh, M_{X}=4500 GeV, |#eta_{h}|<2.5, |#Delta#eta(h,h)| < 1.3");
@@ -119,6 +124,7 @@ void call_display()
   filenames.push_back(dirname+"BulkWW_M2000.root");
   filenames.push_back(dirname+"RSWW_M2000.root");
   filenames.push_back(dirname+"RSWW_M2000_gluon.root");
+  filenames.push_back(dirname+"RSWW_M2000_DY.root");
   
   legnames.clear();
   legnames.push_back("Spin-0 Radion (100% GF)");
@@ -126,6 +132,7 @@ void call_display()
   legnames.push_back("Spin-2 Bulk Graviton (100% GF)");
   legnames.push_back("Spin-2 RS Graviton");
   legnames.push_back("Spin-2 RS Graviton (100% GF)");
+  legnames.push_back("Spin-2 RS Graviton (100% DY)");
 
 
   displayMultipleHistos(filenames,legnames,"h_Xpz","X#rightarrow WW, M_{X}=2000 GeV");
@@ -145,6 +152,7 @@ void call_display()
   filenames.push_back(dirname+"BulkWW_M4500.root");
   filenames.push_back(dirname+"RSWW_M4500.root");
   filenames.push_back(dirname+"RSWW_M4500_gluon.root");
+  filenames.push_back(dirname+"RSWW_M4500_DY.root");
 
   
   displayMultipleHistos(filenames,legnames,"h_Xpz","X#rightarrow WW, M_{X}=4500 GeV");

@@ -30,7 +30,7 @@ void displayMultipleHistos(vector<string> files,
   float max=-999;
   gStyle->SetOptStat(0);
   gStyle->SetTitleFontSize(0.07);
-  int markerStyle[5]={20,21,22,23,29};
+  int markerStyle[8]={20,21,22,23,29,33,34,31};
   int color[8]={kRed, kOrange-3, kYellow, kGreen+2, kAzure+1, kBlue, kViolet-3};
   vector<double> integrals; 
   for(unsigned i=0; i<nfiles; i++)
@@ -48,7 +48,7 @@ void displayMultipleHistos(vector<string> files,
       h[i]->SetMinimum(ymin); 
       if(xmax>xmin)
 	h[i]->GetXaxis()->SetRangeUser(xmin,xmax);
-      h[i]->SetMarkerStyle(markerStyle[i%5]);
+      h[i]->SetMarkerStyle(markerStyle[i%8]);
       h[i]->SetMarkerColor(color[i%8]);
       h[i]->SetLineColor(color[i%8]);
       h[i]->SetLineStyle(1+i);
@@ -70,12 +70,12 @@ void displayMultipleHistos(vector<string> files,
     }
 
   // compute the fraction of DY and GF
-  int frac_GF = 100*integrals[nfiles-1]/integrals[nfiles-2];
+  int frac_GF = 100*integrals[nfiles-2]/integrals[nfiles-3];
   int frac_DY = 100 - frac_GF;
   string temp1= Form("%d",frac_DY);
   string temp2= Form(" %d",frac_GF);
 
-  legs[nfiles-2] += " (" +  temp1 + "% DY" + ", " + temp2 + "% GF)"; 
+  legs[nfiles-3] += " (" +  temp1 + "% DY" + ", " + temp2 + "% GF)"; 
 
   TLegend* leg = new TLegend(x1NDC,y1NDC,x2NDC,y2NDC) ;
 
