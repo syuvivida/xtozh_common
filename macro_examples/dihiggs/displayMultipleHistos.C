@@ -19,7 +19,7 @@ void displayMultipleHistos(vector<string> files,
 			   bool rebin=true,
 			   float ymin=0, float ymax=1.7,
 			   float x1NDC=0.181452,
-			   float y1NDC=0.662447,
+			   float y1NDC=0.622447,
 			   float x2NDC=0.330645,
 			   float y2NDC=0.883966)
 {
@@ -39,7 +39,8 @@ void displayMultipleHistos(vector<string> files,
       cout << "Opening " << files[i].data() << endl;
       h[i] = dynamic_cast<TH1F*>(gDirectory->Get(histo.data()));
       h[i]->SetName(Form("h%d",i));
-      if(rebin)h[i]->Rebin(4);
+      if(rebin && (h[i]->GetNbinsX()%4==0))h[i]->Rebin(4);
+      else if(rebin)h[i]->Rebin(5);
       h[i]->SetTitle("");
       if(title2!="test")
 	h[i]->SetXTitle(title2.data());
@@ -92,6 +93,21 @@ void displayMultipleHistos(vector<string> files,
 
 
   leg->Draw("same");
+
+  // TLatex *lar = new TLatex(0.13, 0.94, "CMS");
+  // lar->SetNDC(kTRUE); 
+  // lar->SetTextSize(0.050);
+  // lar->SetTextFont(62);
+  // lar->SetLineWidth(5);
+  // lar->Draw("");
+
+  // TLatex *lar2 = new TLatex(0.25, 0.94, "Simulation");
+  // lar2->SetNDC(kTRUE); 
+  // lar2->SetTextSize(0.050);
+  // lar2->SetTextFont(52);
+  // lar2->SetLineWidth(5);
+  // lar2->Draw("");
+
 
   TString dirname ="compareHistos";
   gSystem->mkdir(dirname.Data());

@@ -7,7 +7,7 @@ using namespace std;
 
 void call_display()
 {
-  std::string dirname="/afs/cern.ch/work/s/syu/debug/diboson/CMSSW_7_1_19/src/";
+  std::string dirname="$PWD/";
   vector<string> filenames;
   vector<string> legnames;
   ////////////////////////////////  
@@ -37,12 +37,12 @@ void call_display()
   displayMultipleHistos(filenames,legnames,"h_cosTheta0","X#rightarrow hh, M_{X}=2000 GeV");
   displayMultipleHistos(filenames,legnames,"h_B_dEta","X#rightarrow hh, M_{X}=2000 GeV","test",-9999, -9999,true,0,1.2,
  			0.281452,
-			0.662447,
+			0.622447,
 			0.430645,
 			0.883966);
   displayMultipleHistos(filenames,legnames,"h_D_dEta0","X#rightarrow hh, M_{X}=2000 GeV","test",0,3,true,0,1.2,
 			0.281452,
-			0.662447,
+			0.622447,
 			0.430645,
 			0.883966);
 
@@ -67,12 +67,12 @@ void call_display()
   displayMultipleHistos(filenames,legnames,"h_cosTheta0","X#rightarrow hh, M_{X}=4500 GeV");
   displayMultipleHistos(filenames,legnames,"h_B_dEta","X#rightarrow hh, M_{X}=4500 GeV","test",-9999,-9999,true,0,1.3,
  			0.281452,
-			0.662447,
+			0.622447,
 			0.430645,
 			0.883966);
   displayMultipleHistos(filenames,legnames,"h_D_dEta0","X#rightarrow hh, M_{X}=4500 GeV","test",0,3,true,0,1.3,
  			0.281452,
-			0.662447,
+			0.622447,
 			0.430645,
 			0.883966);
 
@@ -120,6 +120,7 @@ void call_display()
   ////////////////////////////////   WW
   filenames.clear();
   filenames.push_back(dirname+"RadionWW_M2000.root");
+  filenames.push_back(dirname+"2HDMWW_M2000.root");
   filenames.push_back(dirname+"ZprimeWW_M2000.root");
   filenames.push_back(dirname+"BulkWW_M2000.root");
   filenames.push_back(dirname+"RSWW_M2000.root");
@@ -128,6 +129,7 @@ void call_display()
   
   legnames.clear();
   legnames.push_back("Spin-0 Radion (100% GF)");
+  legnames.push_back("Spin-0 H (100% DY)");
   legnames.push_back("Spin-1 Zprime (100% DY)");
   legnames.push_back("Spin-2 Bulk Graviton (100% GF)");
   legnames.push_back("Spin-2 RS Graviton");
@@ -148,6 +150,7 @@ void call_display()
   ////////////////////////////////  
   filenames.clear();
   filenames.push_back(dirname+"RadionWW_M4500.root");
+  filenames.push_back(dirname+"2HDMWW_M4500.root");
   filenames.push_back(dirname+"ZprimeWW_M4500.root");
   filenames.push_back(dirname+"BulkWW_M4500.root");
   filenames.push_back(dirname+"RSWW_M4500.root");

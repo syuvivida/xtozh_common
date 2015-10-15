@@ -140,3 +140,5 @@ cmsRun GeneratorInterface/LHEInterface/test/dumpLHE_cfg.py maxEvents=-1 fprod=2 
 cmsRun GeneratorInterface/LHEInterface/test/dumpLHE_cfg.py maxEvents=-1 fprod=2 fhh=False inputFiles=root://eoscms//eos/cms//store/group/phys_exotica/exovv/LHE/Bulk_WW_M2000.lhe outputFile=BulkWW_M2000_DY.root
 cmsRun GeneratorInterface/LHEInterface/test/dumpLHE_cfg.py maxEvents=-1 fprod=2 fhh=False inputFiles=root://eoscms//eos/cms//store/group/phys_exotica/exovv/LHE/Bulk_WW_M4500.lhe outputFile=BulkWW_M4500_DY.root
 
+cmsRun GeneratorInterface/LHEInterface/test/dumpLHE_cfg.py maxEvents=-1 fprod=0 fhh=False inputFiles=root://eoscms//eos/cms//store/group/phys_exotica/exovv/LHE/2HDM_WW_M2000.lhe outputFile=2HDMWW_M2000.root
+cmsRun GeneratorInterface/LHEInterface/test/dumpLHE_cfg.py maxEvents=-1 fprod=0 fhh=False inputFiles=root://eoscms//eos/cms//store/group/phys_exotica/exovv/LHE/2HDM_WW_M4500.lhe outputFile=2HDMWW_M4500.root
