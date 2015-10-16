@@ -109,7 +109,7 @@ https://github.com/syuvivida/xtozh_common/tree/8TeV_CMSSW520/macro_examples/pdf/
  setenv LHAPDFDIR $PWD/test_pdf/LHAPDF
  setenv LHAPATH $LHAPDFDIR/share/lhapdf/PDFsets/
  root -q -b runPDF.C\(\"xxx.root\"\)
-``
+```
 
 Note, before calling the macro to reweigh distributions, remember to load 
  the following library:
