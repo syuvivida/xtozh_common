@@ -107,6 +107,9 @@ https://github.com/syuvivida/xtozh_common/tree/8TeV_CMSSW520/macro_examples/pdf/
 ```
  setenv LHAPDFDIR $PWD/test_pdf/LHAPDF
  setenv LHAPATH $LHAPDFDIR/share/lhapdf/PDFsets/
+```
+ Then, go back to your macro directory
+```
  root -q -b runPDF.C\(\"xxx.root\"\)
 ```
 
