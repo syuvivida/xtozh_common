@@ -38,6 +38,7 @@ AC_ARG_WITH([max-num-pdfsets],
 ```
 
 3) Install LHAPDF
+```
  ./configure --prefix=$LHAPDFDIR
 
  make
