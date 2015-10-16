@@ -5,7 +5,7 @@
  cmsenv
 ```
 
-1) install LHAPDF
+1) Download LHAPDF
    Download LHAPDF from https://lhapdf.hepforge.org/.
 
  In your work area at lxplus:
@@ -25,6 +25,19 @@
 
  cd lhapdf-5.8.7
  
+
+2) Modify the configuration file configure.ac
+
+```
+## NMXSET - max number of concurrent PDF sets
+## Normal default number of PDF sets is 5
+default_max_num_pdfsets=5
+AC_ARG_WITH([max-num-pdfsets],
+  [AC_HELP_STRING(--with-max-num-pdfsets,
+  [maximum number of PDF sets that can be held concurrently in memory - affects virtual memory overhead (default=5)])],
+```
+
+3) Install LHAPDF
  ./configure --prefix=$LHAPDFDIR
 
  make
@@ -38,7 +51,7 @@
  Also you will find PDFsets.index in $LHAPDFDIR/share/lhapdf/PDFsets.index
  ]
  
-2) Download PDFsets from http://lhapdf.hepforge.org/lhapdf5/pdfsets
+4) Download PDFsets from http://lhapdf.hepforge.org/lhapdf5/pdfsets
 
 ```
 mkdir  $LHAPDFDIR/share/lhapdf/PDFsets/
@@ -48,7 +61,7 @@ cd $LHAPDFDIR/share/lhapdf/PDFsets/
 wget http://www.hepforge.org/archive/lhapdf/pdfsets/current/cteq6ll.LHpdf
 wget http://www.hepforge.org/archive/lhapdf/pdfsets/current/MSTW2008lo68cl.LHgrid
 wget http://www.hepforge.org/archive/lhapdf/pdfsets/current/NNPDF21_lo_as_0119_100.LHgrid
-wget http://www.hepforge.org/archive/lhapdf/pdfsets/current/CT10nlo.LHgrid
+wget http://www.hepforge.org/archive/lhapdf/pdfsets/current/CT10.LHgrid
 wget http://www.hepforge.org/archive/lhapdf/pdfsets/current/MSTW2008nlo68cl.LHgrid
 wget http://www.hepforge.org/archive/lhapdf/pdfsets/current/NNPDF23_nlo_collider_as_0118.LHgrid
 
@@ -56,7 +69,7 @@ wget http://www.hepforge.org/archive/lhapdf/pdfsets/current/cteq66.LHgrid
 
 ```
 
-3) Prepare ntuples that include the following information:
+5) Prepare ntuples that include the following information:
 
 ```
   Handle<GenEventInfoProduct> pdfInfoHandle;
@@ -75,29 +88,25 @@ wget http://www.hepforge.org/archive/lhapdf/pdfsets/current/cteq66.LHgrid
 
 ```
 
-4) In the directory where you will run macros to perform PDF 
+6) In the directory where you will run macros to perform PDF 
  reweighing, do a soft link to link to the header files:
  
 ```
  ln -s $LHAPDFDIR/include/LHAPDF .
 ```
 
-5) Set up the enviornment variable to point 
-   to the LHAPDF directory
 
-```
-setenv LHAPATH $LHAPDFDIR/share/lhapdf/PDFsets/
-```
-
-6) Prepare a ROOT macro to use the LHAPDF set to perform PDF reweighing 
+7) Prepare a ROOT macro to use the LHAPDF set to perform PDF reweighing 
  and also use pdfInfo_. Two examples could be found here:
 
 https://github.com/syuvivida/xtozh_common/tree/8TeV_CMSSW520/macro_examples/pdf/runPDF.C
 
 https://github.com/syuvivida/xtozh_common/tree/8TeV_CMSSW520/macro_examples/pdf/myLHAPDF_reweighing.C
 
- to run this example:
+ to run this example, cd to your work area
 ```
+ setenv LHAPDFDIR $PWD/test_pdf/LHAPDF
+ setenv LHAPATH $LHAPDFDIR/share/lhapdf/PDFsets/
  root -q -b runPDF.C\(\"xxx.root\"\)
 ``
 
@@ -108,7 +117,7 @@ Note, before calling the macro to reweigh distributions, remember to load
 ```
 
 
-7) NOTE!!!
+8) NOTE!!!
  In most of the MC samples, in the LHAPDF framework, 
  the gluon identifier code is 0, not 21. However, in Sherpa MC, 
  the gluon identifier code is still 22.
@@ -116,7 +125,7 @@ Note, before calling the macro to reweigh distributions, remember to load
  The list of PDFsets need to be either all in LO or all in NLO. 
  You can not mix LO and NLO in the same job.
 
-8) References:
+9) References:
  
  http://arxiv.org/abs/hep-ph/0508110
  http://arxiv.org/abs/hep-ph/0605240
