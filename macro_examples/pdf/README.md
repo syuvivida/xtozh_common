@@ -24,9 +24,9 @@
  tar xvzf ../lhapdf-5.8.7.tar.gz
 
  cd lhapdf-5.8.7
- 
+``` 
 
-2) Modify the configuration file configure.ac
+2) Modify the configuration file configure.ac in the directory of lhapdf-5.8.7
 
 ```
 ## NMXSET - max number of concurrent PDF sets
