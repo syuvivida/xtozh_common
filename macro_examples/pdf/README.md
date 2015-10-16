@@ -65,7 +65,6 @@ wget http://www.hepforge.org/archive/lhapdf/pdfsets/current/NNPDF21_lo_as_0119_1
 wget http://www.hepforge.org/archive/lhapdf/pdfsets/current/CT10.LHgrid
 wget http://www.hepforge.org/archive/lhapdf/pdfsets/current/MSTW2008nlo68cl.LHgrid
 wget http://www.hepforge.org/archive/lhapdf/pdfsets/current/NNPDF23_nlo_collider_as_0118.LHgrid
-
 wget http://www.hepforge.org/archive/lhapdf/pdfsets/current/cteq66.LHgrid
 
 ```
