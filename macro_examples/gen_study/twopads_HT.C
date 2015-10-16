@@ -1,6 +1,6 @@
 #include "setNCUStyle.C"
 #include <string>
-
+#include "TCanvas.h"
 using namespace std;
 
 void twopads_HT(string inputfile, string histo)
@@ -63,5 +63,20 @@ void twopads_HT(string inputfile, string histo)
   hzoom_after->Draw("same");
 
   c1->Draw("Same");
+
+  int bins=hzpt_before->GetNbinsX()+1;
+  bool findFirstBin=false;
+  for(int i=hzpt_before->GetNbinsX()+1; i>=0;i--)
+    {
+      int diff = hzpt_before->GetBinContent(i) - hzpt_after->GetBinContent(i);
+      cout << i << ": " << diff << endl;
+      if(diff==0 && !findFirstBin)
+	bins=i;
+      else
+	findFirstBin=true;
+    }
+
+  cout << "First bin that the two histograms are equal is bin " << bins << endl;
+  
 
 }

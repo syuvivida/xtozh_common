@@ -11,12 +11,11 @@
 #include "untuplizer.h"
 #include <TClonesArray.h>
 #include <TLorentzVector.h>
-#include "isPassZee.h"
 #include <TSystemDirectory.h>
 #include <TList.h>
 
 using namespace std;
-void xAna_HT(std::string inputFile){
+void xAna_HT(std::string inputFile, bool test=false){
 
   std::vector<string> infiles;
   TString outputFile;
@@ -54,6 +53,13 @@ void xAna_HT(std::string inputFile){
   hpt->SetTitleOffset(1.5,"X");
   hpt->SetTitleOffset(1.5,"Y");
   hpt->SetYTitle("Arbitrary Unit");
+
+  TH1F* hllpt_before = (TH1F*)hpt->Clone("hllpt_before");
+  hllpt_before->SetXTitle("Generator-level p_{T}(ll) [GeV");
+  TH1F* hllpt_after  = (TH1F*)hpt->Clone("hllpt_after");
+  hllpt_after->SetXTitle("Generator-level p_{T}(ll) [GeV");
+
+
   TH1F* hzpt_before = (TH1F*)hpt->Clone("hzpt_before");
   hzpt_before->SetXTitle("Generator-level p_{T}(Z) [GeV");
   TH1F* hzpt_after  = (TH1F*)hpt->Clone("hzpt_after");
@@ -75,14 +81,15 @@ void xAna_HT(std::string inputFile){
 
     if (jEntry % 50000 == 0)
       fprintf(stderr, "Processing event %lli of %lli\n", jEntry + 1, data.GetEntriesFast());
+    if (test && jEntry > 5000)break;
 
     data.GetEntry(jEntry);
     nTotal ++;
         // 0. check the generator-level information and make sure there is a Z->e+e-
     Int_t nGenPar        = data.GetInt("nGenPar");
     Int_t* genParId      = data.GetPtrInt("genParId");
-    // Int_t* genParSt      = data.GetPtrInt("genParSt");
-    // Int_t* genMomParId   = data.GetPtrInt("genMomParId");
+    Int_t* genParSt      = data.GetPtrInt("genParSt");
+    Int_t* genMomParId   = data.GetPtrInt("genMomParId");
     Float_t HT        = data.GetFloat("HT");
     Float_t mcWeight  = data.GetFloat("mcWeight");
     Float_t weight = 1;
@@ -96,21 +103,52 @@ void xAna_HT(std::string inputFile){
  
     
     float zpt=-1;
+    bool findAZ=false;
+    bool findEle[2]={false,false};
+    TLorentzVector ele_P4[2];
     for(int ig=0; ig < nGenPar; ig++){
 
-      if(genParId[ig]!=23)continue;
       TLorentzVector* thisGen = (TLorentzVector*)genParP4->At(ig);
-      zpt = thisGen->Pt();
-      break;
+      int pid=genParId[ig];
+      int mompid = genMomParId[ig];
+      int status = genParSt[ig];
+      if(pid==23 && zpt<0)
+	{
+	  zpt = thisGen->Pt();
+	  findAZ=true;
+	}
+      else if(status==1 && (pid==11 || pid==13 || pid==15) && (mompid==pid || mompid==23))
+	{
+	  ele_P4[0]=*(thisGen);
+	  findEle[0]=true;
+	}
+      else if(status==1 && (pid==-11 || pid==-13 || pid==-15) && (mompid==pid || mompid==23))
+	{
+	  ele_P4[1]=*(thisGen);
+	  findEle[1]=true;
+	}
     }
 
-    hzpt_before->Fill(zpt,weight);
+    bool findAPair=false;
+    if(findEle[0] && findEle[1]){
+      nPass[0]++;
+      findAPair=true;
+    }
+    if(findAZ)nPass[1]++;
+
+    float llpt = (ele_P4[0]+ele_P4[1]).Pt();
+    if(findAZ)
+      hzpt_before->Fill(zpt,weight);
+    if(findAPair)
+      hllpt_before->Fill(llpt,weight);
+
+
 
     //4. look for good electrons first
     Int_t nEle         = data.GetInt("nEle");
-    Int_t run          = data.GetInt("runId");
-    Int_t lumi         = data.GetInt("lumiSection");
-    Int_t event        = data.GetInt("eventId");
+    // Int_t run          = data.GetInt("runId");
+    // Int_t lumi         = data.GetInt("lumiSection");
+    // Int_t event        = data.GetInt("eventId");
     vector<bool> &passHEEPID = *((vector<bool>*) data.GetPtr("eleIsPassHEEPNoIso"));
     TClonesArray* eleP4 = (TClonesArray*) data.GetPtrTObject("eleP4");
     Float_t* eleSCEta         = data.GetPtrFloat("eleScEta");
@@ -166,15 +204,19 @@ void xAna_HT(std::string inputFile){
 	  }	
       }
 
-    if(findEPair)
+    if(findEPair && findAPair)
       hrecozpt_before->Fill(l4_Z.Pt(),weight);
 
     if(HT<100)continue;
-
+    nPass[2]++;
     hht_after->Fill(HT,weight);
-    hzpt_after->Fill(zpt,weight);
 
-    if(findEPair)
+    if(findAZ)
+      hzpt_after->Fill(zpt,weight);
+    if(findAPair)
+      hllpt_after->Fill(llpt,weight);
+
+    if(findEPair && findAPair)
       hrecozpt_after->Fill(l4_Z.Pt(),weight);
 
   } // end of loop over entries
@@ -186,10 +228,12 @@ void xAna_HT(std::string inputFile){
 
   TFile* outFile = new TFile("test.root","recreate");
 
-  hrecozpt_before->Write();
-  hrecozpt_after->Write();
+  hllpt_before->Write();
+  hllpt_after->Write();
   hzpt_before->Write();
   hzpt_after->Write();
+  hrecozpt_before->Write();
+  hrecozpt_after->Write();
   hht_before->Write();
   hht_after->Write();
 
