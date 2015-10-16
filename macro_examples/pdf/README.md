@@ -110,6 +110,9 @@ https://github.com/syuvivida/xtozh_common/tree/8TeV_CMSSW520/macro_examples/pdf/
 ```
  Then, go back to your macro directory
 ```
+ wget https://raw.githubusercontent.com/syuvivida/xtozh_common/8TeV_CMSSW520/macro_examples/pdf/runPDF.C
+ wget https://raw.githubusercontent.com/syuvivida/xtozh_common/8TeV_CMSSW520/macro_examples/pdf/myLHAPDF_reweighing.C
+ wget https://raw.githubusercontent.com/syuvivida/xtozh_common/8TeV_CMSSW520/macro_examples/general/untuplizer.h
  root -q -b runPDF.C\(\"xxx.root\"\)
 ```
 
