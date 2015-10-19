@@ -58,7 +58,7 @@ void xAna_eleID(std::string inputFile, int mode){
 	TList *listOfFiles = base->GetListOfFiles();
 	TIter fileIt(listOfFiles);
 	TFile *fileH = new TFile();
-	while(fileH = (TFile*)fileIt()) {
+	while((fileH = (TFile*)fileIt())) {
 	  std::string fileN = fileH->GetName();
 	  std::string baseString = "root";
 	  if( fileH->IsFolder())  continue;
