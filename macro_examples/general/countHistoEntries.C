@@ -33,7 +33,7 @@ void countHistoEntries(string dirname, string rootname="NCU", string id="data7")
     TList *listOfFiles = base->GetListOfFiles();
     TIter fileIt(listOfFiles);
     TFile *fileH = new TFile();
-    while(fileH = (TFile*)fileIt()) {
+    while((fileH = (TFile*)fileIt())) {
       std::string fileN = fileH->GetName();
       std::string baseString = rootname.data();
       if( fileH->IsFolder())  continue;
