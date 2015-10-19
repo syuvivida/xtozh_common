@@ -31,33 +31,47 @@ void xAna_eleID(std::string inputFile, int mode){
 
   if(inputFile.find(".root")!= std::string::npos)
     { 
-      outputFile=gSystem->GetFromPipe(Form("file=%s; test=${file##*ZprimeToZhToZlephbb/}; echo \"eff_%s_${test}\"",inputFile.data(),idname[mode].data()));
+      outputFile=gSystem->GetFromPipe(Form("file=%s; test=${file##*ZprimeToZhToZlephbb_25ns/}; echo \"eff_%s_${test}\"",inputFile.data(),idname[mode].data()));
       cout << "output file name = " << outputFile.Data() << endl;
       infiles.push_back(inputFile.data());
     }
   else
     {
-      outputFile=gSystem->GetFromPipe(Form("file=%s; test=${file##*signalMC/}; echo \"eff_%s_${test}.root\"",inputFile.data(),idname[mode].data()));
+      outputFile=gSystem->GetFromPipe(Form("file=%s; test=${file##*jet_CMSSW747/}; echo \"eff_%s_${test}.root\"",inputFile.data(),idname[mode].data()));
       cout << "output file name = " << outputFile.Data() << endl;      
-      TSystemDirectory *base = new TSystemDirectory("root","root");
-
-      base->SetDirectory(inputFile.data());
-      TList *listOfFiles = base->GetListOfFiles();
-      TIter fileIt(listOfFiles);
-      TFile *fileH = new TFile();
+      string inputTextFile = "inputdir.txt";
+      // clean-up files
+      gSystem->Exec(Form("rm -rf %s",inputTextFile.data()));
+      // output new text file
+      gSystem->Exec(Form("ls -R %s | grep -a \"%s\" >> %s",
+			 inputFile.data(),"data7", inputTextFile.data()));
+      TSystemDirectory *base = new TSystemDirectory("root","root"); 
       int nfile=0;
-      while(fileH = (TFile*)fileIt()) {
-	std::string fileN = fileH->GetName();
-	if( fileH->IsFolder())  continue;
-	if(fileN.find("Zprime") == std::string::npos)continue;
-	fileN = inputFile + "/" + fileN;
-	cout << fileN.data() << endl;
-	nfile++;
-	infiles.push_back(fileN);
-      }
-
-      std::cout << "Opened " << nfile << " files" << std::endl;
-
+      string tempdir;
+      ifstream fin;
+      fin.open(inputTextFile.data());
+      fin >> tempdir;
+      TString realDirName = gSystem->GetFromPipe(Form("a=%s; echo ${a%%:*}",tempdir.data()));
+      while(!fin.eof()){
+	cout << "Directory name = " << realDirName << endl;
+	base->SetDirectory(realDirName.Data());
+	TList *listOfFiles = base->GetListOfFiles();
+	TIter fileIt(listOfFiles);
+	TFile *fileH = new TFile();
+	while(fileH = (TFile*)fileIt()) {
+	  std::string fileN = fileH->GetName();
+	  std::string baseString = "root";
+	  if( fileH->IsFolder())  continue;
+	  if(fileN.find(baseString) == std::string::npos)continue;
+	  cout << fileN.data() << endl;
+	  nfile++;
+	  string tempfile = Form("%s/%s",realDirName.Data(),fileN.data());
+	  infiles.push_back(tempfile);
+	}
+	fin >> tempdir;
+	realDirName = gSystem->GetFromPipe(Form("a=%s; echo ${a%%:*}",tempdir.data()));
+      } // end of big loop
+      std::cout << "Opened " << nfile << " files" << std::endl;  
     }
   
   TreeReader data(infiles);
@@ -166,16 +180,16 @@ void xAna_eleID(std::string inputFile, int mode){
     std::vector<int> goodElectrons;
     Int_t nEle         = data.GetInt("nEle");
     Float_t* eleSCEta         = data.GetPtrFloat("eleScEta");
-    Float_t* eleSCEt          = data.GetPtrFloat("eleScEt");
+    TClonesArray* eleP4 = (TClonesArray*) data.GetPtrTObject("eleP4");
 
     for(int ie=0; ie< nEle; ie++)
       {
 
     	if(fabs(eleSCEta[ie])>2.5)continue;
-
     	if(fabs(eleSCEta[ie])>1.4442 && fabs(eleSCEta[ie])<1.566)continue;
+	TLorentzVector* thisEle = (TLorentzVector*)eleP4->At(ie);
     	
-	if(eleSCEt[ie]<35)continue; // for HEEP ID 
+	if(thisEle->Pt()<35)continue; // for HEEP ID 
 
     	goodElectrons.push_back(ie);
       }
@@ -186,7 +200,6 @@ void xAna_eleID(std::string inputFile, int mode){
     
 
     //4. select a good Z boson matched to gen-level
-    TClonesArray* eleP4 = (TClonesArray*) data.GetPtrTObject("eleP4");
     Int_t*   eleCharge        = data.GetPtrInt("eleCharge");         
     int zIndex[2]={-1,-1};
     const float DRMAX=0.1;
