@@ -28,6 +28,7 @@ void countHistoEntries(string dirname, string rootname="NCU", string id="data7")
   fin >> tempdir;
   TString realDirName = gSystem->GetFromPipe(Form("a=%s; echo ${a%%:*}",tempdir.data()));
   while(!fin.eof()){
+    if(realDirName.find("fail") != std::string::npos)continue;
     cout << "Directory name = " << realDirName << endl;
     base->SetDirectory(realDirName.Data());
     TList *listOfFiles = base->GetListOfFiles();

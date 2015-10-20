@@ -53,6 +53,7 @@ void xAna_eleID(std::string inputFile, int mode){
       fin >> tempdir;
       TString realDirName = gSystem->GetFromPipe(Form("a=%s; echo ${a%%:*}",tempdir.data()));
       while(!fin.eof()){
+	if(realDirName.find("fail") != std::string::npos)continue;
 	cout << "Directory name = " << realDirName << endl;
 	base->SetDirectory(realDirName.Data());
 	TList *listOfFiles = base->GetListOfFiles();
@@ -63,6 +64,7 @@ void xAna_eleID(std::string inputFile, int mode){
 	  std::string baseString = "root";
 	  if( fileH->IsFolder())  continue;
 	  if(fileN.find(baseString) == std::string::npos)continue;
+	  
 	  cout << fileN.data() << endl;
 	  nfile++;
 	  string tempfile = Form("%s/%s",realDirName.Data(),fileN.data());
