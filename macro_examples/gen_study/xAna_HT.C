@@ -55,20 +55,20 @@ void xAna_HT(std::string inputFile, bool test=false){
   hpt->SetYTitle("Arbitrary Unit");
 
   TH1F* hllpt_before = (TH1F*)hpt->Clone("hllpt_before");
-  hllpt_before->SetXTitle("Generator-level p_{T}(ll) [GeV");
+  hllpt_before->SetXTitle("Generator-level p_{T}(ll) [GeV]");
   TH1F* hllpt_after  = (TH1F*)hpt->Clone("hllpt_after");
-  hllpt_after->SetXTitle("Generator-level p_{T}(ll) [GeV");
+  hllpt_after->SetXTitle("Generator-level p_{T}(ll) [GeV]");
 
 
   TH1F* hzpt_before = (TH1F*)hpt->Clone("hzpt_before");
-  hzpt_before->SetXTitle("Generator-level p_{T}(Z) [GeV");
+  hzpt_before->SetXTitle("Generator-level p_{T}(Z) [GeV]");
   TH1F* hzpt_after  = (TH1F*)hpt->Clone("hzpt_after");
-  hzpt_after->SetXTitle("Generator-level p_{T}(Z) [GeV");
+  hzpt_after->SetXTitle("Generator-level p_{T}(Z) [GeV]");
 
   TH1F* hrecozpt_before = (TH1F*)hpt->Clone("hrecozpt_before");
-  hrecozpt_before->SetXTitle("Reconstruction-level p_{T}(Z) [GeV");
+  hrecozpt_before->SetXTitle("Reconstruction-level p_{T}(ll) [GeV]");
   TH1F* hrecozpt_after = (TH1F*)hpt->Clone("hrecozpt_after");
-  hrecozpt_after->SetXTitle("Reconstruction-level p_{T}(Z) [GeV");
+  hrecozpt_after->SetXTitle("Reconstruction-level p_{T}(ll) [GeV]");
 
 
   TH1F* hht_before = (TH1F*)hpt->Clone("hht_before");
