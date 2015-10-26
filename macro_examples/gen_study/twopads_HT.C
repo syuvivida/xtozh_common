@@ -13,7 +13,9 @@ void twopads_HT(string inputfile, string histo)
  
   hzpt_before->Draw();
   hzpt_after->SetLineColor(2);
-  hzpt_after->Draw("same");
+  hzpt_after->SetFillStyle(3004);
+  hzpt_after->SetFillColor(kRed-7);
+  hzpt_after->Draw("histsame");
 
   float xmin=90;
   float xmax=histo=="hzpt"?130:165;
@@ -23,7 +25,8 @@ void twopads_HT(string inputfile, string histo)
   cout << "Integral of hzpt_after = " << hzpt_after->Integral(xint,1001) << endl;
   c1->SetLogy(1);
 
-  TLegend* legend = new TLegend(0.1426, 0.1550, 0.4429,0.3554,NULL,"brNDC");
+  // TLegend* legend = new TLegend(0.1426, 0.1550, 0.4429,0.3554,NULL,"brNDC");
+  TLegend* legend = new TLegend(0.5940, 0.2561, 0.8943,0.4564,NULL,"brNDC");
   legend->SetLineColor(1);
   legend->SetLineStyle(1);
   legend->SetLineWidth(1);
@@ -60,7 +63,9 @@ void twopads_HT(string inputfile, string histo)
   hzoom_after->SetXTitle("");
   hzoom_after->SetYTitle("");
   hzoom_after->GetXaxis()->SetRangeUser(xmin,xmax);
-  hzoom_after->Draw("same");
+  hzoom_after->SetFillStyle(3004);
+  hzoom_after->SetFillColor(kRed-7);
+  hzoom_after->Draw("histsame");
 
   c1->Draw("Same");
 
