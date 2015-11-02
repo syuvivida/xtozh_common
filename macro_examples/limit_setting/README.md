@@ -3,7 +3,7 @@ For those who need the code, you can download it from github.
 https://github.com/juwugit/XtoZh/blob/master/CLs_results/plot_Asymptotic.C
 
 command to download it:
-``
+```
 wget https://raw.githubusercontent.com/juwugit/XtoZh/master/CLs_results/plot_Asymptotic.C
 ```
 
