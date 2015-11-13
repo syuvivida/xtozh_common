@@ -9,6 +9,8 @@
 #include <TH1D.h>
 #include <TFile.h>
 #include "untuplizer.h"
+#include "isPassZee.h"
+#include "isPassZmumu.h"
 #include <TClonesArray.h>
 #include <TLorentzVector.h>
 
@@ -22,7 +24,6 @@ void xAna_ele(std::string inputFile){
   Long64_t nPass[20]={0};
   ofstream fout;
   fout.open("ele_Eiko.txt");
-  TH1F* h_SD=new TH1F("h_SD","",100,0,200);
   //Event loop
   for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
 
@@ -33,13 +34,15 @@ void xAna_ele(std::string inputFile){
     nTotal ++;
 
     // 0. check the generator-level information and make sure there is a Z->e+e-
+    Int_t run          = data.GetInt("runId");
+    Int_t lumi         = data.GetInt("lumiSection");
+    Int_t event        = data.GetInt("eventId");
     Int_t nGenPar        = data.GetInt("nGenPar");
     Int_t* genParId      = data.GetPtrInt("genParId");
     Int_t* genParSt      = data.GetPtrInt("genParSt");
     Int_t* genMomParId   = data.GetPtrInt("genMomParId");
     Int_t* genDa1      = data.GetPtrInt("genDa1");
     Int_t* genDa2      = data.GetPtrInt("genDa2");
-
 
     bool hasLepton=false;
 
@@ -99,8 +102,6 @@ void xAna_ele(std::string inputFile){
 	// std::cout << thisTrig << " : " << results << std::endl;
 	
  	if( (thisTrig.find("HLT_Ele105")!= std::string::npos && results==1)
-	    ||
-	    (thisTrig.find("HLT_Mu45")!= std::string::npos && results==1)
 	    )
  	  {
  	    passTrigger=true;
@@ -121,158 +122,71 @@ void xAna_ele(std::string inputFile){
     nPass[3]++;
 
     //4. look for good electrons first
-    Int_t nEle         = data.GetInt("nEle");
-    Int_t run          = data.GetInt("runId");
-    Int_t lumi         = data.GetInt("lumiSection");
-    Int_t event        = data.GetInt("eventId");
-    vector<bool> &passHEEPID = *((vector<bool>*) data.GetPtr("eleIsPassHEEPNoIso"));
     TClonesArray* eleP4 = (TClonesArray*) data.GetPtrTObject("eleP4");
-    Float_t* eleSCEta         = data.GetPtrFloat("eleScEta");
-    Float_t* eleMiniIso       = data.GetPtrFloat("eleMiniIso");
-    Int_t*   eleCharge        = data.GetPtrInt("eleCharge");
 
-    //5. select good electrons
-    std::vector<int> goodElectrons;
-
-    for(int ie=0; ie< nEle; ie++)
-      {
-
-    	TLorentzVector* thisEle = (TLorentzVector*)eleP4->At(ie);
-
-    	if(fabs(thisEle->Eta())>2.5)continue;
-
-    	if(! (fabs(eleSCEta[ie])<1.442 || fabs(eleSCEta[ie])>1.566))continue;
-    	
-    	if(thisEle->Pt() < 115)continue;
-
-    	if(!passHEEPID[ie])continue;
-    	
-    	if(eleMiniIso[ie]>0.1)continue;
-
-    	goodElectrons.push_back(ie);
-      }
-
-	
-    //6. select a good Z boson
-    bool findEPair=false;
-    TLorentzVector l4_Z(0,0,0,0);
-
-    for(unsigned int i=0; i< goodElectrons.size(); i++)
-      {
-	int ie = goodElectrons[i];
-	TLorentzVector* thisEle = (TLorentzVector*)eleP4->At(ie);
-
-	for(unsigned int j=0; j< i; j++)
-	  {
-	    int je= goodElectrons[j];
-
-	    if(eleCharge[ie]*eleCharge[je]>0)continue;
-
-	    TLorentzVector* thatEle = (TLorentzVector*)eleP4->At(je);
-
-	    Float_t mll  = (*thisEle+*thatEle).M();
-	    Float_t ptll = (*thisEle+*thatEle).Pt();
-	    
-
-	    if(mll<70 || mll>110)continue;
-	    if(ptll<200)continue;
-
-	    if(!findEPair)l4_Z=(*thisEle+*thatEle);
-
-	    findEPair=true;
-	  }	
-      }
-
-    if(!findEPair)
-      continue;
+    //5. select good electrons from Z
+    vector<Int_t> goodZeeID;
+    if(!isPassZee(data,goodZeeID))continue;
+    TLorentzVector* thisEle =  (TLorentzVector*)eleP4->At(goodZeeID[0]);   
+    TLorentzVector* thatEle =  (TLorentzVector*)eleP4->At(goodZeeID[1]);   
+    
     nPass[4]++;
+
 
 
     //7.select a good CA8 and cleaned jet
 
     // first select muons for cleaning against jet
-    std::vector<int> goodMuons;
-    Int_t nMu          = data.GetInt("nMu");
-    vector<bool> &isHighPtMuon = *((vector<bool>*) data.GetPtr("isHighPtMuon"));
-    vector<bool> &isCustomTrackerMuon = *((vector<bool>*) data.GetPtr("isCustomTrackerMuon"));
+    std::vector<int> goodZmmID;
     TClonesArray* muP4 = (TClonesArray*) data.GetPtrTObject("muP4");
-    Float_t* muMiniIso       = data.GetPtrFloat("muMiniIso");
-
-    for(int im=0; im< nMu; im++)
+    TLorentzVector* thisMuo;
+    TLorentzVector* thatMuo; 
+    bool hasMuon=isPassZmumu(data,goodZmmID);
+    if(hasMuon)
       {
-
-    	TLorentzVector* thisMu = (TLorentzVector*)muP4->At(im);
-
-    	if(!isHighPtMuon[im] && !isCustomTrackerMuon[im])continue;
-    	
-    	if(muMiniIso[im]>0.1)continue;	
-
-        if ( goodMuons.size()==1 ) {
-	  bool highPt_AND_tracker = isHighPtMuon[0] && isCustomTrackerMuon[im];
-	  bool tracker_AND_highPt = isHighPtMuon[im] && isCustomTrackerMuon[0]; 
-            if ( !(highPt_AND_tracker or tracker_AND_highPt) ) continue; 
-        }
-
-    	if(fabs(thisMu->Eta())>2.1)continue;
-
-    	if(thisMu->Pt() < 50)continue;
-
-    	goodMuons.push_back(im);
+	thisMuo =  (TLorentzVector*)muP4->At(goodZmmID[0]);   
+	thatMuo =  (TLorentzVector*)muP4->At(goodZmmID[1]);   
       }
-
 	
     Int_t nJet         = data.GetInt("FATnJet");
     TClonesArray* jetP4 = (TClonesArray*) data.GetPtrTObject("FATjetP4");
-    Float_t*  jetSDmass = data.GetPtrFloat("FATjetSDmass");
+    Float_t*  jetPRmass = data.GetPtrFloat("FATjetPRmassL2L3Corr");
 
-    TLorentzVector l4_leadingJet(0,0,0,0);
-    bool findAJet=false;
+    int jetIndex=-1;
     for(int ij=0; ij<nJet; ij++)
       {
     	
      	TLorentzVector* thisJet = (TLorentzVector*)jetP4->At(ij);
 
-	if(jetSDmass[ij]<50 || jetSDmass[ij]>110)continue;
+	if(thisEle->DeltaR(*thisJet)<0.8)continue;
+	if(thatEle->DeltaR(*thisJet)<0.8)continue;
 
-	bool hasOverLap=false;
-	for(unsigned int ie=0; ie < goodElectrons.size(); ie++)
-	  {
-	    TLorentzVector* thisEle = (TLorentzVector*)eleP4->At(goodElectrons[ie]);
-	    if(thisEle->DeltaR(*thisJet)<0.8)hasOverLap=true;
-	    if(hasOverLap)break;
-	    
-	  }
-	for(unsigned int im=0; im < goodMuons.size(); im++)
-	  {
-	    TLorentzVector* thisMuo = (TLorentzVector*)muP4->At(goodMuons[im]);
-	    if(thisMuo->DeltaR(*thisJet)<0.8)hasOverLap=true;
-	    if(hasOverLap)break;
-	    
-	  }
-	
-	if(hasOverLap)continue;
+	if(hasMuon && thisMuo->DeltaR(*thisJet)<0.8)continue;
+	if(hasMuon && thatMuo->DeltaR(*thisJet)<0.8)continue;
 	
 	if(thisJet->Pt()<200)continue;
 	if(fabs(thisJet->Eta())>2.4)continue;
 
-     	if(!findAJet)
-	  {
-	    l4_leadingJet = *thisJet;
-	    h_SD->Fill(jetSDmass[ij]);
-	  }
+	if(jetPRmass[ij]<40)continue;
+
+     	if(jetIndex<0)
+	  jetIndex=ij;
 	    
-     	findAJet=true;
-    	
+	break;    	
 
       }
     
-    if(!findAJet)
+    if(jetIndex<0)
       continue;
     nPass[5]++;
+    
 
-     Float_t MGrav = (l4_leadingJet + l4_Z).M();
-     if(MGrav<400)continue;
-     nPass[6]++;
+    TLorentzVector l4_leadingJet = (*(TLorentzVector*)jetP4->At(jetIndex));
+    TLorentzVector l4_Z = (*thisEle) + (*thatEle);
+     
+    Float_t MGrav = (l4_leadingJet + l4_Z).M();
+    if(MGrav<400)continue;
+    nPass[6]++;
 
     fout << run << " " << lumi << " " << event << endl;
     
