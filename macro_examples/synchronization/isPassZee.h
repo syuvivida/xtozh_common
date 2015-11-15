@@ -14,7 +14,7 @@ bool isPassZee(TreeReader &data, vector<Int_t>& goodEleID){
   Int_t*   eleCharge  = data.GetPtrInt("eleCharge");
   Float_t* eleScEt    = data.GetPtrFloat("eleScEt");
   Float_t* eleScEta   = data.GetPtrFloat("eleScEta");
-  Float_t* eleMiniIso = data.GetPtrFloat("eleMiniIso");
+  Float_t* eleMiniIso = data.GetPtrFloat("eleMiniIsoEA");
   TClonesArray* eleP4 = (TClonesArray*) data.GetPtrTObject("eleP4");
   vector<bool>& eleIsPassHEEPNoIso = *((vector<bool>*) data.GetPtr("eleIsPassHEEPNoIso"));
 

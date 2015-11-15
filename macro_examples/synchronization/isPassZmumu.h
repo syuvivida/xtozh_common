@@ -10,7 +10,7 @@ bool isPassZmumu(TreeReader &data, vector<Int_t>& goodMuID){
 
   Int_t    nMu       = data.GetInt("nMu");
   Int_t*   muCharge  = data.GetPtrInt("muCharge");
-  Float_t* muMiniIso = data.GetPtrFloat("muMiniIso");
+  Float_t* muMiniIso = data.GetPtrFloat("muMiniIsoEA");
   TClonesArray* muP4 = (TClonesArray*) data.GetPtrTObject("muP4");
   vector<bool>& isHighPtMuon = *((vector<bool>*) data.GetPtr("isHighPtMuon"));
   vector<bool>& isCustomTrackerMuon = *((vector<bool>*) data.GetPtr("isCustomTrackerMuon"));
