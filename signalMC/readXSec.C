@@ -104,7 +104,7 @@ void readXSec(double searchM)
   foutbb.open("13TeV_xsec_Zhllbb.txt",ios::out | ios::app);
 
   ofstream foutbb2;
-  foutbb2.open("13TeV_xsec_Zheebb.txt",ios::out | ios::app);
+  foutbb2.open("13TeV_xsec_Zhllbb_oneLeptonFlavor.txt",ios::out | ios::app);
 
   double xsec=myMap[searchM]["CX0(pb)"];
   cout << "---------------------------------------------------------------------------------------------------------------------------" << endl;
