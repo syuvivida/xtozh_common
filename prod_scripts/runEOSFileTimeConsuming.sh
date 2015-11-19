@@ -1,31 +1,33 @@
 #!/bin/bash
 
 scriptname=`basename $0`
-EXPECTED_ARGS=6
+EXPECTED_ARGS=5
 
-queue=8nm
+userid="syu"
+extraFile="extra.txt"
 
 if [ $# -eq $(( EXPECTED_ARGS - 1 )) ]
 then
-    echo "batch job queue is set to "$queue
+    echo "user ID is set to "$userid
 else if [ $# -ne $EXPECTED_ARGS ]
 then
-    echo "Usage: ./$scriptname ROOTMacroNameWithout.C userid remote_directory string output_directory queue"
-    echo "Example: ./$scriptname pseudoMC_onefile syu AbelianZPrime_ZH_lljj_M800-MADGRAPH NCU trial 1nh"
+    echo "Usage: ./$scriptname ROOTMacroNameWithout.C remote_directory string output_directory userID"
+    echo "Example: ./$scriptname pseudoMC_onefile AbelianZPrime_ZH_lljj_M800-MADGRAPH NCU trial syu"
+    echo "extra.txt stores the list of extra header files that must be copied to the work directory"
     exit 1
 else
-    queue=$6
+    userid=$5
 fi
 fi
 
 echo "user id is "$userid
 workdir=$PWD
 macroprefix=$1
-userid=$2
 macro=$workdir/${macroprefix}.C
-topdir=$3
-string=$4
-outputdir=${5}_${topdir}
+extra=$workdir/$extraFile
+topdir=$2
+string=$3
+outputdir=${4}_${topdir}
 
 if [[ ! -e $macro ]]; then
     echo $macro " does not exist!"
@@ -39,12 +41,6 @@ else
     echo "directory "$outputdir" exists!"
     exit 0;
 fi
-
-### Compile the macro first
-
-$workdir/compile.csh $workdir $macroprefix
-
-### Check which files need to be processed
 
 nowdir=`tcsh -c "eos ls /store/user/$userid/$topdir"`
 echo $nowdir
@@ -78,10 +74,25 @@ do
   iteration=$(( iteration + 1 ))
   inputfile=(`head -n $iteration $list  | tail -1`)
   outputfile=output`echo ${inputfile##*NCUGlobalTuples}`
+  
+  jobdir=job_$iteration
+  mkdir $jobdir
+  cp -p $macro $jobdir/.
+  ### If there are other header files that need to be copied
+  if [[ -e $extra ]]; then
+      temp_n=0;
+      temp_extra=`cat $extra | wc -l`      
+      while [ $temp_n -lt $temp_extra ]; 
+      do
+	  temp_n=$(( temp_n + 1 ))
+	  headerfile=$workdir/`head -n $temp_n $extra  | tail -1`
+	  echo "copying "$headerfile
+	  cp -p $headerfile  $jobdir/.
+      done
+  fi
   currentdir=$PWD/$jobdir
-#  $workdir/runShared.csh $currentdir $workdir $macroprefix $inputfile $outputfile
-  bsub -q8nm $workdir/runShared.csh $currentdir $workdir $macroprefix $inputfile $outputfile
-
+#  $workdir/runJob.csh $currentdir $macroprefix $inputfile $outputfile
+  bsub -q1nh $workdir/runJob.csh $currentdir $macroprefix $inputfile $outputfile
 done
 
 
