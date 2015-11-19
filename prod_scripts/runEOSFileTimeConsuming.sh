@@ -86,7 +86,7 @@ do
       do
 	  temp_n=$(( temp_n + 1 ))
 	  headerfile=$workdir/`head -n $temp_n $extra  | tail -1`
-	  echo "copying "$headerfile
+#	  echo "copying "$headerfile
 	  cp -p $headerfile  $jobdir/.
       done
   fi
