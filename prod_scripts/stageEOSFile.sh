@@ -30,10 +30,10 @@ else
     exit 0;
 fi
 
-nowdir=`tcsh -c "eos ls /store/user/syu/$topdir"`
+nowdir=`tcsh -c "eos ls /store/user/$userid/$topdir"`
 echo $nowdir
-newdir="/store/user/syu/$topdir/$nowdir"
-lastdir="/store/user/syu/$topdir"
+newdir="/store/user/$userid/$topdir/$nowdir"
+lastdir="/store/user/$userid/$topdir"
 string="NCUGlobalTuples"
 
 #find the full path of directories that contain ROOT files
