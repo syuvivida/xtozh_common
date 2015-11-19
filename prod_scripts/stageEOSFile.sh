@@ -13,43 +13,44 @@ then
     echo "Example: ./$scriptname AbelianZPrime_ZH_lljj_M800-MADGRAPH flattuple syu"
     exit 1
 else
-userid=$3
+    userid=$3
 fi
 fi
 
 echo $1
 echo "user id is "$userid
 string=$2
-topdir="temp"
+topdir=$1
 
 if [[ ! -e $topdir ]]; then
     echo "creating directory "$topdir
     mkdir $topdir
-fi
-
-
-if [[ $1 == */* ]];
-then
-#    echo "It's double-layer directory";
-    top=`echo "${1%%/*}"`
-    echo "creating directory "$topdir"/"$top
-    mkdir $topdir/$top
-    echo "creating directory "$topdir"/"$1 
-    mkdir $topdir/$1
-    cmsLs /store/user/$userid/$1 | grep -a $userid | awk '{print "cmsLs "$5}' | bash | grep -a $string | awk -v my_var=$topdir"/"$1 '{print "xrdcp root://eoscms//eos/cms"$5" "my_var"/."}'  | bash
-    sub=`echo "${1##*/}"`
-    echo "adding root files "$topdir"/"$sub".root"
-    hadd $topdir/$sub.root $topdir/$1/*root
 else
-#    echo "It's single-layer directory";
-    echo "creating directory "$topdir"/"$1 
-    mkdir $topdir/$1
-    cmsLs /store/user/$userid/$1 | grep -a $userid | awk '{print "cmsLs "$5}' | bash | grep -a $userid | awk '{print "cmsLs "$5}' | bash | grep -a $string | awk -v my_var=$topdir"/"$1 '{print "xrdcp root://eoscms//eos/cms"$5" "my_var"/."}'  | bash
-    echo "adding root files "$topdir"/"$1".root"
-    hadd $topdir/$1.root $topdir/$1/*root
+    echo "directory "$topdir" exists!"
+    exit 0;
 fi
 
+nowdir=`tcsh -c "eos ls /store/user/syu/$topdir"`
+echo $nowdir
+newdir="/store/user/syu/$topdir/$nowdir"
+lastdir="/store/user/syu/$topdir"
+string="NCUGlobalTuples"
 
+#find the full path of directories that contain ROOT files
+while [[ $nowdir != *"$string"* ]]; 
+do
+ nowdir=`tcsh -c "eos ls $newdir"`
+ lastdir=$newdir
+ newdir="$newdir/$nowdir"
+ echo $newdir
+done
+
+echo "Full path is "$lastdir
+cd $topdir
+
+cmsLs $lastdir | grep -a $string | awk -v my_var=$lastdir '{print "xrdcp root://eoscms//eos/cms"my_var"/"$1" "$1}'  | bash
+
+cd -
 
 
 
