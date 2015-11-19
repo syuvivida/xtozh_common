@@ -18,10 +18,10 @@ else
 fi
 fi
 
-echo "user id is "$userid
 workdir=$PWD
 macroprefix=$1
 userid=$2
+echo "user id is "$userid
 macro=$workdir/${macroprefix}.C
 topdir=$3
 string=$4
@@ -80,7 +80,7 @@ do
   outputfile=output`echo ${inputfile##*NCUGlobalTuples}`
   currentdir=$PWD/$jobdir
 #  $workdir/runShared.csh $currentdir $workdir $macroprefix $inputfile $outputfile
-  bsub -q8nm $workdir/runShared.csh $currentdir $workdir $macroprefix $inputfile $outputfile
+  bsub -q$queue $workdir/runShared.csh $currentdir $workdir $macroprefix $inputfile $outputfile
 
 done
 
