@@ -91,7 +91,8 @@ do
       done
   fi
   currentdir=$PWD/$jobdir
-  $workdir/runJob.csh $currentdir $macroprefix $inputfile $outputfile
+#  $workdir/runJob.csh $currentdir $macroprefix $inputfile $outputfile
+  bsub -q1nh $workdir/runJob.csh $currentdir $macroprefix $inputfile $outputfile
 done
 
 
