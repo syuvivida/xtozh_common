@@ -48,7 +48,7 @@ done
 echo "Full path is "$lastdir
 cd $topdir
 
-cmsLs $lastdir | grep -a $string | awk -v my_var=$lastdir '{print "xrdcp root://eoscms//eos/cms"my_var"/"$1" "$1}'  | bash
+/afs/cern.ch/project/eos/installation/0.3.84-aquamarine/bin/eos.select ls $lastdir | grep -a $string | awk -v my_var=$lastdir '{print "xrdcp root://eoscms//eos/cms"my_var"/"$1" "$1}'  | bash
 
 cd -
 

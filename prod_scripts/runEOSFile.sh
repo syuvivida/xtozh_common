@@ -67,7 +67,7 @@ cd $outputdir
 #print output file name
 list=inputFile.txt
 rm -rf $list
-cmsLs $lastdir | grep -a $string | awk -v my_var=$lastdir '{print "root://eoscms//eos/cms"my_var"/"$1}' >> $list
+/afs/cern.ch/project/eos/installation/0.3.84-aquamarine/bin/eos.select ls $lastdir | grep -a $string | awk -v my_var=$lastdir '{print "root://eoscms//eos/cms"my_var"/"$1}' >> $list
 
 
 iteration=0
