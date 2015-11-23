@@ -62,8 +62,8 @@ do
   inputfile=(`head -n $iteration $list  | tail -1`)
   outputfile=output`echo ${inputfile##*NCUGlobalTuples}`
   currentdir=$PWD/$jobdir
-  $workdir/runShared.csh $currentdir $workdir $macroprefix $inputfile $outputfile
-# bsub -q$queue $workdir/runShared.csh $currentdir $workdir $macroprefix $inputfile $outputfile
+#  $workdir/runShared.csh $currentdir $workdir $macroprefix $inputfile $outputfile
+ bsub -q$queue $workdir/runShared.csh $currentdir $workdir $macroprefix $inputfile $outputfile
 
 done
 
