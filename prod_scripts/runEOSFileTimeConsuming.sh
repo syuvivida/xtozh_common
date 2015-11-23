@@ -1,7 +1,7 @@
 #!/bin/bash
 
 scriptname=`basename $0`
-EXPECTED_ARGS=5
+EXPECTED_ARGS=4
 
 userid="syu"
 extraFile="extra.txt"
@@ -11,12 +11,12 @@ then
     echo "user ID is set to "$userid
 else if [ $# -ne $EXPECTED_ARGS ]
 then
-    echo "Usage: ./$scriptname ROOTMacroNameWithout.C remote_directory string output_directory userID"
-    echo "Example: ./$scriptname pseudoMC_onefile AbelianZPrime_ZH_lljj_M800-MADGRAPH NCU trial syu"
+    echo "Usage: ./$scriptname ROOTMacroNameWithout.C remote_directory output_directory_prefix userID"
+    echo "Example: ./$scriptname muVariable SingleMuon trial khurana"
     echo "extra.txt stores the list of extra header files that must be copied to the work directory"
     exit 1
 else
-    userid=$5
+    userid=$4
 fi
 fi
 
@@ -26,8 +26,7 @@ macroprefix=$1
 macro=$workdir/${macroprefix}.C
 extra=$workdir/$extraFile
 topdir=$2
-string=$3
-outputdir=${4}_${topdir}
+outputdir=${3}_${topdir}
 
 if [[ ! -e $macro ]]; then
     echo $macro " does not exist!"
@@ -42,29 +41,12 @@ else
     exit 0;
 fi
 
-nowdir=`tcsh -c "eos ls /store/user/$userid/$topdir"`
-echo $nowdir
-newdir="/store/user/$userid/$topdir/$nowdir"
-lastdir="/store/user/$userid/$topdir"
-string="NCUGlobalTuples"
-
-#find the full path of directories that contain ROOT files
-while [[ $nowdir != *"$string"* ]]; 
-do
- nowdir=`tcsh -c "eos ls $newdir"`
- lastdir=$newdir
- newdir="$newdir/$nowdir"
- echo $newdir
-done
-
-echo "Full path is "$lastdir
 cd $outputdir
 
 #print output file name
-list=inputFile.txt
+list=inputfileslist.txt
 rm -rf $list
-/afs/cern.ch/project/eos/installation/0.3.84-aquamarine/bin/eos.select ls $lastdir | grep -a $string | awk -v my_var=$lastdir '{print "root://eoscms//eos/cms"my_var"/"$1}' >> $list
-
+python $workdir/MakeEOSDirTree.py $topdir $userid
 
 iteration=0
 lastfile=`cat $list | wc -l`
@@ -91,7 +73,7 @@ do
       done
   fi
   currentdir=$PWD/$jobdir
-#  $workdir/runJob.csh $currentdir $macroprefix $inputfile $outputfile
+# $workdir/runJob.csh $currentdir $macroprefix $inputfile $outputfile
   bsub -q1nh $workdir/runJob.csh $currentdir $macroprefix $inputfile $outputfile
 done
 

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 scriptname=`basename $0`
-EXPECTED_ARGS=6
+EXPECTED_ARGS=5
 
 queue=8nm
 
@@ -10,11 +10,11 @@ then
     echo "batch job queue is set to "$queue
 else if [ $# -ne $EXPECTED_ARGS ]
 then
-    echo "Usage: ./$scriptname ROOTMacroNameWithout.C userid remote_directory string output_directory queue"
-    echo "Example: ./$scriptname pseudoMC_onefile syu AbelianZPrime_ZH_lljj_M800-MADGRAPH NCU trial 1nh"
+    echo "Usage: ./$scriptname ROOTMacroNameWithout.C userid remote_directory output_directory_prefix queue"
+    echo "Example: ./$scriptname muVariable khurana SingleMuon trial 1nh"
     exit 1
 else
-    queue=$6
+    queue=$5
 fi
 fi
 
@@ -24,8 +24,7 @@ userid=$2
 echo "user id is "$userid
 macro=$workdir/${macroprefix}.C
 topdir=$3
-string=$4
-outputdir=${5}_${topdir}
+outputdir=${4}_${topdir}
 
 if [[ ! -e $macro ]]; then
     echo $macro " does not exist!"
@@ -44,30 +43,14 @@ fi
 
 $workdir/compile.csh $workdir $macroprefix
 
-### Check which files need to be processed
-
-nowdir=`tcsh -c "eos ls /store/user/$userid/$topdir"`
-echo $nowdir
-newdir="/store/user/$userid/$topdir/$nowdir"
-lastdir="/store/user/$userid/$topdir"
-string="NCUGlobalTuples"
-
-#find the full path of directories that contain ROOT files
-while [[ $nowdir != *"$string"* ]]; 
-do
- nowdir=`tcsh -c "eos ls $newdir"`
- lastdir=$newdir
- newdir="$newdir/$nowdir"
- echo $newdir
-done
-
-echo "Full path is "$lastdir
+## move to subdirectory
 cd $outputdir
 
-#print output file name
-list=inputFile.txt
+
+### Check which files need to be processed
+list=inputfileslist.txt
 rm -rf $list
-/afs/cern.ch/project/eos/installation/0.3.84-aquamarine/bin/eos.select ls $lastdir | grep -a $string | awk -v my_var=$lastdir '{print "root://eoscms//eos/cms"my_var"/"$1}' >> $list
+python $workdir/MakeEOSDirTree.py $topdir $userid
 
 
 iteration=0
@@ -79,8 +62,8 @@ do
   inputfile=(`head -n $iteration $list  | tail -1`)
   outputfile=output`echo ${inputfile##*NCUGlobalTuples}`
   currentdir=$PWD/$jobdir
-#  $workdir/runShared.csh $currentdir $workdir $macroprefix $inputfile $outputfile
-  bsub -q$queue $workdir/runShared.csh $currentdir $workdir $macroprefix $inputfile $outputfile
+  $workdir/runShared.csh $currentdir $workdir $macroprefix $inputfile $outputfile
+# bsub -q$queue $workdir/runShared.csh $currentdir $workdir $macroprefix $inputfile $outputfile
 
 done
 
