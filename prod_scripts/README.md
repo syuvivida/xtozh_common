@@ -6,7 +6,7 @@ cmsrel CMSSW_7_4_12
 cd CMSSW_7_4_12/src
 ```
 
-In this src directory, put your own analysis macros and the following scripts
+In this src directory, put your own analysis macros, required header files, and the following scripts
 ```
 git clone git@github.com:syuvivida/xtozh_common.git
 
@@ -15,6 +15,7 @@ cp -p xtozh_common/prod_scripts/* .
 chmod 755 *sh
 
 ```
+Note, your analysis macros must be able to run on one input file at a time.
 
 Then, you need to know the directory name of the EOS files you want to run on, for 
 example, if you want to run muVariables.C macro on the files in /store/khurana/SingleMuon,
