@@ -12,9 +12,8 @@ bool isPassZee(TreeReader &data, vector<Int_t>& goodEleID){
 
   Int_t    nEle       = data.GetInt("nEle");
   Int_t*   eleCharge  = data.GetPtrInt("eleCharge");
-  Float_t* eleScEt    = data.GetPtrFloat("eleScEt");
   Float_t* eleScEta   = data.GetPtrFloat("eleScEta");
-  Float_t* eleMiniIso = data.GetPtrFloat("eleMiniIso");
+  Float_t* eleMiniIsoEA = data.GetPtrFloat("eleMiniIsoEA");
   TClonesArray* eleP4 = (TClonesArray*) data.GetPtrTObject("eleP4");
   vector<bool>& eleIsPassHEEPNoIso = *((vector<bool>*) data.GetPtr("eleIsPassHEEPNoIso"));
 
@@ -30,7 +29,7 @@ bool isPassZee(TreeReader &data, vector<Int_t>& goodEleID){
     if( fabs(eleScEta[ie]) > 2.5 ) continue;
     if( myEle->Pt() < 35 ) continue;
     if( !eleIsPassHEEPNoIso[ie] ) continue;
-    if( eleMiniIso[ie] > 0.1 ) continue;
+    if( eleMiniIsoEA[ie] > 0.1 ) continue;
 
     goodElectrons.push_back(ie);
 
