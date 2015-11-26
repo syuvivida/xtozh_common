@@ -24,7 +24,8 @@ userid=$2
 echo "user id is "$userid
 macro=$workdir/${macroprefix}.C
 topdir=$3
-outputdir=${4}_${topdir}
+temptopdir=${topdir##*/}
+outputdir=${4}_${temptopdir}
 
 if [[ ! -e $macro ]]; then
     echo $macro " does not exist!"
