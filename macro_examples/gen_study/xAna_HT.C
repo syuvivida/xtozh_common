@@ -15,37 +15,56 @@
 #include <TList.h>
 
 using namespace std;
-void xAna_HT(std::string inputFile, bool test=false){
+void xAna_HT(std::string inputFile, std::string outputFile, bool test=false){
 
   std::vector<string> infiles;
-  TString outputFile;
- 
-  //get TTree from file ...
-  outputFile="test.root";
-
-  cout << "output file name = " << outputFile.Data() << endl;      
-  TSystemDirectory *base = new TSystemDirectory("root","root");
-
-  base->SetDirectory(inputFile.data());
-  TList *listOfFiles = base->GetListOfFiles();
-  TIter fileIt(listOfFiles);
-  TFile *fileH = new TFile();
+  string inputTextFile = "inputdir.txt";
+  // clean-up files
+  gSystem->Exec(Form("rm -rf %s",inputTextFile.data()));
+  // output new text file
+  gSystem->Exec(Form("ls -R %s | grep -a \"%s\" >> %s",
+		     inputFile.data(),"data7", inputTextFile.data()));
+  TSystemDirectory *base = new TSystemDirectory("root","root"); 
   int nfile=0;
-  while(fileH = (TFile*)fileIt()) {
-    std::string fileN = fileH->GetName();
-    if( fileH->IsFolder())  continue;
-    if(fileN.find("root") == std::string::npos)continue;
-    fileN = inputFile + "/" + fileN;
-    cout << fileN.data() << endl;
-    nfile++;
-    infiles.push_back(fileN);
-  }
+  string tempdir;
+  ifstream fin;
+  fin.open(inputTextFile.data());
+  fin >> tempdir;
+  TString realDirName = gSystem->GetFromPipe(Form("a=%s; echo ${a%%:*}",tempdir.data()));
+  while(!fin.eof()){
+    if(realDirName.Contains("fail")){
+      fin >> tempdir;
+      realDirName = gSystem->GetFromPipe(Form("a=%s; echo ${a%%:*}",tempdir.data
+					      ()));      
+      continue;
+    }
+    cout << "Directory name = " << realDirName << endl;
+    base->SetDirectory(realDirName.Data());
+    TList *listOfFiles = base->GetListOfFiles();
+    TIter fileIt(listOfFiles);
+    TFile *fileH = new TFile();
+    while((fileH = (TFile*)fileIt())) {
+      std::string fileN = fileH->GetName();
+      std::string baseString = "root";
+      if( fileH->IsFolder())  continue;
+      if(fileN.find(baseString) == std::string::npos)continue;
+      
+      cout << fileN.data() << endl;
+      nfile++;
+      string tempfile = Form("%s/%s",realDirName.Data(),fileN.data());
+      infiles.push_back(tempfile);
+    }
+    fin >> tempdir;
+    realDirName = gSystem->GetFromPipe(Form("a=%s; echo ${a%%:*}",tempdir.data()));
+  } // end of big loop
+  std::cout << "Opened " << nfile << " files" << std::endl;  
   
-  std::cout << "Opened " << nfile << " files" << std::endl;
   
-  cout << "output file name = " << outputFile.Data() << endl;
   //get TTree from file ...
   TreeReader data(infiles);
+
+  TH1F* hevent = new TH1F("hevent","",1,0.5,1.5);
+  hevent->Sumw2();
  
   TH1F* hpt = new TH1F("hpt","",1000,0,1000);
   hpt->Sumw2();
@@ -69,12 +88,14 @@ void xAna_HT(std::string inputFile, bool test=false){
   hrecozpt_before->SetXTitle("Reconstruction-level p_{T}(ll) [GeV]");
   TH1F* hrecozpt_after = (TH1F*)hpt->Clone("hrecozpt_after");
   hrecozpt_after->SetXTitle("Reconstruction-level p_{T}(ll) [GeV]");
-
-
+  
+  
   TH1F* hht_before = (TH1F*)hpt->Clone("hht_before");
   TH1F* hht_after  = (TH1F*)hpt->Clone("hht_after");
 
   Long64_t nTotal=0;
+  Long64_t nPos=0;
+  Long64_t nNeg=0;
   Long64_t nPass[20]={0};
   //Event loop
   for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
@@ -85,7 +106,7 @@ void xAna_HT(std::string inputFile, bool test=false){
 
     data.GetEntry(jEntry);
     nTotal ++;
-        // 0. check the generator-level information and make sure there is a Z->e+e-
+    // 0. check the generator-level information and make sure there is a Z->e+e-
     Int_t nGenPar        = data.GetInt("nGenPar");
     Int_t* genParId      = data.GetPtrInt("genParId");
     Int_t* genParSt      = data.GetPtrInt("genParSt");
@@ -94,13 +115,13 @@ void xAna_HT(std::string inputFile, bool test=false){
     Float_t mcWeight  = data.GetFloat("mcWeight");
     Float_t weight = 1;
 
-    if(mcWeight>0)weight = 1;
-    else weight = -1;
+    if(mcWeight>0){weight = 1; nPos++;}
+    else {weight = -1; nNeg++;}
 
     TClonesArray* genParP4 = (TClonesArray*) data.GetPtrTObject("genParP4");
 
     hht_before->Fill(HT,weight);
- 
+    hevent->Fill(1.0,weight);
     
     float zpt=-1;
     bool findAZ=false;
@@ -152,6 +173,7 @@ void xAna_HT(std::string inputFile, bool test=false){
     vector<bool> &passHEEPID = *((vector<bool>*) data.GetPtr("eleIsPassHEEPNoIso"));
     TClonesArray* eleP4 = (TClonesArray*) data.GetPtrTObject("eleP4");
     Float_t* eleSCEta         = data.GetPtrFloat("eleScEta");
+    //Float_t* eleMiniIso       = data.GetPtrFloat("eleMiniIsoBeta");
     Float_t* eleMiniIso       = data.GetPtrFloat("eleMiniIso");
     Int_t*   eleCharge        = data.GetPtrInt("eleCharge");
 
@@ -226,8 +248,12 @@ void xAna_HT(std::string inputFile, bool test=false){
     if(nPass[i]>0)
       std::cout << "nPass[" << i << "]= " << nPass[i] << std::endl;
 
-  TFile* outFile = new TFile("test.root","recreate");
+  cout << "nPos = " << nPos << " and Nneg = " << nNeg << " and";
+  cout << "nPos - nNeg = " << nPos-nNeg << endl;
 
+  TFile* outFile = new TFile(outputFile.data(),"recreate");
+  
+  hevent->Write();
   hllpt_before->Write();
   hllpt_after->Write();
   hzpt_before->Write();
