@@ -125,6 +125,7 @@ void xAna_hh2(std::string inputFile){
 	    findAPair=true;
 	    break;
 	  }
+	//	if(findAPair)break;
       }
     if(!findAPair)continue;
     if(bindex1<0)continue;
