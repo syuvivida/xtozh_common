@@ -14,6 +14,10 @@
 #include <TSystem.h>
 
 using namespace std;
+const float wMassMin=65;
+const float wMassMax=105;
+const float hMassMin=105;
+const float hMassMax=135;
 void xAna_prunedM_genMatch(std::string inputFile, bool debug=false){
 
   std::string dirName="prunedM_genMatch";
@@ -108,6 +112,8 @@ void xAna_prunedM_genMatch(std::string inputFile, bool debug=false){
 
       if(abs(da1pdg)>10 && abs(da1pdg)<17)
        	hasLepton=true;
+      if(abs(da2pdg)>10 && abs(da2pdg)<17)
+       	hasLepton=true;
 
       if(hasLepton)break;
 
@@ -198,10 +204,10 @@ void xAna_prunedM_genMatch(std::string inputFile, bool debug=false){
     	
 	int ij = matchedHJetIndex[i];
 	h_PR->Fill(fatjetPRmassL2L3Corr[ij]);
-	if(ishh && (fatjetPRmassL2L3Corr[ij]<105 ||
-		    fatjetPRmassL2L3Corr[ij]>135))continue;
-	if(isWW && (fatjetPRmassL2L3Corr[ij]<65 ||
-		    fatjetPRmassL2L3Corr[ij]>105))continue;
+	if(ishh && (fatjetPRmassL2L3Corr[ij]<hMassMin ||
+		    fatjetPRmassL2L3Corr[ij]>hMassMax))continue;
+	if(isWW && (fatjetPRmassL2L3Corr[ij]<wMassMin ||
+		    fatjetPRmassL2L3Corr[ij]>wMassMax))continue;
 	nGoodJets++;
       }
     if(nGoodJets>=2)nPass[4]++;
@@ -243,10 +249,10 @@ void xAna_prunedM_genMatch(std::string inputFile, bool debug=false){
 	int ij = matchedHJetIndex[i];
 	h_PR_after->Fill(fatjetPRmassL2L3Corr[ij]);
 
-	if(ishh && (fatjetPRmassL2L3Corr[ij]<105 ||
-		    fatjetPRmassL2L3Corr[ij]>135))continue;
-	if(isWW && (fatjetPRmassL2L3Corr[ij]<65 ||
-		    fatjetPRmassL2L3Corr[ij]>85))continue;
+	if(ishh && (fatjetPRmassL2L3Corr[ij]<hMassMin ||
+		    fatjetPRmassL2L3Corr[ij]>hMassMax))continue;
+	if(isWW && (fatjetPRmassL2L3Corr[ij]<wMassMin ||
+		    fatjetPRmassL2L3Corr[ij]>wMassMax))continue;
 	nGoodJets++;
       }
 
