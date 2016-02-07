@@ -14,7 +14,7 @@
 #include <TSystem.h>
 
 using namespace std;
-void xAna_prunedM_genMatch(std::string inputFile){
+void xAna_prunedM_genMatch(std::string inputFile, bool debug=false){
 
   std::string dirName="prunedM_genMatch";
 
@@ -57,7 +57,9 @@ void xAna_prunedM_genMatch(std::string inputFile){
 
     if (jEntry % 50000 == 0)
       fprintf(stderr, "Processing event %lli of %lli\n", jEntry + 1, data.GetEntriesFast());
-    // if(jEntry>10)break;
+
+    if(debug && jEntry>10)break;
+
     data.GetEntry(jEntry);
     nTotal++;
 
@@ -118,11 +120,15 @@ void xAna_prunedM_genMatch(std::string inputFile){
     TLorentzVector genH_l4[2];
     TClonesArray* genParP4 = (TClonesArray*) data.GetPtrTObject("genParP4");
 
-    // cout << jEntry << " " << genHIndex[0] << "\t" << genHIndex[1] << endl;
-
+    
     for(int ih=0; ih<2; ih++)
       genH_l4[ih] = *((TLorentzVector*)genParP4->At(genHIndex[ih]));
 
+    if(debug){
+      cout << genHIndex[0] << "\t" << genHIndex[1] << endl;
+      genH_l4[0].Print();
+      genH_l4[1].Print();
+    }
 
     int nFATJet         = data.GetInt("FATnJet");
     const int nJets=nFATJet;
@@ -162,7 +168,8 @@ void xAna_prunedM_genMatch(std::string inputFile){
       }
 
     if(!findAMatch)continue;
-    //    cout << matchedHJetIndex[0] << "\t" << matchedHJetIndex[1] << endl;
+    if(debug)
+      cout << matchedHJetIndex[0] << "\t" << matchedHJetIndex[1] << endl;
     nPass[2]++;
 
     Int_t event        = data.GetInt("eventId");
@@ -214,7 +221,12 @@ void xAna_prunedM_genMatch(std::string inputFile){
 
     if(nGoodJets<2)continue;
     nPass[5]++;
-
+    
+    if(debug)
+      {
+	recoH_l4[0].Print();
+	recoH_l4[1].Print();
+      }
 
     float dEta=fabs(recoH_l4[0].Eta()-recoH_l4[1].Eta());
     if(dEta>1.3)continue;
