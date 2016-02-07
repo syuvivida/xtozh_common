@@ -11,9 +11,17 @@
 #include "untuplizer.h"
 #include <TClonesArray.h>
 #include <TLorentzVector.h>
+#include <TSystem.h>
 
 using namespace std;
-void xAna_hh2_genMatch(std::string inputFile){
+void xAna_prunedM_genMatch(std::string inputFile){
+
+  std::string dirName="prunedM_genMatch";
+
+  gSystem->mkdir(dirName.data());
+  TString outputFile=gSystem->GetFromPipe(Form("file=%s; test=${file##*/}; echo \"%s/histoPR_${test}\"",
+					       inputFile.data(), dirName.data()));
+  std::cout << "output file name = " << outputFile.Data() << endl;
 
   bool isHerwigpp=(inputFile.find("herwigpp")!= std::string::npos);
   cout << endl;
@@ -21,23 +29,37 @@ void xAna_hh2_genMatch(std::string inputFile){
   else
     cout << "This is a pythia8 MC sample" << endl;
   cout << endl;
+
+
+
+  bool isWW=(inputFile.find("WW")!= std::string::npos);
+  bool ishh=(inputFile.find("hh")!= std::string::npos);
+  cout << endl;
+  if(isWW)cout << "Note!! This is BulkG->WW" << endl;
+  else if(ishh)
+    cout << "This is BulkG->hh" << endl;
+  cout << endl;
+
+
+
   //get TTree from file ...
   TreeReader data(inputFile.data());
   
   Long64_t nTotal=0;
   Long64_t nPass[20]={0};
 
-  TH1F* h_SD=new TH1F("h_SD","",100,0,200);
+  TH1F* h_PR=new TH1F("h_PR","",100,0,200);
+  TH1F* h_PR_after=new TH1F("h_PR_after","",100,0,200);
   TH1F* h_hh=new TH1F("h_hh","",900,0,4500);
+
 
   for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
 
     if (jEntry % 50000 == 0)
       fprintf(stderr, "Processing event %lli of %lli\n", jEntry + 1, data.GetEntriesFast());
-
+    // if(jEntry>10)break;
     data.GetEntry(jEntry);
     nTotal++;
-
 
     Int_t nGenPar        = data.GetInt("nGenPar");
     Int_t* genParId      = data.GetPtrInt("genParId");
@@ -45,12 +67,13 @@ void xAna_hh2_genMatch(std::string inputFile){
     Int_t* genMomParId   = data.GetPtrInt("genMomParId");
 
     int genHIndex[2]={-1,-1};
+    const int bosonID= ishh? 25: 24;
 
     for(int ig=0; ig < nGenPar; ig++){
 
-      if(genParId[ig]!=25)continue;
+      if(abs(genParId[ig])!=bosonID)continue;
 
-      if(isHerwigpp && genMomParId[ig]!=25)continue;
+      if(isHerwigpp && abs(genMomParId[ig])!=bosonID)continue;
 
       if(genHIndex[0]<0)
 	genHIndex[0]=ig;
@@ -59,17 +82,43 @@ void xAna_hh2_genMatch(std::string inputFile){
 	genHIndex[1]=ig;
 
     }    
+    
 
     if(genHIndex[0]<0 || genHIndex[1]<0)continue;
     nPass[0]++;
 
     if(genHIndex[0]==genHIndex[1])continue;
+    
+    // 1. make sure there is a W/h-> qq 
+    bool hasLepton=false;
+    Int_t* genDa1      = data.GetPtrInt("genDa1");
+    Int_t* genDa2      = data.GetPtrInt("genDa2");
+
+    for(int ig=0; ig < nGenPar; ig++){
+
+      if(abs(genParId[ig])!=bosonID)continue;
+      int da1=genDa1[ig];
+      int da2=genDa2[ig];
+
+      if(da1<0 || da2<0)continue;
+      int da1pdg = genParId[da1];
+      int da2pdg = genParId[da2];
+
+      if(abs(da1pdg)>10 && abs(da1pdg)<17)
+       	hasLepton=true;
+
+      if(hasLepton)break;
+
+    }
+
+    if(hasLepton)continue;
+
     nPass[1]++;
 
     TLorentzVector genH_l4[2];
     TClonesArray* genParP4 = (TClonesArray*) data.GetPtrTObject("genParP4");
 
-    // cout << genHIndex[0] << "\t" << genHIndex[1] << endl;
+    // cout << jEntry << " " << genHIndex[0] << "\t" << genHIndex[1] << endl;
 
     for(int ih=0; ih<2; ih++)
       genH_l4[ih] = *((TLorentzVector*)genParP4->At(genHIndex[ih]));
@@ -113,7 +162,7 @@ void xAna_hh2_genMatch(std::string inputFile){
       }
 
     if(!findAMatch)continue;
-    // cout << matchedHJetIndex[0] << "\t" << matchedHJetIndex[1] << endl;
+    //    cout << matchedHJetIndex[0] << "\t" << matchedHJetIndex[1] << endl;
     nPass[2]++;
 
     Int_t event        = data.GetInt("eventId");
@@ -134,9 +183,24 @@ void xAna_hh2_genMatch(std::string inputFile){
     vector<float>   *subjetSDPz  =  data.GetPtrVectorFloat("FATsubjetSDPz", nFATJet);
     vector<float>   *subjetSDE   =  data.GetPtrVectorFloat("FATsubjetSDE", nFATJet);
     vector<bool>    &passFatJetLooseID = *((vector<bool>*) data.GetPtr("FATjetPassIDLoose"));
+
+
+    int nGoodJets=0;
+    for(int i=0; i<2; i++)
+      {
+    	
+	int ij = matchedHJetIndex[i];
+	h_PR->Fill(fatjetPRmassL2L3Corr[ij]);
+	if(ishh && (fatjetPRmassL2L3Corr[ij]<105 ||
+		    fatjetPRmassL2L3Corr[ij]>135))continue;
+	if(isWW && (fatjetPRmassL2L3Corr[ij]<65 ||
+		    fatjetPRmassL2L3Corr[ij]>105))continue;
+	nGoodJets++;
+      }
+    if(nGoodJets>=2)nPass[4]++;
     
     TLorentzVector recoH_l4[2];
-    int nGoodJets=0;
+    nGoodJets=0;
     for(int i=0; i<2; i++)
       {
     	
@@ -149,30 +213,33 @@ void xAna_hh2_genMatch(std::string inputFile){
       }
 
     if(nGoodJets<2)continue;
-    nPass[4]++;
+    nPass[5]++;
 
 
     float dEta=fabs(recoH_l4[0].Eta()-recoH_l4[1].Eta());
     if(dEta>1.3)continue;
-    nPass[5]++;
+    nPass[6]++;
 
     float M=(recoH_l4[0] + recoH_l4[1]).M();
     if(M<1000)continue;
-    nPass[6]++;
+    nPass[7]++;
 
     nGoodJets=0;
     for(int i=0; i<2; i++)
       {
     	
 	int ij = matchedHJetIndex[i];
+	h_PR_after->Fill(fatjetPRmassL2L3Corr[ij]);
 
-	if(fatjetPRmassL2L3Corr[ij]<105 ||
-	   fatjetPRmassL2L3Corr[ij]>135)continue;
+	if(ishh && (fatjetPRmassL2L3Corr[ij]<105 ||
+		    fatjetPRmassL2L3Corr[ij]>135))continue;
+	if(isWW && (fatjetPRmassL2L3Corr[ij]<65 ||
+		    fatjetPRmassL2L3Corr[ij]>85))continue;
 	nGoodJets++;
       }
 
     if(nGoodJets<2)continue;
-    nPass[7]++;
+    nPass[8]++;
 
     int nHP=0;
     int nLP=0;
@@ -190,7 +257,7 @@ void xAna_hh2_genMatch(std::string inputFile){
       }
 
     if(nHP==0 && nLP<2)continue;
-    nPass[8]++;
+    nPass[9]++;
 
     int nSubBJet=0;
 
@@ -202,7 +269,7 @@ void xAna_hh2_genMatch(std::string inputFile){
 	  nSubBJet++;
 	}
       }
-    nPass[9+nSubBJet]++;
+    nPass[10+nSubBJet]++;
 
     
 
@@ -213,10 +280,19 @@ void xAna_hh2_genMatch(std::string inputFile){
     if(nPass[i]>0)
       std::cout << "nPass[" << i << "]= " << nPass[i] << std::endl;
 
-  TFile* outFile = new TFile("test.root","recreate");
 
-  h_hh->Write();
+  std::string prefix=isWW? "WW": "hh";
+  ofstream fout;
+  fout.open(Form("eff_%s.dat",prefix.data()),ios::out| ios::app);
+  fout << nPass[3] << " " << nPass[4] << " " << nPass[7] << " " << nPass[8] << endl;
+  fout.close();
+
+  TFile* outFile = new TFile(outputFile.Data(),"recreate");
+
+  h_PR->Write();
+  h_PR_after->Write();
   outFile->Close();
+
 
 
 
