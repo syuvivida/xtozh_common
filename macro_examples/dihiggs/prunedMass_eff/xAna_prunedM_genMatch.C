@@ -65,11 +65,17 @@ void xAna_prunedM_genMatch(std::string inputFile, bool debug=false){
   TH1F* h_hh=new TH1F("h_hh","",900,0,4500);
 
   Long64_t nTotalJets=0;
+  Long64_t nTotalJetsMassUp=0;
+  Long64_t nTotalJetsMassCentral=0;
+  Long64_t nTotalJetsMassDown=0;
   Long64_t nTotalJetsMassLP=0;
   Long64_t nTotalJetsMassLPext=0;
   Long64_t nTotalJetsMassHP=0;
 
   Long64_t nTotalJets_after=0;
+  Long64_t nTotalJetsMassUp_after=0;
+  Long64_t nTotalJetsMassCentral_after=0;
+  Long64_t nTotalJetsMassDown_after=0;
   Long64_t nTotalJetsMassLP_after=0;
   Long64_t nTotalJetsMassLPext_after=0;
   Long64_t nTotalJetsMassHP_after=0;
@@ -156,7 +162,7 @@ void xAna_prunedM_genMatch(std::string inputFile, bool debug=false){
     int nFATJet         = data.GetInt("FATnJet");
     const int nJets=nFATJet;
     TClonesArray* fatjetP4 = (TClonesArray*) data.GetPtrTObject("FATjetP4");
-
+    
     // check matching first
 
     bool findAMatch=false;
@@ -206,6 +212,9 @@ void xAna_prunedM_genMatch(std::string inputFile, bool debug=false){
     Float_t*  fatjetCISVV2 = data.GetPtrFloat("FATjetCISVV2");
     Float_t*  fatjetPRmass = data.GetPtrFloat("FATjetPRmass");
     Float_t*  fatjetPRmassL2L3Corr = data.GetPtrFloat("FATjetPRmassL2L3Corr");
+
+    Float_t*  jecUp   = data.GetPtrFloat("FATjetCorrUncUp");
+    Float_t*  jecDown = data.GetPtrFloat("FATjetCorrUncDown");
     Int_t*   nSubSoftDropJet = data.GetPtrInt("FATnSubSDJet");
     vector<float>   *subjetSDCSV =  data.GetPtrVectorFloat("FATsubjetSDCSV", nFATJet);
     vector<float>   *subjetSDPx  =  data.GetPtrVectorFloat("FATsubjetSDPx", nFATJet);
@@ -229,6 +238,7 @@ void xAna_prunedM_genMatch(std::string inputFile, bool debug=false){
 	if(isWW && (mass < wMassMin ||
 		    mass > wMassMax))continue;
 
+	nTotalJetsMassCentral++;
 	float tau21_i = fatjetTau2[ij]/fatjetTau1[ij];
 
 	if(tau21_i<0.75)nTotalJetsMassLP++;
@@ -239,7 +249,39 @@ void xAna_prunedM_genMatch(std::string inputFile, bool debug=false){
 	
       }
     if(nGoodJets>=2)nPass[4]++;
-    
+   
+    // check systematic uncertainty JECUp
+    for(int i=0; i<2; i++)
+      {
+    	
+	int ij = matchedHJetIndex[i];
+	float mass=fatjetPRmassL2L3Corr[ij]*(1+fabs(jecUp[i]));
+
+	if(ishh && (mass < hMassMin ||
+		    mass > hMassMax))continue;
+	if(isWW && (mass < wMassMin ||
+		    mass > wMassMax))continue;	
+
+	nTotalJetsMassUp++;
+      }
+
+    // check systematic uncertainty JECDown
+    for(int i=0; i<2; i++)
+      {
+    	
+	int ij = matchedHJetIndex[i];
+	float mass=fatjetPRmassL2L3Corr[ij]*(1-fabs(jecDown[i]));
+
+	if(ishh && (mass < hMassMin ||
+		    mass > hMassMax))continue;
+	if(isWW && (mass < wMassMin ||
+		    mass > wMassMax))continue;	
+
+	nTotalJetsMassDown++;
+      }
+
+
+ 
     TLorentzVector recoH_l4[2];
     nGoodJets=0;
     for(int i=0; i<2; i++)
@@ -300,6 +342,8 @@ void xAna_prunedM_genMatch(std::string inputFile, bool debug=false){
 	if(isWW && (mass < wMassMin ||
 		    mass > wMassMax))continue;
 
+	nTotalJetsMassCentral_after++;
+
 	if(isLP)nTotalJetsMassLP_after++;
 	if(isHP)nTotalJetsMassHP_after++;
 	else if(isLP)nTotalJetsMassLPext_after++;
@@ -307,6 +351,38 @@ void xAna_prunedM_genMatch(std::string inputFile, bool debug=false){
 
 	nGoodJets++;
       }
+
+    // check systematic uncertainty JECUp
+    for(int i=0; i<2; i++)
+      {
+    	
+	int ij = matchedHJetIndex[i];
+	float mass=fatjetPRmassL2L3Corr[ij]*(1+fabs(jecUp[i]));
+
+	if(ishh && (mass < hMassMin ||
+		    mass > hMassMax))continue;
+	if(isWW && (mass < wMassMin ||
+		    mass > wMassMax))continue;	
+
+	nTotalJetsMassUp_after++;
+      }
+
+    // check systematic uncertainty JECDown
+    for(int i=0; i<2; i++)
+      {
+    	
+	int ij = matchedHJetIndex[i];
+	float mass=fatjetPRmassL2L3Corr[ij]*(1-fabs(jecDown[i]));
+
+	if(ishh && (mass < hMassMin ||
+		    mass > hMassMax))continue;
+	if(isWW && (mass < wMassMin ||
+		    mass > wMassMax))continue;	
+
+	nTotalJetsMassDown_after++;
+      }
+
+
 
     if(nGoodJets<2)continue;
     nPass[8]++;
@@ -355,6 +431,15 @@ void xAna_prunedM_genMatch(std::string inputFile, bool debug=false){
   std::cout << "nTotalJetsLPext    = " << nTotalJetsMassLPext << std::endl;
   std::cout << "nTotalJetsLPext_after    = " << nTotalJetsMassLPext_after << std::endl;
 
+  std::cout << "nTotalJetsMassCentral    = " << nTotalJetsMassCentral << std::endl;
+  std::cout << "nTotalJetsMassCentral_after    = " << nTotalJetsMassCentral_after << std::endl;
+
+  std::cout << "nTotalJetsMassUp    = " << nTotalJetsMassUp << std::endl;
+  std::cout << "nTotalJetsMassUp_after    = " << nTotalJetsMassUp_after << std::endl;
+
+  std::cout << "nTotalJetsMassDown    = " << nTotalJetsMassDown << std::endl;
+  std::cout << "nTotalJetsMassDown_after    = " << nTotalJetsMassDown_after << std::endl;
+
   for(int i=0;i<20;i++)
     if(nPass[i]>0)
       std::cout << "nPass[" << i << "]= " << nPass[i] << std::endl;
@@ -383,6 +468,24 @@ void xAna_prunedM_genMatch(std::string inputFile, bool debug=false){
   foutLext.open(Form("LPexteff_%s.dat",prefix.data()),ios::out| ios::app);
   foutLext << nTotalJets << " " << nTotalJetsMassLPext << " " << nTotalJets_after << " " << nTotalJetsMassLPext_after << endl;
   foutLext.close();
+
+
+  //for JES uncertainty
+  ofstream foutjes;
+  foutjes.open(Form("JECeff_%s.dat",prefix.data()),ios::out| ios::app);
+  foutjes << nTotalJets << " " << nTotalJetsMassCentral << " " << nTotalJets_after << " " << nTotalJetsMassCentral_after << endl;
+  foutjes.close();
+
+  ofstream foutjesUp;
+  foutjesUp.open(Form("JECUpeff_%s.dat",prefix.data()),ios::out| ios::app);
+  foutjesUp << nTotalJets << " " << nTotalJetsMassUp << " " << nTotalJets_after << " " << nTotalJetsMassUp_after << endl;
+  foutjesUp.close();
+
+  ofstream foutjesDown;
+  foutjesDown.open(Form("JECDowneff_%s.dat",prefix.data()),ios::out| ios::app);
+  foutjesDown << nTotalJets << " " << nTotalJetsMassDown << " " << nTotalJets_after << " " << nTotalJetsMassDown_after << endl;
+  foutjesDown.close();
+
 
   TFile* outFile = new TFile(outputFile.Data(),"recreate");
 
