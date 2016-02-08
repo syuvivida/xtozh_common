@@ -15,7 +15,8 @@
 
 using namespace std;
 const float wMassMin=65;
-const float wMassMax=105;
+// const float wMassMax=105;
+const float wMassMax=85;
 const float hMassMin=105;
 const float hMassMax=135;
 void xAna_prunedM_genMatch(std::string inputFile, bool debug=false){
@@ -56,6 +57,15 @@ void xAna_prunedM_genMatch(std::string inputFile, bool debug=false){
   TH1F* h_PR_after=new TH1F("h_PR_after","",100,0,200);
   TH1F* h_hh=new TH1F("h_hh","",900,0,4500);
 
+  Long64_t nTotalJets=0;
+  Long64_t nTotalJetsMassLP=0;
+  Long64_t nTotalJetsMassLPext=0;
+  Long64_t nTotalJetsMassHP=0;
+
+  Long64_t nTotalJets_after=0;
+  Long64_t nTotalJetsMassLP_after=0;
+  Long64_t nTotalJetsMassLPext_after=0;
+  Long64_t nTotalJetsMassHP_after=0;
 
   for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
 
@@ -183,6 +193,7 @@ void xAna_prunedM_genMatch(std::string inputFile, bool debug=false){
     Int_t nVtx        = data.GetInt("nVtx");
     if(nVtx<1)continue;
     nPass[3]++;
+    nTotalJets +=2;
 
     Float_t*  fatjetTau1 = data.GetPtrFloat("FATjetTau1");
     Float_t*  fatjetTau2 = data.GetPtrFloat("FATjetTau2");
@@ -208,7 +219,15 @@ void xAna_prunedM_genMatch(std::string inputFile, bool debug=false){
 		    fatjetPRmassL2L3Corr[ij]>hMassMax))continue;
 	if(isWW && (fatjetPRmassL2L3Corr[ij]<wMassMin ||
 		    fatjetPRmassL2L3Corr[ij]>wMassMax))continue;
+
+	float tau21_i = fatjetTau2[ij]/fatjetTau1[ij];
+
+	if(tau21_i<0.75)nTotalJetsMassLP++;
+	if(tau21_i<0.6)nTotalJetsMassHP++;
+	else if(tau21_i>=0.6 && tau21_i<0.75)nTotalJetsMassLPext++;
+	
 	nGoodJets++;
+	
       }
     if(nGoodJets>=2)nPass[4]++;
     
@@ -242,6 +261,8 @@ void xAna_prunedM_genMatch(std::string inputFile, bool debug=false){
     if(M<1000)continue;
     nPass[7]++;
 
+    nTotalJets_after +=2;
+
     nGoodJets=0;
     for(int i=0; i<2; i++)
       {
@@ -253,6 +274,14 @@ void xAna_prunedM_genMatch(std::string inputFile, bool debug=false){
 		    fatjetPRmassL2L3Corr[ij]>hMassMax))continue;
 	if(isWW && (fatjetPRmassL2L3Corr[ij]<wMassMin ||
 		    fatjetPRmassL2L3Corr[ij]>wMassMax))continue;
+
+	float tau21_i = fatjetTau2[ij]/fatjetTau1[ij];
+
+	if(tau21_i<0.75)nTotalJetsMassLP_after++;
+	if(tau21_i<0.6)nTotalJetsMassHP_after++;
+	else if(tau21_i>=0.6 && tau21_i<0.75)nTotalJetsMassLPext_after++;
+
+
 	nGoodJets++;
       }
 
@@ -294,6 +323,15 @@ void xAna_prunedM_genMatch(std::string inputFile, bool debug=false){
   } // end of loop over entries
 
   std::cout << "nTotal    = " << nTotal << std::endl;
+  std::cout << "nTotalJets    = " << nTotalJets << std::endl;
+  std::cout << "nTotalJets_after    = " << nTotalJets_after << std::endl;
+  std::cout << "nTotalJetsHP    = " << nTotalJetsMassHP << std::endl;
+  std::cout << "nTotalJetsHP_after    = " << nTotalJetsMassHP_after << std::endl;
+  std::cout << "nTotalJetsLP    = " << nTotalJetsMassLP << std::endl;
+  std::cout << "nTotalJetsLP_after    = " << nTotalJetsMassLP_after << std::endl;
+  std::cout << "nTotalJetsLPext    = " << nTotalJetsMassLPext << std::endl;
+  std::cout << "nTotalJetsLPext_after    = " << nTotalJetsMassLPext_after << std::endl;
+
   for(int i=0;i<20;i++)
     if(nPass[i]>0)
       std::cout << "nPass[" << i << "]= " << nPass[i] << std::endl;
@@ -304,6 +342,24 @@ void xAna_prunedM_genMatch(std::string inputFile, bool debug=false){
   fout.open(Form("eff_%s.dat",prefix.data()),ios::out| ios::app);
   fout << nPass[3] << " " << nPass[4] << " " << nPass[7] << " " << nPass[8] << endl;
   fout.close();
+
+
+  ofstream foutH;
+  foutH.open(Form("HPeff_%s.dat",prefix.data()),ios::out| ios::app);
+  foutH << nTotalJets << " " << nTotalJetsMassHP << " " << nTotalJets_after << " " << nTotalJetsMassHP_after << endl;
+  foutH.close();
+
+
+  ofstream foutL;
+  foutL.open(Form("LPeff_%s.dat",prefix.data()),ios::out| ios::app);
+  foutL << nTotalJets << " " << nTotalJetsMassLP << " " << nTotalJets_after << " " << nTotalJetsMassLP_after << endl;
+  foutL.close();
+
+
+  ofstream foutLext;
+  foutLext.open(Form("LPexteff_%s.dat",prefix.data()),ios::out| ios::app);
+  foutLext << nTotalJets << " " << nTotalJetsMassLPext << " " << nTotalJets_after << " " << nTotalJetsMassLPext_after << endl;
+  foutLext.close();
 
   TFile* outFile = new TFile(outputFile.Data(),"recreate");
 

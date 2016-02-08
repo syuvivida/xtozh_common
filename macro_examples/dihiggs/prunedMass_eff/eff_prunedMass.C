@@ -20,7 +20,7 @@ void errmc(const float nsig, const float ntotal,float& eff, float& err)
   return;
 }
 
-void eff_prunedMass()
+void eff_prunedMass(std::string prefix="eff")
 {
 
   const int NMASSPOINTS=3;
@@ -32,7 +32,7 @@ void eff_prunedMass()
   int pythia_after_WW[3][2];
 
   ifstream fin;
-  fin.open("eff_WW.dat");
+  fin.open(Form("%s_WW.dat",prefix.data()));
   
   for(int i=0; i<NMASSPOINTS; i++)
     {
@@ -50,7 +50,7 @@ void eff_prunedMass()
   int pythia_after_hh[3][2];
 
   ifstream fin2;
-  fin2.open("eff_hh.dat");
+  fin2.open(Form("%s_hh.dat",prefix.data()));
   
   for(int i=0; i<NMASSPOINTS; i++)
     {
@@ -88,13 +88,13 @@ void eff_prunedMass()
       float doubleRatio=-1, doubleRatioErr=-1;
       errRatio(rh,rerrh,rp,rerrp,doubleRatio,doubleRatioErr);
 
-      cout << std::setprecision(3) << eff_temp << " \\pm " << err_temp << " & ";
-      cout << std::setprecision(3) << eff_temp2 << " \\pm " << err_temp2 << " & ";
-      cout << std::setprecision(3) << rh << " \\pm " << rerrh << " & ";
-      cout << std::setprecision(3) << eff_temp3 << " \\pm " << err_temp3 << " & ";
-      cout << std::setprecision(3) << eff_temp4 << " \\pm " << err_temp4 << " & ";
-      cout << std::setprecision(3) << rp << " \\pm " << rerrp << " & ";
-      cout << std::setprecision(3) << doubleRatio << " \\pm " << doubleRatioErr << " \\\\" << endl;
+      cout << std::setprecision(3) << eff_temp << " $\\pm$ " << std::setprecision(1) << err_temp << " & ";
+      cout << std::setprecision(3) << eff_temp2 << " $\\pm$ "<< std::setprecision(1) << err_temp2 << " & ";
+      cout << std::setprecision(3) << rh << " $\\pm$ " << std::setprecision(2) << rerrh << " & ";
+      cout << std::setprecision(3) << eff_temp3 << " $\\pm$ " << std::setprecision(1) << err_temp3 << " & ";
+      cout << std::setprecision(3) << eff_temp4 << " $\\pm$ " << std::setprecision(1) << err_temp4 << " & ";
+      cout << std::setprecision(3) << rp << " $\\pm$ " << std::setprecision(2) << rerrp << " & ";
+      cout << std::setprecision(3) << doubleRatio << " $\\pm$ " << std::setprecision(2) << doubleRatioErr << " \\\\" << endl;
     }
 
   cout << "----------------------------------------------------" << endl;
@@ -128,13 +128,13 @@ void eff_prunedMass()
       float doubleRatio=-1, doubleRatioErr=-1;
       errRatio(rh,rerrh,rp,rerrp,doubleRatio,doubleRatioErr);
 
-      cout << std::setprecision(3) << eff_temp << " \\pm " << err_temp << " & ";
-      cout << std::setprecision(3) << eff_temp2 << " \\pm " << err_temp2 << " & ";
-      cout << std::setprecision(3) << rh << " \\pm " << rerrh << " & ";
-      cout << std::setprecision(3) << eff_temp3 << " \\pm " << err_temp3 << " & ";
-      cout << std::setprecision(3) << eff_temp4 << " \\pm " << err_temp4 << " & ";
-      cout << std::setprecision(3) << rp << " \\pm " << rerrp << " & ";
-      cout << std::setprecision(3) << doubleRatio << " \\pm " << doubleRatioErr << " \\\\" << endl;
+      cout << std::setprecision(3) << eff_temp << " $\\pm$ " << err_temp << " & ";
+      cout << std::setprecision(3) << eff_temp2 << " $\\pm$ " << err_temp2 << " & ";
+      cout << std::setprecision(3) << rh << " $\\pm$ " << rerrh << " & ";
+      cout << std::setprecision(3) << eff_temp3 << " $\\pm$ " << err_temp3 << " & ";
+      cout << std::setprecision(3) << eff_temp4 << " $\\pm$ " << err_temp4 << " & ";
+      cout << std::setprecision(3) << rp << " $\\pm$ " << rerrp << " & ";
+      cout << std::setprecision(3) << doubleRatio << " $\\pm$ " << doubleRatioErr << " \\\\" << endl;
     }
 
 

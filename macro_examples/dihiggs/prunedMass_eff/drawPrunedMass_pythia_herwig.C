@@ -14,8 +14,10 @@ void drawPrunedMass_pythia_herwig(string infname, int M)
   bool isWW=(infname.find("WW")!= std::string::npos);
   std::string prefix=isWW? "WW":"hh";
   
-  h1= (TH1F*)inf1->FindObjectAny("h_PR");
-  h2= (TH1F*)inf2->FindObjectAny("h_PR");
+//   h1= (TH1F*)inf1->FindObjectAny("h_PR");
+//   h2= (TH1F*)inf2->FindObjectAny("h_PR");
+  h1= (TH1F*)inf1->FindObjectAny("h_PR_after");
+  h2= (TH1F*)inf2->FindObjectAny("h_PR_after");
 
   h1->SetLineColor(1);
   h1->SetLineWidth(2);
@@ -64,6 +66,7 @@ void drawPrunedMass_pythia_herwig(string infname, int M)
   gSystem->mkdir("plots");
   c1->Print(Form("plots/prunedM_%s-M%d.eps",prefix.data(),M));
   c1->Print(Form("plots/prunedM_%s-M%d.gif",prefix.data(),M));
+  c1->Print(Form("plots/prunedM_%s-M%d.pdf",prefix.data(),M));
   c1->Print(Form("plots/prunedM_%s-M%d.C",prefix.data(),M));
 
 }
