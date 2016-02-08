@@ -193,7 +193,6 @@ void xAna_prunedM_genMatch(std::string inputFile, bool debug=false){
     Int_t nVtx        = data.GetInt("nVtx");
     if(nVtx<1)continue;
     nPass[3]++;
-    nTotalJets +=2;
 
     Float_t*  fatjetTau1 = data.GetPtrFloat("FATjetTau1");
     Float_t*  fatjetTau2 = data.GetPtrFloat("FATjetTau2");
@@ -215,6 +214,8 @@ void xAna_prunedM_genMatch(std::string inputFile, bool debug=false){
     	
 	int ij = matchedHJetIndex[i];
 	h_PR->Fill(fatjetPRmassL2L3Corr[ij]);
+	nTotalJets++;
+
 	if(ishh && (fatjetPRmassL2L3Corr[ij]<hMassMin ||
 		    fatjetPRmassL2L3Corr[ij]>hMassMax))continue;
 	if(isWW && (fatjetPRmassL2L3Corr[ij]<wMassMin ||
@@ -261,7 +262,6 @@ void xAna_prunedM_genMatch(std::string inputFile, bool debug=false){
     if(M<1000)continue;
     nPass[7]++;
 
-    nTotalJets_after +=2;
 
     nGoodJets=0;
     for(int i=0; i<2; i++)
@@ -269,6 +269,7 @@ void xAna_prunedM_genMatch(std::string inputFile, bool debug=false){
     	
 	int ij = matchedHJetIndex[i];
 	h_PR_after->Fill(fatjetPRmassL2L3Corr[ij]);
+	nTotalJets_after++;
 
 	if(ishh && (fatjetPRmassL2L3Corr[ij]<hMassMin ||
 		    fatjetPRmassL2L3Corr[ij]>hMassMax))continue;
