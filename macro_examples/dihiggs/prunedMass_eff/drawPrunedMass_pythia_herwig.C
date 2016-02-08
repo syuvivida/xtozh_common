@@ -3,7 +3,7 @@
 #include <TSystem.h>
 #include <TLegend.h>
 
-void drawPrunedMass_pythia_herwig(string infname, int M)
+void drawPrunedMass_pythia_herwig(string infname, int M, string histoname="h_PR",string cutname="")
 {
   setNCUStyle();
   TH1F* h1;
@@ -14,10 +14,8 @@ void drawPrunedMass_pythia_herwig(string infname, int M)
   bool isWW=(infname.find("WW")!= std::string::npos);
   std::string prefix=isWW? "WW":"hh";
   
-//   h1= (TH1F*)inf1->FindObjectAny("h_PR");
-//   h2= (TH1F*)inf2->FindObjectAny("h_PR");
-  h1= (TH1F*)inf1->FindObjectAny("h_PR_after");
-  h2= (TH1F*)inf2->FindObjectAny("h_PR_after");
+  h1= (TH1F*)inf1->FindObjectAny(histoname.data());
+  h2= (TH1F*)inf2->FindObjectAny(histoname.data());
 
   h1->SetLineColor(1);
   h1->SetLineWidth(2);
@@ -32,19 +30,25 @@ void drawPrunedMass_pythia_herwig(string infname, int M)
     h2->GetXaxis()->SetRangeUser(0,126);
     h1->GetXaxis()->SetRangeUser(0,126);
   }
-  h2->GetXaxis()->SetTitle("L2+L3 corrected M_{pruned} [GeV]");
+
+  if(histoname.find("raw")!= std::string::npos)
+    h2->GetXaxis()->SetTitle("Uncorrected M_{pruned} [GeV]");
+  else
+    h2->GetXaxis()->SetTitle("L2+L3 corrected M_{pruned} [GeV]");
   h2->GetYaxis()->SetTitle("Arbitrary unit per 2 GeV");
   h2->DrawNormalized();
   h1->DrawNormalized("same");
 
   // For Legend
-  TLegend* legend = new TLegend(0.146, 0.706, 0.547,0.886,NULL,"brNDC");
+  TLegend* legend = new TLegend(0.146, 0.621, 0.547,0.886,NULL,"brNDC");
   legend->SetLineColor(1);
   legend->SetLineStyle(1);
   legend->SetLineWidth(1);
   legend->SetFillStyle(0);
   legend->SetTextSize(0.05);
   legend->SetHeader(Form("G_{bulk}#rightarrow%s, M_{G_{bulk}}=%d TeV",prefix.data(),(int)(M/1000)));
+  legend->AddEntry((TObject*)0, "","");
+  legend->AddEntry((TObject*)0, cutname.data(),"");
   legend->AddEntry(h1,"Herwig++","lpf");
   legend->AddEntry(h2,"Pythia8","lpf");
   legend->Draw("same");
@@ -64,9 +68,14 @@ void drawPrunedMass_pythia_herwig(string infname, int M)
   lar2->Draw("");
 
   gSystem->mkdir("plots");
-  c1->Print(Form("plots/prunedM_%s-M%d.eps",prefix.data(),M));
-  c1->Print(Form("plots/prunedM_%s-M%d.gif",prefix.data(),M));
-  c1->Print(Form("plots/prunedM_%s-M%d.pdf",prefix.data(),M));
-  c1->Print(Form("plots/prunedM_%s-M%d.C",prefix.data(),M));
+  // c1->Print(Form("plots/prunedM_%s-M%d.eps",prefix.data(),M));
+  // c1->Print(Form("plots/prunedM_%s-M%d.gif",prefix.data(),M));
+  // c1->Print(Form("plots/prunedM_%s-M%d.pdf",prefix.data(),M));
+  // c1->Print(Form("plots/prunedM_%s-M%d.C",prefix.data(),M));
+
+  c1->Print(Form("plots/%s_%s-M%d.eps",histoname.data(),prefix.data(),M));
+  c1->Print(Form("plots/%s_%s-M%d.gif",histoname.data(),prefix.data(),M));
+  c1->Print(Form("plots/%s_%s-M%d.pdf",histoname.data(),prefix.data(),M));
+  c1->Print(Form("plots/%s_%s-M%d.C",histoname.data(),prefix.data(),M));
 
 }
