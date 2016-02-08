@@ -15,8 +15,8 @@
 
 using namespace std;
 const float wMassMin=65;
-// const float wMassMax=105;
-const float wMassMax=85;
+const float wMassMax=105;
+//const float wMassMax=85;
 const float hMassMin=105;
 const float hMassMax=135;
 void xAna_prunedM_genMatch(std::string inputFile, bool debug=false){
@@ -55,6 +55,13 @@ void xAna_prunedM_genMatch(std::string inputFile, bool debug=false){
 
   TH1F* h_PR=new TH1F("h_PR","",100,0,200);
   TH1F* h_PR_after=new TH1F("h_PR_after","",100,0,200);
+  TH1F* h_PR_afterHP=new TH1F("h_PR_afterHP","",100,0,200);
+  TH1F* h_PR_afterLP=new TH1F("h_PR_afterLP","",100,0,200);
+
+  TH1F* h_rawPR_after=new TH1F("h_rawPR_after","",100,0,200);
+  TH1F* h_rawPR_afterHP=new TH1F("h_rawPR_afterHP","",100,0,200);
+  TH1F* h_rawPR_afterLP=new TH1F("h_rawPR_afterLP","",100,0,200);
+
   TH1F* h_hh=new TH1F("h_hh","",900,0,4500);
 
   Long64_t nTotalJets=0;
@@ -213,13 +220,14 @@ void xAna_prunedM_genMatch(std::string inputFile, bool debug=false){
       {
     	
 	int ij = matchedHJetIndex[i];
-	h_PR->Fill(fatjetPRmassL2L3Corr[ij]);
+	float mass=fatjetPRmassL2L3Corr[ij];
+	h_PR->Fill(mass);
 	nTotalJets++;
 
-	if(ishh && (fatjetPRmassL2L3Corr[ij]<hMassMin ||
-		    fatjetPRmassL2L3Corr[ij]>hMassMax))continue;
-	if(isWW && (fatjetPRmassL2L3Corr[ij]<wMassMin ||
-		    fatjetPRmassL2L3Corr[ij]>wMassMax))continue;
+	if(ishh && (mass < hMassMin ||
+		    mass > hMassMax))continue;
+	if(isWW && (mass < wMassMin ||
+		    mass > wMassMax))continue;
 
 	float tau21_i = fatjetTau2[ij]/fatjetTau1[ij];
 
@@ -266,21 +274,35 @@ void xAna_prunedM_genMatch(std::string inputFile, bool debug=false){
     nGoodJets=0;
     for(int i=0; i<2; i++)
       {
-    	
+    	bool isLP=false;
+	bool isHP=false;
 	int ij = matchedHJetIndex[i];
-	h_PR_after->Fill(fatjetPRmassL2L3Corr[ij]);
+	float tau21 = fatjetTau2[ij]/fatjetTau1[ij];
+
+	float mass=fatjetPRmassL2L3Corr[ij];
+	h_PR_after->Fill(mass);
+
+	float raw_mass=fatjetPRmass[ij];
+	h_rawPR_after->Fill(raw_mass);
+
+	if(tau21<0.75)isLP=true;
+	if(tau21<0.6)isHP=true;
+
+	if(isLP)h_PR_afterLP->Fill(mass);
+	if(isHP)h_PR_afterHP->Fill(mass);
+	if(isLP)h_rawPR_afterLP->Fill(raw_mass);
+	if(isHP)h_rawPR_afterHP->Fill(raw_mass);
+
 	nTotalJets_after++;
 
-	if(ishh && (fatjetPRmassL2L3Corr[ij]<hMassMin ||
-		    fatjetPRmassL2L3Corr[ij]>hMassMax))continue;
-	if(isWW && (fatjetPRmassL2L3Corr[ij]<wMassMin ||
-		    fatjetPRmassL2L3Corr[ij]>wMassMax))continue;
+	if(ishh && (mass < hMassMin ||
+		    mass > hMassMax))continue;
+	if(isWW && (mass < wMassMin ||
+		    mass > wMassMax))continue;
 
-	float tau21_i = fatjetTau2[ij]/fatjetTau1[ij];
-
-	if(tau21_i<0.75)nTotalJetsMassLP_after++;
-	if(tau21_i<0.6)nTotalJetsMassHP_after++;
-	else if(tau21_i>=0.6 && tau21_i<0.75)nTotalJetsMassLPext_after++;
+	if(isLP)nTotalJetsMassLP_after++;
+	if(isHP)nTotalJetsMassHP_after++;
+	else if(isLP)nTotalJetsMassLPext_after++;
 
 
 	nGoodJets++;
@@ -296,9 +318,9 @@ void xAna_prunedM_genMatch(std::string inputFile, bool debug=false){
     	
 	int ij = matchedHJetIndex[i];
 
-	float tau21_i = fatjetTau2[ij]/fatjetTau1[ij];
-	bool isHP= (tau21_i < 0.6);
-	bool isLP= (tau21_i < 0.75);
+	float tau21 = fatjetTau2[ij]/fatjetTau1[ij];
+	bool isHP= (tau21 < 0.6);
+	bool isLP= (tau21 < 0.75);
        
 	if(isHP)nHP++;
 	if(isLP)nLP++;
@@ -366,6 +388,13 @@ void xAna_prunedM_genMatch(std::string inputFile, bool debug=false){
 
   h_PR->Write();
   h_PR_after->Write();
+  h_PR_afterHP->Write();
+  h_PR_afterLP->Write();
+
+  h_rawPR_after->Write();
+  h_rawPR_afterHP->Write();
+  h_rawPR_afterLP->Write();
+
   outFile->Close();
 
 
