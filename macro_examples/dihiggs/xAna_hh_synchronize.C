@@ -95,17 +95,6 @@ void xAna_hh_synchronize(std::string inputFile){
     	
      	TLorentzVector* thisJet = (TLorentzVector*)fatjetP4->At(ij);
 	if(thisJet->Pt()<200)continue;
-	//	if(fabs(thisJet->Eta())>2.4)continue;
-
-	// if(fatjetPRmassL2L3Corr[ij]<105 ||
-	//    fatjetPRmassL2L3Corr[ij]>135)continue;
-
-	    
-	// float tau21_j = fatjetTau2[ij]/fatjetTau1[ij];
-	// bool isHP_that= (tau21_j < 0.6);
-	// bool isLP_that= (tau21_j < 0.75);
-	
-	// if(!isLP_that)continue;
 	nGoodJets++;
       }
 
@@ -120,16 +109,6 @@ void xAna_hh_synchronize(std::string inputFile){
      	TLorentzVector* thisJet = (TLorentzVector*)fatjetP4->At(ij);
 	if(thisJet->Pt()<200)continue;
 	if(fabs(thisJet->Eta())>2.4)continue;
-
-	// if(fatjetPRmassL2L3Corr[ij]<105 ||
-	//    fatjetPRmassL2L3Corr[ij]>135)continue;
-
-	    
-	// float tau21_j = fatjetTau2[ij]/fatjetTau1[ij];
-	// bool isHP_that= (tau21_j < 0.6);
-	// bool isLP_that= (tau21_j < 0.75);
-	
-	// if(!isLP_that)continue;
 	nGoodJets++;
       }
 
@@ -159,13 +138,8 @@ void xAna_hh_synchronize(std::string inputFile){
      	TLorentzVector* thisJet = (TLorentzVector*)fatjetP4->At(ij);
 	if(thisJet->Pt()<200)continue;
 	if(fabs(thisJet->Eta())>2.4)continue;
-
-	// if(fatjetPRmassL2L3Corr[ij]<105 ||
-	//    fatjetPRmassL2L3Corr[ij]>135)continue;
-	    
         float tau21_j = fatjetTau2[ij]/fatjetTau1[ij];
 	bool isHP_that= (tau21_j < 0.6);
-	// bool isLP_that= (tau21_j < 0.75);
 	h_tau21->Fill(tau21_j);
 	
         if(!isHP_that)continue;
@@ -185,16 +159,16 @@ void xAna_hh_synchronize(std::string inputFile){
      	TLorentzVector* thisJet = (TLorentzVector*)fatjetP4->At(ij);
 	if(thisJet->Pt()<200)continue;
 	if(fabs(thisJet->Eta())>2.4)continue;
-
-	if(fatjetPRmassL2L3Corr[ij]<105 ||
-	   fatjetPRmassL2L3Corr[ij]>135)continue;
-
 	    
         float tau21_j = fatjetTau2[ij]/fatjetTau1[ij];
 	bool isHP_that= (tau21_j < 0.6);
-	// bool isLP_that= (tau21_j < 0.75);
-	
         if(!isHP_that)continue;
+
+
+	if(fatjetPRmass[ij]<100 ||
+	   fatjetPRmass[ij]>130)continue;
+
+
 	nGoodJets++;
       }
 
