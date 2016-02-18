@@ -451,6 +451,11 @@ void xAna_prunedM_genMatch(std::string inputFile, bool debug=false){
   fout << nPass[3] << " " << nPass[4] << " " << nPass[7] << " " << nPass[8] << endl;
   fout.close();
 
+  ofstream foutM;
+  foutM.open(Form("Masseff_%s.dat",prefix.data()),ios::out| ios::app);
+  foutM << nTotalJets << " " << nTotalJetsMassCentral << " " << nTotalJets_after << " " << nTotalJetsMassCentral_after << endl;
+  foutM.close();
+
 
   ofstream foutH;
   foutH.open(Form("HPeff_%s.dat",prefix.data()),ios::out| ios::app);
