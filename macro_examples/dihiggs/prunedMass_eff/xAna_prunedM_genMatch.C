@@ -69,12 +69,12 @@ void xAna_prunedM_genMatch(std::string inputFile, bool debug=false){
   TH1F* h_rawPR_afterLP=(TH1F*)h_PR->Clone("h_rawPR_afterLP");
 
   TH2F* h_PRCos=new TH2F("h_PRCos","",50,0,200,20,-1,1);
-  TH2F* h_PRdR=new TH2F("h_PRdR","",50,0,200,20,0,TMath::Pi()*2);
-  TH2F* h_dRCos=new TH2F("h_dRCos","",20,0,TMath::Pi()*2.0,20,-1,1);
+  TH2F* h_PRdR=new TH2F("h_PRdR","",50,0,200,60,0,6);
+  TH2F* h_dRCos=new TH2F("h_dRCos","",60,0,6,20,-1,1);
   TH2F* h_MassCos=new TH2F("h_MassCos","",50,0,200,20,-1,1);
 
   // for debugging
-  TH2F* h_AngleCos=new TH2F("h_AngleCos","",50,0,2,20,-1,1);
+  TH2F* h_AngleCos=new TH2F("h_AngleCos","",40,0,2,20,-1,1);
 
   TH1F* h_hh=new TH1F("h_hh","",900,0,4500);
 
