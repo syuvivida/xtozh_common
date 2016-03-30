@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <TString.h>
 #include <map>
+#include <TH2.h>
 #include <TH1D.h>
 #include <TFile.h>
 #include "untuplizer.h"
@@ -54,13 +55,26 @@ void xAna_prunedM_genMatch(std::string inputFile, bool debug=false){
   Long64_t nPass[20]={0};
 
   TH1F* h_PR=new TH1F("h_PR","",100,0,200);
-  TH1F* h_PR_after=new TH1F("h_PR_after","",100,0,200);
-  TH1F* h_PR_afterHP=new TH1F("h_PR_afterHP","",100,0,200);
-  TH1F* h_PR_afterLP=new TH1F("h_PR_afterLP","",100,0,200);
 
-  TH1F* h_rawPR_after=new TH1F("h_rawPR_after","",100,0,200);
-  TH1F* h_rawPR_afterHP=new TH1F("h_rawPR_afterHP","",100,0,200);
-  TH1F* h_rawPR_afterLP=new TH1F("h_rawPR_afterLP","",100,0,200);
+  TH1F* h_jMass_after  =(TH1F*)h_PR->Clone("h_jMass_after");
+  TH1F* h_jMass_afterHP=(TH1F*)h_PR->Clone("h_jMass_afterHP");
+  TH1F* h_jMass_afterLP=(TH1F*)h_PR->Clone("h_jMass_afterLP");
+
+  TH1F* h_PR_after     =(TH1F*)h_PR->Clone("h_PR_after");
+  TH1F* h_PR_afterHP   =(TH1F*)h_PR->Clone("h_PR_afterHP");
+  TH1F* h_PR_afterLP   =(TH1F*)h_PR->Clone("h_PR_afterLP");
+
+  TH1F* h_rawPR_after  =(TH1F*)h_PR->Clone("h_rawPR_after");
+  TH1F* h_rawPR_afterHP=(TH1F*)h_PR->Clone("h_rawPR_afterHP");
+  TH1F* h_rawPR_afterLP=(TH1F*)h_PR->Clone("h_rawPR_afterLP");
+
+  TH2F* h_PRCos=new TH2F("h_PRCos","",50,0,200,20,-1,1);
+  TH2F* h_PRdR=new TH2F("h_PRdR","",50,0,200,20,0,TMath::Pi()*2);
+  TH2F* h_dRCos=new TH2F("h_dRCos","",20,0,TMath::Pi()*2.0,20,-1,1);
+  TH2F* h_MassCos=new TH2F("h_MassCos","",50,0,200,20,-1,1);
+
+  // for debugging
+  TH2F* h_AngleCos=new TH2F("h_AngleCos","",50,0,2,20,-1,1);
 
   TH1F* h_hh=new TH1F("h_hh","",900,0,4500);
 
@@ -155,6 +169,7 @@ void xAna_prunedM_genMatch(std::string inputFile, bool debug=false){
 
     if(debug){
       cout << genHIndex[0] << "\t" << genHIndex[1] << endl;
+      cout << " p = " << genH_l4[0].P() << " " << genH_l4[1].P() << endl;
       genH_l4[0].Print();
       genH_l4[1].Print();
     }
@@ -321,19 +336,60 @@ void xAna_prunedM_genMatch(std::string inputFile, bool debug=false){
 	int ij = matchedHJetIndex[i];
 	float tau21 = fatjetTau2[ij]/fatjetTau1[ij];
 
+	TLorentzVector* thisJet = (TLorentzVector*)fatjetP4->At(ij);
+	h_jMass_after->Fill(thisJet->M());
+
 	float mass=fatjetPRmassL2L3Corr[ij];
 	h_PR_after->Fill(mass);
 
 	float raw_mass=fatjetPRmass[ij];
 	h_rawPR_after->Fill(raw_mass);
 
+
+	TLorentzVector* thisH = (TLorentzVector*)genParP4->At(genHIndex[i]);
+
+	TLorentzVector thisB(*((TLorentzVector*)genParP4->At(genDa1[genHIndex[i]])));
+	thisB.Boost(-thisH->BoostVector());
+	float cos=TMath::Cos(thisB.Vect().Angle(thisH->Vect()));
+
+	if(debug)
+	  cout <<  "cosTheta1 = " << cos << endl;
+	
+	TLorentzVector* b1   = (TLorentzVector*)genParP4->At(genDa1[genHIndex[i]]);
+	TLorentzVector* b2   = (TLorentzVector*)genParP4->At(genDa2[genHIndex[i]]);
+	float dR = b1->DeltaR(*b2);
+
+	float cosbb = TMath::Cos(b1->Vect().Angle(b2->Vect()));
+	float dTheta= sqrt(2*(1-cosbb));
+	if(debug)
+	  {
+	    b1->Print();
+	    b2->Print();
+	    cout << "sqrt(2*(1-cos(angle))) = " << dTheta << endl;
+	  }
+
+	if(debug)
+	  cout << "dR = " << dR << endl;
+
+	h_PRCos   ->Fill(mass,cos);
+	h_PRdR    ->Fill(mass,dR );
+	h_dRCos   ->Fill(dR,cos);
+	h_MassCos ->Fill(thisJet->M(),cos);
+	h_AngleCos->Fill(dTheta,cos);
+
+
 	if(tau21<0.75)isLP=true;
 	if(tau21<0.6)isHP=true;
 
 	if(isLP)h_PR_afterLP->Fill(mass);
 	if(isHP)h_PR_afterHP->Fill(mass);
+
 	if(isLP)h_rawPR_afterLP->Fill(raw_mass);
 	if(isHP)h_rawPR_afterHP->Fill(raw_mass);
+
+
+	if(isLP)h_jMass_afterLP->Fill(thisJet->M());
+	if(isHP)h_jMass_afterHP->Fill(thisJet->M());
 
 	nTotalJets_after++;
 
@@ -499,9 +555,21 @@ void xAna_prunedM_genMatch(std::string inputFile, bool debug=false){
   h_PR_afterHP->Write();
   h_PR_afterLP->Write();
 
+  h_PRCos->Write();
+  h_PRdR->Write();
+  h_dRCos->Write();
+  h_MassCos->Write();
+
+  h_AngleCos->Write();
+
+
   h_rawPR_after->Write();
   h_rawPR_afterHP->Write();
   h_rawPR_afterLP->Write();
+
+  h_jMass_after->Write();
+  h_jMass_afterHP->Write();
+  h_jMass_afterLP->Write();
 
   outFile->Close();
 
