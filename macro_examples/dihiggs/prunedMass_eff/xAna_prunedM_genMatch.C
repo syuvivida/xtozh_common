@@ -55,8 +55,11 @@ void xAna_prunedM_genMatch(std::string inputFile, bool debug=false){
   Long64_t nPass[20]={0};
 
   TH1F* h_PR=new TH1F("h_PR","",100,0,200);
+  h_PR->SetXTitle("L2+L3 corrected pruned mass [GeV]");
 
   TH1F* h_jMass_after  =(TH1F*)h_PR->Clone("h_jMass_after");
+  h_jMass_after->SetXTitle("AK8 jet mass [GeV]");
+
   TH1F* h_jMass_afterHP=(TH1F*)h_PR->Clone("h_jMass_afterHP");
   TH1F* h_jMass_afterLP=(TH1F*)h_PR->Clone("h_jMass_afterLP");
 
@@ -64,11 +67,23 @@ void xAna_prunedM_genMatch(std::string inputFile, bool debug=false){
   TH1F* h_PR_afterHP   =(TH1F*)h_PR->Clone("h_PR_afterHP");
   TH1F* h_PR_afterLP   =(TH1F*)h_PR->Clone("h_PR_afterLP");
 
+  TH1F* h_rawSD_after  =(TH1F*)h_PR->Clone("h_rawSD_after");
+  h_rawSD_after->SetXTitle("Raw softdrop mass [GeV]");
+
   TH1F* h_rawPR_after  =(TH1F*)h_PR->Clone("h_rawPR_after");
+  h_rawPR_after->SetXTitle("Raw pruned mass [GeV]");
+
   TH1F* h_rawPR_afterHP=(TH1F*)h_PR->Clone("h_rawPR_afterHP");
   TH1F* h_rawPR_afterLP=(TH1F*)h_PR->Clone("h_rawPR_afterLP");
 
   TH2F* h_PRCos=new TH2F("h_PRCos","",50,0,200,20,-1,1);
+  h_PRCos->SetXTitle("L2+L3 corrected pruned mass [GeV]");
+  h_PRCos->SetYTitle("Generator-level cos#theta_{1}");
+
+  TH2F* h_SDCos=new TH2F("h_SDCos","",50,0,200,20,-1,1);
+  h_SDCos->SetXTitle("Raw softdrop mass [GeV]");
+  h_SDCos->SetYTitle("Generator-level cos#theta_{1}");
+
   TH2F* h_PRdR=new TH2F("h_PRdR","",50,0,200,60,0,6);
   TH2F* h_dRCos=new TH2F("h_dRCos","",60,0,6,20,-1,1);
   TH2F* h_MassCos=new TH2F("h_MassCos","",50,0,200,20,-1,1);
@@ -226,6 +241,7 @@ void xAna_prunedM_genMatch(std::string inputFile, bool debug=false){
     Float_t*  fatjetTau2 = data.GetPtrFloat("FATjetTau2");
     Float_t*  fatjetCISVV2 = data.GetPtrFloat("FATjetCISVV2");
     Float_t*  fatjetPRmass = data.GetPtrFloat("FATjetPRmass");
+    Float_t*  fatjetSDmass = data.GetPtrFloat("FATjetSDmass");
     Float_t*  fatjetPRmassL2L3Corr = data.GetPtrFloat("FATjetPRmassL2L3Corr");
 
     Float_t*  jecUp   = data.GetPtrFloat("FATjetCorrUncUp");
@@ -345,6 +361,8 @@ void xAna_prunedM_genMatch(std::string inputFile, bool debug=false){
 	float raw_mass=fatjetPRmass[ij];
 	h_rawPR_after->Fill(raw_mass);
 
+	float softdrop_mass = fatjetSDmass[ij];
+	h_rawSD_after->Fill(softdrop_mass);
 
 	TLorentzVector* thisH = (TLorentzVector*)genParP4->At(genHIndex[i]);
 
@@ -371,6 +389,7 @@ void xAna_prunedM_genMatch(std::string inputFile, bool debug=false){
 	if(debug)
 	  cout << "dR = " << dR << endl;
 
+	h_SDCos   ->Fill(softdrop_mass,cos);
 	h_PRCos   ->Fill(mass,cos);
 	h_PRdR    ->Fill(mass,dR );
 	h_dRCos   ->Fill(dR,cos);
@@ -550,26 +569,32 @@ void xAna_prunedM_genMatch(std::string inputFile, bool debug=false){
 
   TFile* outFile = new TFile(outputFile.Data(),"recreate");
 
-  h_PR->Write();
-  h_PR_after->Write();
-  h_PR_afterHP->Write();
-  h_PR_afterLP->Write();
-
-  h_PRCos->Write();
-  h_PRdR->Write();
-  h_dRCos->Write();
-  h_MassCos->Write();
-
-  h_AngleCos->Write();
+  h_jMass_after->Write();
+  // h_jMass_afterHP->Write();
+  // h_jMass_afterLP->Write();
 
 
   h_rawPR_after->Write();
-  h_rawPR_afterHP->Write();
-  h_rawPR_afterLP->Write();
+  // h_rawPR_afterHP->Write();
+  // h_rawPR_afterLP->Write();
 
-  h_jMass_after->Write();
-  h_jMass_afterHP->Write();
-  h_jMass_afterLP->Write();
+  h_rawSD_after->Write();
+
+  // h_PR->Write();
+  h_PR_after->Write();
+  // h_PR_afterHP->Write();
+  // h_PR_afterLP->Write();
+
+  h_SDCos->Write();
+
+  h_PRCos->Write();
+  // h_PRdR->Write();
+  // h_dRCos->Write();
+  // h_MassCos->Write();
+
+  // h_AngleCos->Write();
+
+
 
   outFile->Close();
 
