@@ -84,8 +84,14 @@ void xAna_prunedM_genMatch(std::string inputFile, bool debug=false){
   h_SDCos->SetXTitle("Raw softdrop mass [GeV]");
   h_SDCos->SetYTitle("Generator-level cos#theta_{1}");
 
-  TH2F* h_PRdR=new TH2F("h_PRdR","",50,0,200,60,0,6);
-  TH2F* h_dRCos=new TH2F("h_dRCos","",60,0,6,20,-1,1);
+  TH2F* h_PRdR=new TH2F("h_PRdR","",50,0,200,80,0,4);
+  h_PRdR->SetXTitle("L2+L3 corrected pruned mass [GeV]");
+  h_PRdR->SetYTitle("Generator-level #Delta R(q,#bar{q})");
+
+  TH2F* h_dRCos=new TH2F("h_dRCos","",80,0,4,20,-1,1);
+  h_dRCos->SetXTitle("Generator-level #Delta R(q,#bar{q})");
+  h_dRCos->SetYTitle("Generator-level cos#theta_{1}");
+  
   TH2F* h_MassCos=new TH2F("h_MassCos","",50,0,200,20,-1,1);
 
   // for debugging
@@ -588,8 +594,8 @@ void xAna_prunedM_genMatch(std::string inputFile, bool debug=false){
   h_SDCos->Write();
 
   h_PRCos->Write();
-  // h_PRdR->Write();
-  // h_dRCos->Write();
+  h_PRdR->Write();
+  h_dRCos->Write();
   // h_MassCos->Write();
 
   // h_AngleCos->Write();
