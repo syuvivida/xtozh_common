@@ -20,7 +20,7 @@ const float wMassMax=105;
 //const float wMassMax=85;
 const float hMassMin=105;
 const float hMassMax=135;
-void xAna_prunedM_genMatch(std::string inputFile, bool debug=false){
+void xAna_prunedM_genMatch(std::string inputFile, bool debug=false, bool hhAna=false){
 
   std::string dirName="prunedM_genMatch";
 
@@ -346,11 +346,11 @@ void xAna_prunedM_genMatch(std::string inputFile, bool debug=false){
       }
 
     float dEta=fabs(recoH_l4[0].Eta()-recoH_l4[1].Eta());
-    if(dEta>1.3)continue;
+    if(dEta>1.3 && hhAna)continue;
     nPass[6]++;
 
     float M=(recoH_l4[0] + recoH_l4[1]).M();
-    if(M<1000)continue;
+    if(M<1000 && hhAna)continue;
     nPass[7]++;
 
 
