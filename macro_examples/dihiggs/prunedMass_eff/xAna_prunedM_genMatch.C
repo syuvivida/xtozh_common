@@ -94,6 +94,10 @@ void xAna_prunedM_genMatch(std::string inputFile, bool debug=false){
   
   TH2F* h_MassCos=new TH2F("h_MassCos","",50,0,200,20,-1,1);
 
+  TH1F* h_dR_smallPR    = new TH1F("h_dR_smallPR","L2+L3 corrected pruned mass<30 GeV",80,0,4);
+  TH2F* h_dRCos_smallPR = (TH2F*)h_dRCos->Clone("h_dRCos_smallPR");
+  h_dRCos_smallPR->SetTitle("L2+L3 corrected pruned mass<30 GeV");
+
   // for debugging
   TH2F* h_AngleCos=new TH2F("h_AngleCos","",40,0,2,20,-1,1);
 
@@ -403,6 +407,12 @@ void xAna_prunedM_genMatch(std::string inputFile, bool debug=false){
 	h_AngleCos->Fill(dTheta,cos);
 
 
+	if(mass<30)
+	  {
+	    h_dRCos_smallPR->Fill(dR,cos);
+	    h_dR_smallPR->Fill(dR);
+	  }
+
 	if(tau21<0.75)isLP=true;
 	if(tau21<0.6)isHP=true;
 
@@ -600,7 +610,8 @@ void xAna_prunedM_genMatch(std::string inputFile, bool debug=false){
 
   // h_AngleCos->Write();
 
-
+  h_dR_smallPR->Write();
+  h_dRCos_smallPR->Write();
 
   outFile->Close();
 
