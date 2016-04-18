@@ -49,6 +49,11 @@ void xAna_muo(std::string inputFile){
     for(int ig=0; ig < nGenPar; ig++){
 
       if(genParId[ig]!=23)continue;
+
+      // check if the mother is a bulk graviton
+
+      if(abs(genMomParId[ig])!=39)continue;
+
       int da1=genDa1[ig];
       int da2=genDa2[ig];
 
@@ -63,29 +68,29 @@ void xAna_muo(std::string inputFile){
 
     }
 
-    bool hasHadron=false;
+    // bool hasHadron=false;
 
-    for(int ig=0; ig < nGenPar; ig++){
+    // for(int ig=0; ig < nGenPar; ig++){
 
-      if(genParId[ig]!=23)continue;
-      int da1=genDa1[ig];
-      int da2=genDa2[ig];
+    //   if(genParId[ig]!=23)continue;
+    //   int da1=genDa1[ig];
+    //   int da2=genDa2[ig];
 
-      if(da1<0 || da2<0)continue;
-      int da1pdg = genParId[da1];
-      int da2pdg = genParId[da2];
+    //   if(da1<0 || da2<0)continue;
+    //   int da1pdg = genParId[da1];
+    //   int da2pdg = genParId[da2];
 
-      if(abs(da1pdg)>0 && abs(da1pdg)<6)
-     	hasHadron=true;
+    //   if(abs(da1pdg)>0 && abs(da1pdg)<6)
+    //  	hasHadron=true;
 
-      if(hasHadron)break;
+    //   if(hasHadron)break;
 
-    }
+    // }
     
     if(!hasLepton)continue;
     nPass[0]++;
-    if(!hasHadron)continue;
-    nPass[1]++;
+    // if(!hasHadron)continue;
+    // nPass[1]++;
 
     //2. pass electron or muon trigger
     std::string* trigName = data.GetPtrString("hlt_trigName");
@@ -100,7 +105,7 @@ void xAna_muo(std::string inputFile){
 
 	// std::cout << thisTrig << " : " << results << std::endl;
 	
- 	if( (thisTrig.find("HLT_Mu45")!= std::string::npos && results==1)
+ 	if( (thisTrig.find("HLT_Mu45_eta2p1_v")!= std::string::npos && results==1)
 	    )
  	  {
  	    passTrigger=true;

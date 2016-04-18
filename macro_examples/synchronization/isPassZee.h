@@ -24,8 +24,8 @@ bool isPassZee(TreeReader &data, vector<Int_t>& goodEleID){
     TLorentzVector* myEle = (TLorentzVector*)eleP4->At(ie);
 
     if( myEle->Pt() < 20 ) continue; 
-    if( abs(myEle->Eta()) > 2.5 ) continue; 
-    if( abs(eleScEta[ie])>1.442 && abs(eleScEta[ie])<1.566 )continue;
+    if( fabs(myEle->Eta()) > 2.5 ) continue; 
+    if( fabs(eleScEta[ie])>1.442 && fabs(eleScEta[ie])<1.566 )continue;
     if( !eleIsPassLoose[ie] )continue;
 
     goodElectrons.push_back(ie);

@@ -10,21 +10,18 @@ bool isPassZmumu(TreeReader &data, vector<Int_t>& goodMuID){
 
   Int_t    nMu       = data.GetInt("nMu");
   Int_t*   muCharge  = data.GetPtrInt("muCharge");
-  Float_t* muMiniIso = data.GetPtrFloat("muMiniIsoEA");
   TClonesArray* muP4 = (TClonesArray*) data.GetPtrTObject("muP4");
   vector<bool>& isHighPtMuon = *((vector<bool>*) data.GetPtr("isHighPtMuon"));
   vector<bool>& isCustomTrackerMuon = *((vector<bool>*) data.GetPtr("isCustomTrackerMuon"));
+  Float_t* muTrkIso     = data.GetPtrFloat("muTrkIso");
+  Float_t* muInnerTrkPt = data.GetPtrFloat("muInnerTrkPt");
 
   // select good muons
   std::vector<Int_t> goodMuons;
-  bool hasTrigMuon=false;
   for(Int_t im = 0; im < nMu; im++){
       
     TLorentzVector* myMu = (TLorentzVector*)muP4->At(im);
-    if( muMiniIso[im] >= 0.2 ) continue;
     if( !isHighPtMuon[im] && !isCustomTrackerMuon[im] ) continue;
-    if( myMu->Pt()>50 && fabs(myMu->Eta())<2.1 )
-      hasTrigMuon=true;
     if( fabs(myMu->Eta()) > 2.4 ) continue;
     if( myMu->Pt() < 20 ) continue;
 
@@ -32,7 +29,6 @@ bool isPassZmumu(TreeReader &data, vector<Int_t>& goodMuID){
 
   }	
 
-  if(!hasTrigMuon)goodMuons.clear();
 
   // select good Z boson
 
@@ -44,21 +40,43 @@ bool isPassZmumu(TreeReader &data, vector<Int_t>& goodMuID){
 
     Int_t im = goodMuons[i];
     thisMu = (TLorentzVector*)muP4->At(im);
+    Float_t pt1  = thisMu->Pt();
+    Float_t regularIso1 = muTrkIso[im]/pt1;
 
     for(unsigned int j = 0; j < i; j++){
 
       Int_t jm = goodMuons[j];
       thatMu = (TLorentzVector*)muP4->At(jm);
 
-      Float_t pt1  = thisMu->Pt();
+      if( !isHighPtMuon[im] && !isHighPtMuon[jm] ) continue;
+      if(! ( (thisMu->Pt()>50 && fabs(thisMu->Eta())<2.1) ||
+	     (thatMu->Pt()>50 && fabs(thatMu->Eta())<2.1) ))continue;
+
       Float_t pt2  = thatMu->Pt();
+      Float_t regularIso2 = muTrkIso[jm]/pt2;
+      Float_t boostIso1 = ( muTrkIso[im]-muInnerTrkPt[jm] )/pt1;
+      Float_t boostIso2 = ( muTrkIso[jm]-muInnerTrkPt[im] )/pt2;
+
       Float_t mll  = (*thisMu+*thatMu).M();
       Float_t ptll = (*thisMu+*thatMu).Pt();
 
+
+      // check isolation
+      Float_t dR = thisMu->DeltaR(*thatMu);
+      // if the two muons are far away, use regular isolation
+      if(dR > 0.3 && regularIso1 > 0.1)continue;
+      if(dR > 0.3 && regularIso2 > 0.1)continue;
+
+      // if the two muons are close, use corrected isolation
+      if(dR < 0.3 && boostIso1 > 0.1)continue;
+      if(dR < 0.3 && boostIso2 > 0.1)continue;
+      
+
       if( muCharge[im]*muCharge[jm] > 0 ) continue;
       if( mll < 70 || mll > 110 ) continue;
-      if( ptll < 200 ) continue;
-      if( !( (isHighPtMuon[im] && isCustomTrackerMuon[jm]) || (isHighPtMuon[jm] && isCustomTrackerMuon[im]) ) ) continue;
+      if( ptll < 170 ) continue;
+
+
       if( !findMPair ){
 
 	goodMuID.push_back( (pt1 > pt2) ? im : jm );
