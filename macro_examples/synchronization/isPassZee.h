@@ -14,30 +14,25 @@ bool isPassZee(TreeReader &data, vector<Int_t>& goodEleID){
   Int_t*   eleCharge  = data.GetPtrInt("eleCharge");
   Float_t* eleScEt    = data.GetPtrFloat("eleScEt");
   Float_t* eleScEta   = data.GetPtrFloat("eleScEta");
-  Float_t* eleMiniIso = data.GetPtrFloat("eleMiniIsoEA");
   TClonesArray* eleP4 = (TClonesArray*) data.GetPtrTObject("eleP4");
-  vector<bool>& eleIsPassHEEPNoIso = *((vector<bool>*) data.GetPtr("eleIsPassHEEPNoIso"));
+  vector<bool>& eleIsPassLoose = *((vector<bool>*) data.GetPtr("eleIsPassLoose"));
 
   // select good electrons
-  bool hasTrigElectron=false;
   std::vector<Int_t> goodElectrons;
   for(Int_t ie = 0; ie < nEle; ie++){
 
     TLorentzVector* myEle = (TLorentzVector*)eleP4->At(ie);
 
-    if( !eleIsPassHEEPNoIso[ie] ) continue;
-    if( eleMiniIso[ie] > 0.1 ) continue;
-    if( myEle->Pt()>115 ) hasTrigElectron = true;
-
+    if( myEle->Pt() < 20 ) continue; 
     if( abs(myEle->Eta()) > 2.5 ) continue; 
-    if( myEle->Pt() < 35 ) continue; 
+    if( abs(eleScEta[ie])>1.442 && abs(eleScEta[ie])<1.566 )continue;
+    if( !eleIsPassLoose[ie] )continue;
 
     goodElectrons.push_back(ie);
 
   } // end of ele loop
 
 
-  if(!hasTrigElectron)goodElectrons.clear();
 
   // select good Z boson
 
@@ -59,10 +54,10 @@ bool isPassZee(TreeReader &data, vector<Int_t>& goodEleID){
       Float_t pt2 = thatEle->Pt();
       Float_t mll = (*thisEle+*thatEle).M();
       Float_t ptll = (*thisEle+*thatEle).Pt();
-
+      if( pt1 < 115 && pt2 < 115)continue;
       if( eleCharge[ie]*eleCharge[je] > 0 ) continue;  
       if( mll < 70 || mll > 110 ) continue;
-      if( ptll < 200 ) continue;
+      if( ptll < 170 ) continue;
 
       if( !findEPair ){
 
