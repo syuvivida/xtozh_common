@@ -68,30 +68,9 @@ void xAna_ele(std::string inputFile){
 
     }
 
-    // // 1. make sure there is a Z-> qq 
-    // bool hasHadron=false;
-
-    // for(int ig=0; ig < nGenPar; ig++){
-
-    //   if(genParId[ig]!=23)continue;
-    //   int da1=genDa1[ig];
-    //   int da2=genDa2[ig];
-
-    //   if(da1<0 || da2<0)continue;
-    //   int da1pdg = genParId[da1];
-    //   int da2pdg = genParId[da2];
-
-    //   if(abs(da1pdg)>0 && abs(da1pdg)<6)
-    //  	hasHadron=true;
-
-    //   if(hasHadron)break;
-
-    // }
-    
     if(!hasLepton)continue;
     nPass[0]++;
-    // if(!hasHadron)continue;
-    // nPass[1]++;
+
      
     //2. pass electron or muon trigger
     std::string* trigName = data.GetPtrString("hlt_trigName");
@@ -118,13 +97,13 @@ void xAna_ele(std::string inputFile){
 
 
     if(!passTrigger)continue;
-    nPass[2]++;
+    nPass[1]++;
 
 
     //3. has a good vertex
     Int_t nVtx        = data.GetInt("nVtx");
     if(nVtx<1)continue;
-    nPass[3]++;
+    nPass[2]++;
 
     //4. look for good electrons first
     TClonesArray* eleP4 = (TClonesArray*) data.GetPtrTObject("eleP4");
@@ -135,8 +114,33 @@ void xAna_ele(std::string inputFile){
     TLorentzVector* thisEle =  (TLorentzVector*)eleP4->At(goodZeeID[0]);   
     TLorentzVector* thatEle =  (TLorentzVector*)eleP4->At(goodZeeID[1]);   
     
-    nPass[4]++;
+    nPass[3]++;
 
+
+
+    // 6. make sure there is a Z-> qq 
+    bool hasHadron=false;
+
+    for(int ig=0; ig < nGenPar; ig++){
+
+      if(genParId[ig]!=23)continue;
+      int da1=genDa1[ig];
+      int da2=genDa2[ig];
+
+      if(da1<0 || da2<0)continue;
+      int da1pdg = genParId[da1];
+      int da2pdg = genParId[da2];
+
+      if(abs(da1pdg)>0 && abs(da1pdg)<6)
+      	hasHadron=true;
+
+      if(hasHadron)break;
+
+    }
+    
+
+    if(!hasHadron)continue;
+    nPass[4]++;
 
 
     //7.select a good CA8 and cleaned jet
@@ -156,6 +160,9 @@ void xAna_ele(std::string inputFile){
     Int_t nJet         = data.GetInt("FATnJet");
     TClonesArray* jetP4 = (TClonesArray*) data.GetPtrTObject("FATjetP4");
     Float_t*  jetPRmass = data.GetPtrFloat("FATjetPRmassL2L3Corr");
+    Float_t*  fatjetTau1 = data.GetPtrFloat("FATjetTau1");
+    Float_t*  fatjetTau2 = data.GetPtrFloat("FATjetTau2");
+    vector<bool>  &passFatJetLooseID = *((vector<bool>*) data.GetPtr("FATjetPassIDLoose"));    
 
     int jetIndex=-1;
     for(int ij=0; ij<nJet; ij++)
@@ -169,13 +176,20 @@ void xAna_ele(std::string inputFile){
 	if(hasMuon && thisMuo->DeltaR(*thisJet)<0.8)continue;
 	if(hasMuon && thatMuo->DeltaR(*thisJet)<0.8)continue;
 	
-	if(thisJet->Pt()<200)continue;
+	if(thisJet->Pt()<170)continue;
 	if(fabs(thisJet->Eta())>2.4)continue;
 
-	if(jetPRmass[ij]<40)continue;
+	if(!passFatJetLooseID[ij])continue;
+
+	float tau21 = fatjetTau2[ij]/fatjetTau1[ij];
+	if(tau21 > 0.75)continue;
+
+	if(jetPRmass[ij]<20)continue;
+	if(jetPRmass[ij]>220)continue;
 
      	if(jetIndex<0)
 	  jetIndex=ij;
+	
 	    
 	break;    	
 
@@ -190,7 +204,7 @@ void xAna_ele(std::string inputFile){
     TLorentzVector l4_Z = (*thisEle) + (*thatEle);
      
     Float_t MGrav = (l4_leadingJet + l4_Z).M();
-    if(MGrav<400)continue;
+    if(MGrav<600)continue;
     nPass[6]++;
 
     fout << run << " " << lumi << " " << event << endl;
