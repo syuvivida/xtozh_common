@@ -24,7 +24,7 @@ void draw(string infname)
   h1->DrawNormalized("same");
 
   // For Legend
-  TLegend* legend = new TLegend(0.565, 0.693, 0.965,0.874,NULL,"brNDC");
+  TLegend* legend = new TLegend(0.58, 0.64, 0.98,0.874,NULL,"brNDC");
   legend->SetLineColor(1);
   legend->SetLineStyle(1);
   legend->SetLineWidth(1);
@@ -33,8 +33,10 @@ void draw(string infname)
   legend->SetHeader("M_{G_{bulk}}=1.8 TeV");
 //   legend->AddEntry("h1","No correction: M_{jj}");
 //  legend->AddEntry("h2","corrected: M_{jj}-(M_{j1}-125)-(M_{j2}-125)");
-  legend->AddEntry(h1,"No correction","lpf");
-  legend->AddEntry(h2,"Corrected","lpf");
+//  legend->AddEntry(h1,"No correction","lpf");
+//  legend->AddEntry(h2,"Corrected","lpf");
+  legend->AddEntry(h1,"Raw M_{jj}","lpf");
+  legend->AddEntry(h2,"M_{jj}^{subtr}","f");
   legend->Draw("same");
 
   TLatex *lar = new TLatex(0.13, 0.94, "CMS");
