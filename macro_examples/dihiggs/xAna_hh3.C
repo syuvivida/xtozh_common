@@ -21,7 +21,8 @@ void xAna_hh3(std::string inputFile){
   Long64_t nTotal=0;
   Long64_t nPass[20]={0};
 
-  TH1F* h_SD=new TH1F("h_SD","",100,0,200);
+  TH1F* h_SD1=new TH1F("h_SD1","",100,0,200);
+  TH1F* h_SD2=new TH1F("h_SD2","",100,0,200);
   const float xmin=1000;
   const float xmax=2600;
   const int nbin=160;
@@ -179,6 +180,16 @@ void xAna_hh3(std::string inputFile){
     float mjj= (*thish+*thath).M();
     float mjj2= mjj - (thish->M()-125)-(thath->M()-125);
 
+    if(thish->Pt() > thath->Pt()){
+      h_SD1->Fill(thish->M());
+      h_SD2->Fill(thath->M());
+    }
+    else
+      {
+	h_SD1->Fill(thath->M());
+	h_SD2->Fill(thish->M());
+      }
+
     h_hh->Fill(mjj);
     h_hh2->Fill(mjj2);
 
@@ -195,6 +206,8 @@ void xAna_hh3(std::string inputFile){
 
   h_hh->Write();
   h_hh2->Write();
+  h_SD1->Write();
+  h_SD2->Write();
 
   outFile->Close();
 
