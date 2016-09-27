@@ -75,6 +75,11 @@ void plotMultiGraphs(){
 	
       } // end loop of mass types
 
+    mg->SetTitle(i==2? Form("%s jets",prefix[i].data()):
+		 Form("%s jet",prefix[i].data())
+		 );
+
+
     mg->Draw("AP");
     mg->GetXaxis()->SetTitle("M_{bulkG} [GeV]");
     mg->GetYaxis()->SetTitleOffset(1.1);
@@ -99,6 +104,10 @@ void plotMultiGraphs(){
     c1->Print(final.data());
     final = output + ".pdf";
     c1->Print(final.data());
+
+    mg_h->SetTitle(i==2? Form("%s jets",prefix[i].data()):
+		 Form("%s jet",prefix[i].data())
+		 );
     
     mg_h->Draw("AP");
     mg_h->GetXaxis()->SetTitle("M_{bulkG} [GeV]");
