@@ -35,9 +35,11 @@ void plotMultiGraphs(){
 
     TGraphErrors* graph_mean[NTYPES];
     TGraphErrors* graph_RMS[NTYPES];
+    TGraphErrors* graph_RMSMean[NTYPES];
 
     TMultiGraph *mg = new TMultiGraph();
     TMultiGraph *mg_h = new TMultiGraph();
+    TMultiGraph *mg_a = new TMultiGraph();
 
     for(int j=0; j<NTYPES; j++)
       {
@@ -45,6 +47,7 @@ void plotMultiGraphs(){
 	fin.open(Form("%s_%s.dat",prefix[i].data(),name[j].data()));
 	
 	float mean[9],meanerr[9],RMS[9],RMSerr[9];
+	float rel[9], relerr[9];
 	float masserr[9];
 	for(int il=0; il<9; il++)
 	  {
@@ -71,6 +74,29 @@ void plotMultiGraphs(){
 	graph_RMS[j]->SetLineColor(COLORS[j]);
 	graph_RMS[j]->SetMarkerSize(1.2);
 	mg_h->Add(graph_RMS[j]);
+
+	ifstream fin2;
+	fin2.open(Form("rel_%s_%s.dat",prefix[i].data(),name[j].data()));
+	
+	for(int il=0; il<9; il++)
+	  {
+	    fin2 >> mean[il] >> meanerr[il] >> RMS[il] >> RMSerr[il];
+	    float yield = RMS[il]/mean[il];
+	    float err = yield*sqrt(pow(RMSerr[il]/RMS[il],2)+
+				   pow(meanerr[il]/mean[il],2));
+	    rel[il] = yield;
+	    relerr[il] = err;
+	  }
+	fin2.close();
+
+	
+	graph_RMSMean[j] = new TGraphErrors(9,mass,rel,masserr,relerr);
+	graph_RMSMean[j]->SetName(Form("gr_RMSMean_%d",j));
+	graph_RMSMean[j]->SetMarkerStyle(MARKERS[j]);
+	graph_RMSMean[j]->SetMarkerColor(COLORS[j]);
+	graph_RMSMean[j]->SetLineColor(COLORS[j]);
+	graph_RMSMean[j]->SetMarkerSize(1.1);
+	mg_a->Add(graph_RMSMean[j]);
 
 	
       } // end loop of mass types
@@ -118,6 +144,26 @@ void plotMultiGraphs(){
     leg->Draw("same");
     
     output = Form("MassRMS_%s",prefix[i].data());
+    final = output + ".gif";
+    c1->Print(final.data());
+    final = output + ".pdf";
+    c1->Print(final.data());
+
+
+
+    mg_a->SetTitle(i==2? Form("%s jets",prefix[i].data()):
+		 Form("%s jet",prefix[i].data())
+		 );
+    
+    mg_a->Draw("AP");
+    mg_a->GetXaxis()->SetTitle("M_{bulkG} [GeV]");
+    mg_a->GetYaxis()->SetTitleOffset(1.1);
+    mg_a->GetYaxis()->SetTitle("RMS/Mean of mass");
+    mg_a->GetYaxis()->SetRangeUser(0.08,0.25);
+    
+    leg->Draw("same");
+    
+    output = Form("MassRMSMean_%s",prefix[i].data());
     final = output + ".gif";
     c1->Print(final.data());
     final = output + ".pdf";

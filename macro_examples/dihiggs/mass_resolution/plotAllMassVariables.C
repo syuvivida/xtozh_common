@@ -138,6 +138,12 @@ void plotAllMassVariables(std::string inputFile){
 
       fout << hdiffmass[i][k]->GetMean() << " " << hdiffmass[i][k]->GetMeanError() << " " << hdiffmass[i][k]->GetRMS() << " " << hdiffmass[i][k]->GetRMSError()  << endl;
       fout.close();
+
+      ofstream fout2;
+      fout2.open(Form("rel_%s_%s.dat",prefix[k].data(),name[i].data()),ios::out | ios::app);
+
+      fout2 << hmass[i][k]->GetMean() << " " << hmass[i][k]->GetMeanError() << " " << hmass[i][k]->GetRMS() << " " << hmass[i][k]->GetRMSError()  << endl;
+      fout2.close();
  
       leg2->AddEntry(hdiffmass[i][k], name[i].data(),"l");
       leg2->AddEntry((TObject*)0, tagname3.data(),"");
