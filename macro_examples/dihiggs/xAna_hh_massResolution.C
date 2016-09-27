@@ -80,7 +80,7 @@ void xAna_hh_massResolution(std::string inputFile, bool debug=false, bool cut=fa
 
   const int nHistos=3;
 
-  TH1F* h_massDiff = new TH1F("h_massDiff","",50,-0.5,0.5);
+  TH1F* h_massDiff = new TH1F("h_massDiff","",100,-0.5,0.5);
   TH1F* h_mass     = new TH1F("h_mass","",100,0,200);
 
   TH1F* h_SD[nHistos];
@@ -292,7 +292,7 @@ void xAna_hh_massResolution(std::string inputFile, bool debug=false, bool cut=fa
 	nGoodJets++;
       }
 
-    if(nGoodJets<2 && cut)continue;
+    if(nGoodJets<2)continue;
     nPass[5]++;
     
     if(debug)
