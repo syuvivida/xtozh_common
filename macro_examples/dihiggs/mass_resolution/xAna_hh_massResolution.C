@@ -65,7 +65,7 @@ float getPUPPIweight(float puppipt, float puppieta ){
 }
 
 
-void xAna_hh_massResolution(std::string inputFile, bool debug=false, bool cut=false){
+void xAna_hh_massResolution(std::string inputFile, bool matchb=false, bool debug=false, bool cut=false){
 
   TString outputFile;
   outputFile=gSystem->GetFromPipe(Form("file=%s; test=${file##*/}; echo \"massHisto_${test}\"",inputFile.data()));
@@ -81,7 +81,7 @@ void xAna_hh_massResolution(std::string inputFile, bool debug=false, bool cut=fa
   const int nHistos=3;
 
   TH1F* h_massDiff = new TH1F("h_massDiff","",100,-0.5,0.5);
-  // TH1F* h_mass     = new TH1F("h_mass","",100,0,200);
+  //TH1F* h_mass     = new TH1F("h_mass","",100,0,200);
   TH1F* h_mass     = new TH1F("h_mass","",100,62.5,187.5);
 
   TH1F* h_SD[nHistos];
@@ -178,38 +178,69 @@ void xAna_hh_massResolution(std::string inputFile, bool debug=false, bool cut=fa
     Int_t* genParId      = data.GetPtrInt("genParId");
     Int_t* genParSt      = data.GetPtrInt("genParSt");
     Int_t* genMomParId   = data.GetPtrInt("genMomParId");
+    Int_t* genDa1      = data.GetPtrInt("genDa1");
+    Int_t* genDa2      = data.GetPtrInt("genDa2");
 
     int genHIndex[2]={-1,-1};
+    int genbIndex[2][2]={{-1,-1},
+			 {-1,-1}};		       
 
     for(int ig=0; ig < nGenPar; ig++){
 
       if(genParId[ig]!=25)continue;
 
       if(genHIndex[0]<0)
-	genHIndex[0]=ig;
+	{
+	  genHIndex[0]=ig;
+	  genbIndex[0][0]=genDa1[ig];
+	  genbIndex[0][1]=genDa2[ig];
+	}
 
       else if(genHIndex[1]<0)
-	genHIndex[1]=ig;
+	{
+	  genHIndex[1]=ig;
+	  genbIndex[1][0]=genDa1[ig];
+	  genbIndex[1][1]=genDa2[ig];
+	}
 
     }    
 
     if(genHIndex[0]<0 || genHIndex[1]<0)continue;
+    if(genbIndex[0][0]<0 || genbIndex[0][1]<0)continue;
+    if(genbIndex[1][0]<0 || genbIndex[1][1]<0)continue;
+
     nPass[0]++;
 
     if(genHIndex[0]==genHIndex[1])continue;
     nPass[1]++;
 
     TLorentzVector genH_l4[2];
+    TLorentzVector genb_l4[2][2];
     TClonesArray* genParP4 = (TClonesArray*) data.GetPtrTObject("genParP4");
 
     for(int ih=0; ih<2; ih++)
-      genH_l4[ih] = *((TLorentzVector*)genParP4->At(genHIndex[ih]));
+      {
+	genH_l4[ih] = *((TLorentzVector*)genParP4->At(genHIndex[ih]));
+	for(int ib=0; ib<2; ib++)
+	  {
+	    genb_l4[ih][ib] = *((TLorentzVector*)genParP4->At(genbIndex[ih][ib]));
+	  }
+      }
 
 
     if(debug){
       cout << genHIndex[0] << "\t" << genHIndex[1] << endl;
       genH_l4[0].Print();
       genH_l4[1].Print();
+
+      cout << genbIndex[0][0] << "\t" << genbIndex[0][1] << "\t" 
+	   << genbIndex[1][0] << "\t" << genbIndex[1][1] << endl;
+      genH_l4[0].Print();
+      genH_l4[1].Print();
+      genb_l4[0][0].Print();
+      genb_l4[0][1].Print();
+      genb_l4[1][0].Print();
+      genb_l4[1][1].Print();
 
     }
     int nFATJet         = data.GetInt("FATnJet");
@@ -221,6 +252,7 @@ void xAna_hh_massResolution(std::string inputFile, bool debug=false, bool cut=fa
 
     bool findAMatch=false;
     const float dRMax=0.4;
+    const float dRbMax=0.8;
     int matchedHJetIndex[2]={-1,-1};
 		      
     for(int ij=0; ij<nJets; ij++)
@@ -234,8 +266,21 @@ void xAna_hh_massResolution(std::string inputFile, bool debug=false, bool cut=fa
 	    TLorentzVector* thatJet = (TLorentzVector*)fatjetP4->At(jj);
 	    
 	    if(thisJet->DeltaR(genH_l4[0])<dRMax && 
-	       thatJet->DeltaR(genH_l4[1])<dRMax)
+	       (!matchb || (matchb && 
+			    thisJet->DeltaR(genb_l4[0][0])<dRbMax && 
+			    thisJet->DeltaR(genb_l4[0][1])<dRbMax)) &&
+	       thatJet->DeltaR(genH_l4[1])<dRMax &&
+	       (!matchb || (matchb &&
+			    thatJet->DeltaR(genb_l4[1][0])<dRbMax &&
+			    thatJet->DeltaR(genb_l4[1][1])<dRbMax)))
 	      {
+		if(debug)
+		  {
+		    cout << "dRhb00= " <<  thisJet->DeltaR(genb_l4[0][0]) << endl;
+		    cout << "dRhb01= " <<  thisJet->DeltaR(genb_l4[0][1]) << endl;
+		    cout << "dRhb10= " <<  thatJet->DeltaR(genb_l4[1][0]) << endl;
+		    cout << "dRhb11= " <<  thatJet->DeltaR(genb_l4[1][1]) << endl;
+		  }
 		if(ij<jj){
 		  matchedHJetIndex[0]=ij;
 		  matchedHJetIndex[1]=jj;
