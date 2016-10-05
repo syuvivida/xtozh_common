@@ -14,7 +14,7 @@ using namespace std;
 void dumpPDF(std::string inputFile_)
 {
 
-  TString endfix=gSystem->GetFromPipe(Form("file=%s; echo \"${file%%.root}\"",inputFile_.data()));
+  TString endfix=gSystem->GetFromPipe(Form("file=%s; test=${file##*/}; echo \"${test%%.root}\"",inputFile_.data()));
 
   cout << endfix << endl;
   std::string dirName = "fig";
