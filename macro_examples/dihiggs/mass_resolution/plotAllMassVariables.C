@@ -75,6 +75,7 @@ void plotAllMassVariables(std::string inputFile){
   leg->SetBorderSize(0);
 
 
+  TF1* f2 = new TF1("f2","[4]*ROOT::Math::crystalball_function(x,[0],[1],[2],[3])");
 
   int nPage=0;
   for(int k=0; k < NHISTOS; k++){
@@ -144,6 +145,8 @@ void plotAllMassVariables(std::string inputFile){
 
       fout2 << hmass[i][k]->GetMean() << " " << hmass[i][k]->GetMeanError() << " " << hmass[i][k]->GetRMS() << " " << hmass[i][k]->GetRMSError()  << endl;
       fout2.close();
+
+
  
       leg2->AddEntry(hdiffmass[i][k], name[i].data(),"l");
       leg2->AddEntry((TObject*)0, tagname3.data(),"");
@@ -159,7 +162,19 @@ void plotAllMassVariables(std::string inputFile){
 	    c1->Print(Form("%s",outputFile.Data()),"pdf");
 	  nPage++;
 	}
-     }
+
+      // fitting with crystall ball here
+      f2->SetParameters(0.15,100,0.2,-0.15,10);
+      hdiffmass[i][k]->Fit("f2","","",-0.4,0.1);
+      hdiffmass[i][k]->Fit("f2","","",-0.4,0.1);
+      ofstream fout3;
+      fout3.open(Form("CB_%s_%s.dat",prefix[k].data(),name[i].data()),ios::out | ios::app);
+      fout3 << f2->GetParameter(3) << " " << f2->GetParError(3) << " "
+	    << f2->GetParameter(2) << " " << f2->GetParError(2) << endl;
+      fout3.close();
+
+
+    }
   } // end loop over  jet type
  
  
