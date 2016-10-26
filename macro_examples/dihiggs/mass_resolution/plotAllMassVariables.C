@@ -55,11 +55,13 @@ void plotAllMassVariables(std::string inputFile){
   for(int i=0; i < NTYPES;i++){
     for(int k=0; k < NHISTOS; k++){
       hmass[i][k] = (TH1F*)inf->FindObjectAny(Form("h_%s_%s",name[i].data(),prefix[k].data()));
+      hmass[i][k]->Sumw2();
       hmass[i][k]->Scale(1.0/hmass[i][k]->Integral());
       if( hmass[i][k]->GetMaximum()>max[k])
 	max[k]=hmass[i][k]->GetMaximum();
 
       hdiffmass[i][k] = (TH1F*)inf->FindObjectAny(Form("h_diff_%s_%s",name[i].data(),prefix[k].data()));						  
+      hdiffmass[i][k]->Sumw2();
       hdiffmass[i][k]->Scale(1.0/hdiffmass[i][k]->Integral());
       if( hdiffmass[i][k]->GetMaximum()>maxdiff[k])
 	maxdiff[k]=hdiffmass[i][k]->GetMaximum();
