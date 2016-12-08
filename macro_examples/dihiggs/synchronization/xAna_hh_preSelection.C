@@ -157,7 +157,7 @@ void xAna_hh_preSelection(std::string inputFile, bool debug=false){
     for(int ie=0; ie < nEle; ie++){
 
       TLorentzVector* thisEle= (TLorentzVector*)eleP4->At(ie);
-      if( fabs(thisEle->Eta())>2.5 )continue;
+      if( fabs(thisEle->Eta())>2.4 )continue;
       if( thisEle->Pt() < 25 )continue;
       bool preSelect= 
 
@@ -190,11 +190,11 @@ void xAna_hh_preSelection(std::string inputFile, bool debug=false){
 
    	TLorentzVector* thisEle= (TLorentzVector*)eleP4->At(ie);
 
-    	if( fabs(thisEle->Eta())>2.5 )continue;
+    	if( fabs(thisEle->Eta())>2.4 )continue;
     	if( thisEle->Pt() < 15 )continue;
 
    	TLorentzVector* thatEle = (TLorentzVector*)eleP4->At(je);
-    	if( fabs(thatEle->Eta())>2.5 )continue;
+    	if( fabs(thatEle->Eta())>2.4 )continue;
     	if( thatEle->Pt() < 15 )continue;
 
 	bool preSelect_ie= 
@@ -417,7 +417,7 @@ void xAna_hh_preSelection(std::string inputFile, bool debug=false){
 
     float mjj = (*higgsJet[0]+*higgsJet[1]).M();
     h[6][0]->Fill(mjj);
-    if(mjj<800)continue;
+    if(mjj<700)continue;
     h[6][1]->Fill(mjj);
     nPass[12]++;
     
