@@ -329,6 +329,8 @@ void xAna_hh_preSelection(std::string inputFile, bool debug=false){
     const float dRMax=0.8;
     int addJetIndex[2]={-1,-1};
     
+    float thea_mass[2]={-1,-1};
+
     for(int ij=0; ij<2; ij++)
       {
 	if( !passFatJetTightID[ij] )continue;
@@ -350,12 +352,12 @@ void xAna_hh_preSelection(std::string inputFile, bool debug=false){
 	TLorentzVector* thisJetPuppi = (TLorentzVector*)puppijetP4->At(ij);
 	float thea_corr = getPUPPIweight(thisJetPuppi->Pt(),thisJetPuppi->Eta());
 	float raw_mass = fatjetPuppiSDmass[ij];
-	float thea_mass = raw_mass*thea_corr;
+	thea_mass[ij] = raw_mass*thea_corr;
 	
 
-	h[3][0]->Fill(thea_mass);
-	if(thea_mass < 105 || thea_mass > 135)continue;
-	h[3][1]->Fill(thea_mass);
+	h[3][0]->Fill(thea_mass[ij]);
+	if(thea_mass[ij] < 105 || thea_mass[ij] > 135)continue;
+	h[3][1]->Fill(thea_mass[ij]);
 
 	// now look for add jets
 
@@ -416,9 +418,12 @@ void xAna_hh_preSelection(std::string inputFile, bool debug=false){
     nPass[11]++;
 
     float mjj = (*higgsJet[0]+*higgsJet[1]).M();
-    h[6][0]->Fill(mjj);
-    if(mjj<700)continue;
-    h[6][1]->Fill(mjj);
+
+    float mjjred = mjj + 250 - thea_mass[0]-thea_mass[1];
+
+    h[6][0]->Fill(mjjred);
+    if(mjjred<750)continue;
+    h[6][1]->Fill(mjjred);
     nPass[12]++;
     
     
