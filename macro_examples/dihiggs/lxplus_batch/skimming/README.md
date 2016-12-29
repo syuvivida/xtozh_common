@@ -35,5 +35,12 @@ gfal-ls root://se01.grid.nchc.org.tw//dpm/grid.nchc.org.tw/home/cms/store/user/s
 ## Submit the jobs at lxplus
 
 ```
+setenv X509_USER_PROXY $HOME/private/grid.proxy
+voms-proxy-init --voms cms
+```
+
+Check if you do have a grid.proxy at $HOME/private. Then, you can submit jobs if you want to process all input files of a certain dataset at the same time. If you only want to process part of the input files, change the values of the variables "iteration" and "lastfile" in the script "launch_ntuple.sh"
+
+```
 launch_ntuple.sh JetMET_Run2016B
 ```
