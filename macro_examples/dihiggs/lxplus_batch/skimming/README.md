@@ -12,6 +12,7 @@ git config core.sparsecheckout true
 echo "macro_examples/dihiggs/lxplus_batch/skimming/*" >> .git/info/sparse-checkout
 git pull --depth=1 origin 80X_analysis
 cd macro_examples/dihiggs/lxplus_batch/skimming/
+chmod 755 *sh
 root -b
 .L skimTree.C++
 .q
@@ -49,5 +50,5 @@ voms-proxy-init --voms cms
 Check if you do have a grid.proxy at $HOME/private. Then, you can submit jobs if you want to process all input files of a certain dataset at the same time. If you only want to process part of the input files, change the values of the variables "iteration" and "lastfile" in the script "launch_ntuple.sh"
 
 ```
-launch_ntuple.sh JetMET_Run2016B
+./launch_ntuple.sh JetMET_Run2016B
 ```
