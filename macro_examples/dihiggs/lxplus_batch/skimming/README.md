@@ -5,6 +5,13 @@ setenv SCRAM_ARCH slc6_amd64_gcc530
 cmsrel CMSSW_8_0_22
 cd CMSSW_8_0_22/src
 cmsenv
+git init scripts
+cd scripts
+git remote add origin https://github.com/syuvivida/xtozh_common
+git config core.sparsecheckout true
+echo "macro_examples/dihiggs/lxplus_batch/skimming/*" >> .git/info/sparse-checkout
+git pull --depth=1 origin 80X_analysis
+cd macro_examples/dihiggs/lxplus_batch/skimming/
 root -b
 .L skimTree.C++
 .q
