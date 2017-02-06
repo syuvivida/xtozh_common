@@ -22,6 +22,8 @@ At this point, you should see a file skimTree_C.so in your work directory
 
 ## Prepare inputfile that contains a list of NCU ntuples at NCU Tier 3 or Taiwan Tier 2
 
+You can find the full list of input files here: https://github.com/syuvivida/xtozh_common/tree/80X_analysis/2016data
+
 Open a new lxplus terminal and log back in
 
 ```
