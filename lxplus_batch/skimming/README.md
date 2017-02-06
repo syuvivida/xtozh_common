@@ -9,9 +9,9 @@ git init scripts
 cd scripts
 git remote add origin https://github.com/syuvivida/xtozh_common
 git config core.sparsecheckout true
-echo "macro_examples/dihiggs/lxplus_batch/skimming/*" >> .git/info/sparse-checkout
+echo "lxplus_batch/skimming/*" >> .git/info/sparse-checkout
 git pull --depth=1 origin 80X_analysis
-cd macro_examples/dihiggs/lxplus_batch/skimming/
+cd lxplus_batch/skimming/
 chmod 755 *sh
 root -b
 .L skimTree.C++
@@ -30,14 +30,14 @@ voms-proxy-init --voms cms
 
 If the files are at NCU Tier 3:
 ```
-gfal-ls root://grid71.phy.ncu.edu.tw:1094//dpm/phy.ncu.edu.tw/home/cms/store/user/syu/JetHT/
+gfal-ls root://grid71.phy.ncu.edu.tw:1094//dpm/phy.ncu.edu.tw/home/cms/store/user/syu/SingleMuon/
 ```
 Note, you need to include all the files that are in different subfolders!!
 An example input file of ntuples from /JetHT/Run2016B-23Sep2016-v3/MINIAOD is "JetMET_Run2016B"
 
 If the files are at Taiwan Tier 2:
 ```
-gfal-ls root://se01.grid.nchc.org.tw//dpm/grid.nchc.org.tw/home/cms/store/user/syu/JetHT
+gfal-ls root://se01.grid.nchc.org.tw//dpm/grid.nchc.org.tw/home/cms/store/user/syu/SingleMuon
 ```
 
 ## Submit the jobs at lxplus
@@ -50,5 +50,5 @@ voms-proxy-init --voms cms
 Check if you do have a grid.proxy at $HOME/private. Then, you can submit jobs if you want to process all input files of a certain dataset at the same time. If you only want to process part of the input files, change the values of the variables "iteration" and "lastfile" in the script "launch_ntuple.sh"
 
 ```
-./launch_ntuple.sh JetMET_Run2016B
+./launch_ntuple.sh SingleMuon_Run2016B
 ```
