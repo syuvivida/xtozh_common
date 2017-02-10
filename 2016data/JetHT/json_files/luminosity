@@ -1,16 +1,16 @@
-JetHT-Run2016B: 5.933 /fb
-JetHT-Run2016C: 2.646 /fb
-JetHT-Run2016D: 4.353 /fb
-JetHT-Run2016E: 4.117 /fb
-JetHT-Run2016F: 3.186 /fb
-JetHT-Run2016G: 7.721 /fb
-JetHT-Run2016H: 8.857 /fb
+JetHT-Run2016B: 5.788 /fb
+JetHT-Run2016C: 2.573 /fb
+JetHT-Run2016D: 4.248 /fb
+JetHT-Run2016E: 4.009 /fb
+JetHT-Run2016F: 3.102 /fb
+JetHT-Run2016G: 7.540 /fb
+JetHT-Run2016H: 8.606 /fb
 
 #Summary: 
 +-------+------+--------+--------+-------------------+------------------+
 | nfill | nrun | nls    | ncms   | totdelivered(/fb) | totrecorded(/fb) |
 +-------+------+--------+--------+-------------------+------------------+
-| 144   | 393  | 232223 | 232218 | 38.369            | 36.814           |
+| 144   | 393  | 232227 | 232222 | 37.382            | 35.866           |
 +-------+------+--------+--------+-------------------+------------------+
 
-
+Luminosity uncertainty 2.6%

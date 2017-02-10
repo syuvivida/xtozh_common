@@ -1,17 +1,18 @@
-SingleMuon-Run2016B: 5.929 /fb
-SingleMuon-Run2016C: 2.646 /fb
-SingleMuon-Run2016D: 4.353 /fb
-SingleMuon-Run2016E: 4.117 /fb
-SingleMuon-Run2016F: 3.186 /fb
-SingleMuon-Run2016G: 7.721 /fb
-SingleMuon-Run2016H: 8.857 /fb
+SingleMuon-Run2016B: 5.784 /fb
+SingleMuon-Run2016C: 2.573 /fb
+SingleMuon-Run2016D: 4.248 /fb
+SingleMuon-Run2016E: 4.009 /fb
+SingleMuon-Run2016F: 3.102 /fb
+SingleMuon-Run2016G: 7.540 /fb
+SingleMuon-Run2016H: 8.606 /fb
 
 #Summary: 
-
 +-------+------+--------+--------+-------------------+------------------+
 | nfill | nrun | nls    | ncms   | totdelivered(/fb) | totrecorded(/fb) |
 +-------+------+--------+--------+-------------------+------------------+
-| 144   | 393  | 232176 | 232171 | 38.365            | 36.810           |
+| 144   | 393  | 232180 | 232175 | 37.378            | 35.862           |
 +-------+------+--------+--------+-------------------+------------------+
+
+Luminosity uncertainty: 2.6%
 
 
