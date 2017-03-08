@@ -127,7 +127,7 @@ void xAna_hh_preSelection(std::string inputFile, bool debug=false){
           }
       }
 
-    if(!passTrigger && isData)continue;
+    if(!passTrigger)continue;
     nPass[0]++;
 
     //0. has a good vertex
