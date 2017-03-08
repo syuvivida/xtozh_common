@@ -22,7 +22,8 @@ do
   iteration=$(( iteration + 1 ))
   input=(`head -n $iteration $inputfile  | tail -1`)
   echo $iteration $input
-bsub -q1nd -R "rusage[mem=12000]" $PWD/runNtuple.sh $PWD $iteration $input
+#bsub -q1nd -R "rusage[mem=12000]" $PWD/runNtuple.sh $PWD $iteration $input
+bsub -q1nh $PWD/runNtuple.sh $PWD $iteration $input
 done
 
 
