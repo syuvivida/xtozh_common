@@ -42,6 +42,11 @@ If the files are at Taiwan Tier 2:
 gfal-ls root://se01.grid.nchc.org.tw//dpm/grid.nchc.org.tw/home/cms/store/user/syu/SingleMuon
 ```
 
+To prepare the root files list, you can use "genFileList.sh" to make it. 
+By giving file name and root file directory path, it will generates a file which records root file pathes
+```
+./genFileList.sh SingleMuon_Run2016B root://se01.grid.nchc.org.tw//dpm/grid.nchc.org.tw/home/cms/store/user/syu/SingleMuon/crab_SingleMuon-Run2016B/170128_145150/0000
+```
 ## Submit the jobs at lxplus
 
 ```
