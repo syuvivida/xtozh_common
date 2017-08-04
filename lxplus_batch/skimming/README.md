@@ -42,11 +42,19 @@ If the files are at Taiwan Tier 2:
 gfal-ls root://se01.grid.nchc.org.tw//dpm/grid.nchc.org.tw/home/cms/store/user/syu/SingleMuon
 ```
 
-To prepare the root files list, you can use "genFileList.sh" to make it. 
-By giving file name and root file directory path, it will generates a file which records root file pathes
+To prepare the data root files list, you can use "gfalListDataFile.sh" to make it. 
+By giving the keyword of the directory name, it will generates a file which records root file pathes. BUT NOTE, if you have directories from the old jobs under the same dataset name, PLEASE REMEMBER to remove them via "gfal-rm -r xxx"!!
 ```
-./genFileList.sh SingleMuon_Run2016B root://se01.grid.nchc.org.tw//dpm/grid.nchc.org.tw/home/cms/store/user/syu/SingleMuon/crab_SingleMuon-Run2016B/170128_145150/0000
+./gfalListDataFile.sh JetHT NCUGlobal ncu syu
 ```
+
+To prepare the MC root files list, you can use "gfalListMCFile.sh" to make it. 
+By giving the keyword of the directory name, it will generates a file which records root file pathes. BUT NOTE, if you have directories from the old jobs under the same dataset name, PLEASE REMEMBER to remove them via "gfal-rm -r xxx"!!
+```
+./gfalListMCFile.sh QCD NCUGlobal ncu syu
+```
+
+
 ## Submit the jobs at lxplus
 
 ```
