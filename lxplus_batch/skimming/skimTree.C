@@ -435,7 +435,7 @@ void skimTree(int w, string st){
 	TH1D * fixScale=new TH1D("fixScale","fixScale",12,-0.5,12.5);
 	for(int i=0;i<16;i++)fixScale->SetBinContent(i+1,fixScaleNum[i]);
 	gSystem->mkdir("N1");
-	TFile* outFile= new TFile(Form("N1/%d",w),"recreate");
+	TFile* outFile= new TFile(Form("N1/%d.root",w),"recreate");
 	for(int i=0;i<15;i++){
 		for(int j=0;j<4;j++){
 			th_flavor[j][i]->Write();
