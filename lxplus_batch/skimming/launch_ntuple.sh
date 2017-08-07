@@ -5,7 +5,7 @@ EXPECTED_ARGS=1
 if [ $# -ne $EXPECTED_ARGS ]
 then
     echo "Usage: $scriptname inputTextFile"
-    echo "Example: ./$scriptname JetMET_Run2016B"
+    echo "Example: ./$scriptname JetMET_Run2016B.txt"
     exit 1
 fi
 
