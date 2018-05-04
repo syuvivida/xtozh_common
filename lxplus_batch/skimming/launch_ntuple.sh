@@ -25,6 +25,7 @@ rootfileDir="${inputfile%.txt}"
 mkdir -p ${rootfileDir}
 cp -p runNtuple.sh ${rootfileDir}/.
 cp -p run.C ${rootfileDir}/.
+cp -p *.xml ${rootfileDir}/.
 cd ${rootfileDir}
 
 iteration=0
