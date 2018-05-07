@@ -3,6 +3,8 @@ void run(int w, std::string fileName)
 {
   TStopwatch* myWatch = new TStopwatch();
   myWatch->Start();
+  //  this file is copied to subfolders
+  //  DO NOT remove ../ !
   gROOT->ProcessLine(".L ../skimTree_C.so");
   //  gROOT->ProcessLine(".L skimTree.C++");
   gROOT->ProcessLine(Form("skimTree(%d,\"%s\")",w,fileName.data()));
