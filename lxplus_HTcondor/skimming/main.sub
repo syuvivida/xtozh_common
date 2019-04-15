@@ -1,0 +1,36 @@
+##########################################################
+## user setting area
+
+listFile              = dataTest.txt
+#exeMacro              = anbb2HDM_4jetData_C.so
+exeMacro              = skimTree_C.so
+
+outputVar             = testOut.root
+outputTransfer        = $Fn(listFile)/output_$(ClusterId)_$(ProcId).root
+
+request_cpus          = 1
+request_memory        = 2000    # MB
++JobFlavour           = "longlunch"
+
+#Rank = (machine ==  "bigbird10.cern.ch")
+
+##########################################################
+
+
+universe              = vanilla
+executable            = subMacro.sh
+output                = $Fn(listFile)/out/job_$(ClusterId)_$(ProcId).out
+error                 = $Fn(listFile)/err/job_$(ClusterId)_$(ProcId).err
+log                   = $Fn(listFile)/job_$(ClusterId).log
+arguments             = $(exeMacro) $(inputFile) $(outputVar)
+
+
+#transfer input file
+should_transfer_files   = Yes
+when_to_transfer_output = ON_EXIT
+transfer_output_remaps  = "$(outputVar)=$(outputTransfer)"
+#transfer_output_files   = dir/
+transfer_input_files   = $(exeMacro), $Fn(exeMacro)_ACLiC_dict_rdict.pcm
+
+queue inputFile from $(listFile)
+
