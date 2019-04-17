@@ -49,7 +49,7 @@ By giving the keyword of the directory name, it will generates a file which reco
 ./gfalListDataFile.sh JetHT NCUGlobal ncu syu
 ```
 
-To prepare the MC root files list, you can use gfalListMCFile.sh](gfalListMCFile.sh) to make it. 
+To prepare the MC root files list, you can use [gfalListMCFile.sh](gfalListMCFile.sh) to make it. 
 By giving the keyword of the directory name, it will generates a file which records root file pathes. BUT NOTE, if you have directories from the old jobs under the same dataset name, PLEASE REMEMBER to remove them via "gfal-rm -r xxx"!!
 ```
 ./gfalListMCFile.sh QCD NCUGlobal ncu syu
@@ -120,4 +120,5 @@ the detail of this framework is writen in this file.
 
 ## Useful Links
 [CERN Batch Service User Guide](http://batchdocs.web.cern.ch/batchdocs/tutorial/introduction.html)
+
 [HTCondor Manuals](http://research.cs.wisc.edu/htcondor/manual/)
