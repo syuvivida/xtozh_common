@@ -20,7 +20,7 @@ Set the environment variables and some required directories and files
 source prepare.sh
 ```
 
-At this point, you should see a file skimTree_C.so in your work directory. If you change something in skimTree.C, remember to compile it again.
+At this point, you should see a file skimTree_C.so in your work directory. Note, if you change something in [skimTree.C](skimTree.C), remember to compile it again.
 ```
 # compile
 root -b -q -e ".L skimTree.C++"
@@ -43,13 +43,13 @@ If the files are at Taiwan Tier 2:
 gfal-ls root://se01.grid.nchc.org.tw//dpm/grid.nchc.org.tw/home/cms/store/user/syu/SingleMuon
 ```
 
-To prepare the data root files list, you can use "gfalListDataFile.sh" to make it. 
+To prepare the data root files list, you can use [gfalListDataFile.sh](gfalListDataFile.sh) to make it. 
 By giving the keyword of the directory name, it will generates a file which records root file pathes. BUT NOTE, if you have directories from the old jobs under the same dataset name, PLEASE REMEMBER to remove them via "gfal-rm -r xxx"!!
 ```
 ./gfalListDataFile.sh JetHT NCUGlobal ncu syu
 ```
 
-To prepare the MC root files list, you can use "gfalListMCFile.sh" to make it. 
+To prepare the MC root files list, you can use gfalListMCFile.sh](gfalListMCFile.sh) to make it. 
 By giving the keyword of the directory name, it will generates a file which records root file pathes. BUT NOTE, if you have directories from the old jobs under the same dataset name, PLEASE REMEMBER to remove them via "gfal-rm -r xxx"!!
 ```
 ./gfalListMCFile.sh QCD NCUGlobal ncu syu
@@ -76,16 +76,15 @@ condor_submit main.sub
 # If you want to run multiple files, use this way
 condor_submit main.sub -append "listFile = yourDataList"
 ```
-
-### Check status of job and other useful commands
+## Useful commands of HTcondor
+### Check status of job
 Using the following command to check the status of jobs
 ```
 condor_q
 condor_q <ClusterID>
 ```
 ### Problem handling
-If the status of job is "hold" which means something wrong,
-using following command to know the reason.
+If the status of job is "hold" which means something is wrong, using following command to study the reason.
 ```
 condor_q -analyze <ClusterID.jobID>
 ```
@@ -99,15 +98,25 @@ Or you can remove jobs
 condor_rm <ClusterID>        ## used to remove specific job
 condor_rm -all               ## used to remove all jobs
 ```
-### common troubleshooting
+### Common troubleshooting
 ```
 -- Failed to fetch ads from: <... : bigbirdxx.cern.ch
 SECMAN:2007:Failed to end classad message.
 ```
-If you see this error, wait a while and submit your jobs again. It's better to open a CERN Service Now ticket to inform the IT group.
-
-This is usually due to heavy load, either on a specific schedd host or the central manager. In exceptional cases this might be caused by a centralized outage causing delays to the system.
-## The way to submit jobs with other macro
+If you see this error, wait a while and submit your jobs again. This is usually due to heavy load, either on a specific schedd host or the central manager. In exceptional cases this might be caused by a centralized outage causing delays to the system.
+#### solution
+To avoid the problem of heavy load of machine, please switch remote machine
+```
+# show the status of machine, check which machine is not busy
+condor_status -schedd
+# e.g. using bigbird15.cern.ch
+export _CONDOR_SCHEDD_HOST=bigbird15.cern.ch
+export _CONDOR_CREDD_HOST=bigbird15.cern.ch 
+condor_submit main.sub
+```
+## How to run with other macro?
+Please see [guide.md](Guide/guide.md)
+the detail of this framework is writen in this file.
 
 ## Useful Links
 [CERN Batch Service User Guide](http://batchdocs.web.cern.ch/batchdocs/tutorial/introduction.html)
