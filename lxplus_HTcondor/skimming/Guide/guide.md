@@ -18,8 +18,9 @@ This file contains all configuration used for HTcondor. For most of cases, user 
 |exeMacro | your executed macro name|
 |outputVar | your output file name in exeMacro|
 |outputTransfer | transfering name of your outputfile |
+
 Explaination of variables in user setting area.
-* If you have some include file, you should add it in transfer_input_files list
+* NOTE: If you have some include file, you should add it in transfer_input_files list
 
 ### subMacro.sh
 This file is used to set environment variables in remote machine and run the executed macro.
