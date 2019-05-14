@@ -11,6 +11,8 @@ sed -i "s#export X509.*#export X509_USER_PROXY=$X509_USER_PROXY#g" subMacro.sh
 echo "execute 'voms-proxy-init --voms cms'"
 voms-proxy-init --voms cms
 
+# comment block
+<<multi-line-comment-1
 exefile=skimTree.C
 if [ ! -f $exefile ]
 then
@@ -23,4 +25,6 @@ then
     echo "compiling..."
     root -b -q -e ".L $exefile++"
 fi
+multi-line-comment-1
+
 echo "Done"

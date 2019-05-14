@@ -20,12 +20,6 @@ Set the environment variables and some required directories and files
 source prepare.sh
 ```
 
-At this point, you should see a file skimTree_C.so in your work directory. Note, if you change something in [skimTree.C](skimTree.C), remember to compile it again.
-```
-# compile
-root -b -q -e ".L skimTree.C++"
-```
-
 ## Prepare inputfile that contains a list of NCU ntuples at NCU Tier 3 or Taiwan Tier 2
 
 You can find the full list of input files here: https://github.com/syuvivida/xtozh_common/tree/80X_analysis/2016data

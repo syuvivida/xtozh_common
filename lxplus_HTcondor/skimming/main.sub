@@ -2,13 +2,11 @@
 ## user setting area
 
 listFile              = dataTest.txt
-exeMacro              = skimTree_C.so
+exeMacro              = skimTree.C
 
 outputVar             = testOut.root
 outputTransfer        = $Fn(listFile)/output_$(ClusterId)_$(ProcId).root
 
-request_cpus          = 1
-request_memory        = 2000    # MB
 +JobFlavour           = "longlunch"
 
 ##########################################################
@@ -26,7 +24,7 @@ arguments             = $(exeMacro) $(inputFile) $(outputVar)
 should_transfer_files   = Yes
 when_to_transfer_output = ON_EXIT
 transfer_output_remaps  = "$(outputVar)=$(outputTransfer)"
-transfer_input_files   = $(exeMacro), $Fn(exeMacro)_ACLiC_dict_rdict.pcm
+transfer_input_files   = $(exeMacro), untuplizer.h, standalone_LumiReWeighting.h, standalone_LumiReWeighting.cc 
 
 queue inputFile from $(listFile)
 
