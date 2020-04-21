@@ -1,9 +1,18 @@
-//////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////
 // This class has been automatically generated on
 // Tue Apr 21 10:16:18 2020 by ROOT version 6.14/00
 // from TTree treeMaker/tree
 // found on file: NCUGlobalTuples_1.root
-//////////////////////////////////////////////////////////
+//
+// Usage: within ROOT
+//
+//  .L skimTree.C++
+//  skimTree a("xxx.root")
+//  skimTree.Loop()
+//  
+//  An output file with a name "xxx_filtered.root will be 
+//  created in the same path
+//////////////////////////////////////////////////////////////
 
 #ifndef skimTree_h
 #define skimTree_h
