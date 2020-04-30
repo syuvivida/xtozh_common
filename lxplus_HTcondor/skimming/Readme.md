@@ -2,7 +2,8 @@
 ## Compiling of skimTree
 
 ```
-setenv SCRAM_ARCH slc7_amd64_gcc530
+setenv SCRAM_ARCH slc7_amd64_gcc530  ## tch
+export SCRAM_ARCH=slc7_amd64_gcc530  ## bash
 cmsrel CMSSW_8_0_27
 cd CMSSW_8_0_27/src
 cmsenv
