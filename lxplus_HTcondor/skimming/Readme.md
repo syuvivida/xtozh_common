@@ -2,15 +2,16 @@
 ## Compiling of skimTree
 
 ```
-setenv SCRAM_ARCH slc6_amd64_gcc530
-cmsrel CMSSW_8_0_25
-cd CMSSW_8_0_25/src
+setenv SCRAM_ARCH slc7_amd64_gcc530  ## tch
+export SCRAM_ARCH=slc7_amd64_gcc530  ## bash
+cmsrel CMSSW_8_0_27
+cd CMSSW_8_0_27/src
 cmsenv
 git init scripts
 cd scripts
 git remote add origin https://github.com/syuvivida/xtozh_common
 git config core.sparsecheckout true
-echo "lxplus_batch/skimming/*" >> .git/info/sparse-checkout
+echo "lxplus_HTcondor/skimming/*" >> .git/info/sparse-checkout
 git pull --depth=1 origin 80X_analysis
 cd lxplus_batch/skimming/
 chmod 755 *sh
