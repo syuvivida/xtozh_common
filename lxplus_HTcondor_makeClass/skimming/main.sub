@@ -2,7 +2,7 @@
 ## user setting area
 
 listFile              = dataTest.txt
-exeMacro              = skimTree.C
+exeMacro              = treeMaker.C 
 
 +JobFlavour           = "longlunch"
 
@@ -26,14 +26,15 @@ executable            = subMacro.sh
 output                = $Fn(listFile)/out/job_$(ClusterId)_$(ProcId).out
 error                 = $Fn(listFile)/err/job_$(ClusterId)_$(ProcId).err
 log                   = $Fn(listFile)/job_$(ClusterId).log
-arguments             = $(exeMacro) $(inputFile) $(outputVar)
+arguments             = $Fn(exeMacro).C $(inputFile) $(outputVar)
 
 
 #transfer input file
 should_transfer_files   = Yes
 when_to_transfer_output = ON_EXIT
 transfer_output_remaps  = "$(outputVar)=$(outputTransfer)"
-transfer_input_files   = $(exeMacro), untuplizer.h, standalone_LumiReWeighting.h, standalone_LumiReWeighting.cc 
+transfer_input_files   = $Fn(exeMacro).C, $Fn{exeMacro}.h
+# transfer_input_files   = treeMaker.C, treeMaker.h 
 
 queue inputFile from $(listFile)
 
