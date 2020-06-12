@@ -21,6 +21,7 @@ chmod 755 *sh
 ## Prepare inputfile that contains a list of NCU ntuples at NCU Tier 3 or Taiwan Tier 2
 
 You can find the full list of input files here: https://github.com/syuvivida/xtozh_common/tree/80X_analysis/2016data
+
 Please prepare the file list. You can use the list on github or make by yourself.
 
 Set the environment variables and some required directories and files
@@ -41,7 +42,8 @@ root > .q
 ```
 
 myTree.h and myTree.C will be generated. You need to modify .C file, writing the analysis code in Loop() function.
-**Do not change .h file **
+
+**Do not change .h file**
 
 ### Running code & local test
 ```
